@@ -1,0 +1,71 @@
+# Fichiers et dossiers à ignorer pour Git
+
+# Dépendances Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Variables d'environnement
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# IDE et Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Fichiers de build
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs/
+*.log
+
+# Fichiers uploadés
+uploads/
+*/uploads/*
+!uploads/.gitkeep
+
+# Base de données locale
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# Fichiers temporaires
+tmp/
+temp/
+*.tmp
+
+# Coverage et tests
+coverage/
+.nyc_output/
+*.lcov
+
+# Angular specific
+.angular/
+.angular/*
+
+# Fichiers système
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini

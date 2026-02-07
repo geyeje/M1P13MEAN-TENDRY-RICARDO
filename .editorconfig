@@ -1,0 +1,29 @@
+# EditorConfig - Configuration partagée entre éditeurs
+# https://editorconfig.org
+
+root = true
+
+# Configuration par défaut pour tous les fichiers
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Fichiers Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# Fichiers YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# Package.json
+[package.json]
+indent_size = 2
+
+# Makefile
+[Makefile]
+indent_style = tab
