@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   nom: {
-    type: String,
+    type: String, 
     required: [true, 'Le nom est requis'],
     trim: true,
     minlength: [2, 'Le nom doit contenir au moins 2 caractères']
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'boutique', 'acheteur'],
+    enum: ['admin', 'boutique', 'acheteur','gerant'],
     default: 'acheteur',
     required: true
   },
