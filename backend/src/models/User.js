@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  nom: {
+  firstname: {
     type: String,
     required: [true, 'Le nom est requis'],
     trim: true,
     minlength: [2, 'Le nom doit contenir au moins 2 caractères']
   },
-  prenom: {
+  lastname: {
     type: String,
     required: [true, 'Le prénom est requis'],
     trim: true,
@@ -31,16 +31,16 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'boutique', 'acheteur'],
-    default: 'acheteur',
+    enum: ['admin', 'store', 'customer'],
+    default: 'customer',
     required: true
   },
-  telephone: {
+  phone: {
     type: String,
     trim: true,
     match: [/^[0-9]{10}$/, 'Numéro de téléphone invalide (10 chiffres requis)']
   },
-  adresse: {
+  address: {
     type: String,
     trim: true
   },

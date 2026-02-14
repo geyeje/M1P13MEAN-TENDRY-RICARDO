@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
       });
     }
 
-    const { nom, prenom, email, password, role, telephone, adresse } = req.body;
+    const { firstname, lastname, email, password, role, phone, address } = req.body;
 
     // Vérifier si l'utilisateur existe déjà
     const userExists = await User.findOne({ email: email.toLowerCase() });
@@ -39,13 +39,13 @@ exports.register = async (req, res) => {
 
     // Créer l'utilisateur
     const user = await User.create({
-      nom,
-      prenom,
+      firstname,
+      lastname,
       email: email.toLowerCase(),
       password, // Le password sera hashé automatiquement par le middleware Mongoose
       role: role || 'acheteur', // Par défaut : acheteur
-      telephone,
-      adresse
+      phone,
+      address
     });
 
     // Générer le token
@@ -58,12 +58,12 @@ exports.register = async (req, res) => {
       token,
       user: {
         id: user._id,
-        nom: user.nom,
-        prenom: user.prenom,
+        firstname: user.firstname,
+        lastname: user.lastname,
         email: user.email,
         role: user.role,
-        telephone: user.telephone,
-        adresse: user.adresse
+        phone: user.phone,
+        address: user.address
       }
     });
 
@@ -133,12 +133,12 @@ exports.login = async (req, res) => {
       token,
       user: {
         id: user._id,
-        nom: user.nom,
-        prenom: user.prenom,
+        firstname: user.firstname,
+        lastname: user.lastname,
         email: user.email,
         role: user.role,
-        telephone: user.telephone,
-        adresse: user.adresse,
+        phone: user.phone,
+        address: user.address,
         avatar: user.avatar
       }
     });
@@ -171,12 +171,12 @@ exports.getProfile = async (req, res) => {
       success: true,
       user: {
         id: user._id,
-        nom: user.nom,
-        prenom: user.prenom,
+        firstname: user.firstname,
+        lastname: user.lastname,
         email: user.email,
         role: user.role,
-        telephone: user.telephone,
-        adresse: user.adresse,
+        phone: user.phone,
+        address: user.address,
         avatar: user.avatar,
         createdAt: user.createdAt
       }
@@ -197,7 +197,7 @@ exports.getProfile = async (req, res) => {
 // @access  Private
 exports.updateProfile = async (req, res) => {
   try {
-    const { nom, prenom, telephone, adresse } = req.body;
+    const { firstname, lastname, phone, address } = req.body;
 
     const user = await User.findById(req.user.id);
 
@@ -209,10 +209,10 @@ exports.updateProfile = async (req, res) => {
     }
 
     // Mise à jour des champs
-    if (nom) user.nom = nom;
-    if (prenom) user.prenom = prenom;
-    if (telephone) user.telephone = telephone;
-    if (adresse) user.adresse = adresse;
+    if (nom) user.firstname = firstname;
+    if (prenom) user.lastname = lastname;
+    if (telephone) user.phone = phone;
+    if (adresse) user.address = address;
 
     await user.save();
 
@@ -221,12 +221,12 @@ exports.updateProfile = async (req, res) => {
       message: 'Profil mis à jour avec succès',
       user: {
         id: user._id,
-        nom: user.nom,
-        prenom: user.prenom,
+        firstname: user.firstname,
+        lastname: user.lastname,
         email: user.email,
         role: user.role,
-        telephone: user.telephone,
-        adresse: user.adresse
+        phone: user.phone,
+        address: user.address
       }
     });
 

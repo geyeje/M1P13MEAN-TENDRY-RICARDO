@@ -16,6 +16,8 @@ connectDB();
 // Middlewares
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 app.use(express.json());

@@ -7,12 +7,12 @@ const { protect } = require('../middlewares/auth.middleware');
 
 // Validation pour l'inscription
 const registerValidation = [
-  body('nom')
+  body('firstname')
     .trim()
     .notEmpty().withMessage('Le nom est requis')
     .isLength({ min: 2 }).withMessage('Le nom doit contenir au moins 2 caractères'),
   
-  body('prenom')
+  body('lastname')
     .trim()
     .notEmpty().withMessage('Le prénom est requis')
     .isLength({ min: 2 }).withMessage('Le prénom doit contenir au moins 2 caractères'),
@@ -30,13 +30,13 @@ const registerValidation = [
   
   body('role')
     .optional()
-    .isIn(['admin', 'boutique', 'acheteur']).withMessage('Rôle invalide'),
+    .isIn(['admin', 'store', 'customer']).withMessage('Rôle invalide'),
   
-  body('telephone')
+  body('phone')
     .optional()
     .matches(/^[0-9]{10}$/).withMessage('Numéro de téléphone invalide (10 chiffres requis)'),
   
-  body('adresse')
+  body('address')
     .optional()
     .trim()
 ];

@@ -30,12 +30,12 @@ exports.createBoutique = async (req , res ) => {
     const boutique = await Boutique.create({
       name,
       description,
-      categorie,
+      category,
       userId,
-      statut:'en_attente',
+      status:'en_attente',
       phone,
       email,
-      adresse,
+      address,
       schedule,
       socialNetwork,
       logo:req.file ? req.file.path :null
@@ -71,8 +71,8 @@ exports.getAllBoutiques= async (req, res) => {
   try{
     //recuperer les parametre de recherche/filtrage
     const{
-      categorie,
-      statut,
+      category,
+      status,
       search,
       page=1,
       limit= 10,
@@ -84,15 +84,15 @@ exports.getAllBoutiques= async (req, res) => {
 
     //si pas admin montrer seulement les boutiques actices 
     if (req.user?.role !=='admin'){
-      filter.statut='active';
-    }else if (statut){
+      filter.status='active';
+    }else if (status){
       //admin peut filtrer par sstatus 
-      filter.statut= statut;
+      filter.status= status;
     }
 
     //filtrer par categories 
-    if (categorie){
-      filter.categorie=categorie;
+    if (category){
+      filter.category=category;
     }
 
     //recherche textuel
@@ -111,7 +111,7 @@ exports.getAllBoutiques= async (req, res) => {
     //executer la requete
 
     const boutiques = await Boutique.find(filter)
-      .populate('userId','nom prenom email')
+      .populate('userId','firstname lastname email')
       .sort(sort)
       .limit(parseInt(limit))
       .skip(skip);
@@ -141,15 +141,15 @@ exports.getAllBoutiques= async (req, res) => {
 exports.getBoutiqueById = async (req,res) =>{
   try{
     const boutique = await Boutique.findById(req.params.id)
-      .populate('userId','nom prenom email telephone ');
+      .populate('userId','firstname lastname email phone ');
     if (!boutique){
       return res.status(404).json({
         success:false,
-        message:'botique non trouvé'
+        message:'boutique non trouvé'
       });
     }
     //si boutique n'est pas acticve , asdmin et prop peut acivé
-    if (boutique .statut !=='active'){
+    if (boutique.status !=='active'){
       if(!req.user || (req.user.role !== 'admin' && req.user.id !==boutique.userId._id.toString())){
         return res.status(403).json({
           success:false,
@@ -179,7 +179,7 @@ exports.getBoutiqueById = async (req,res) =>{
 exports.getMyBoutique = async (req, res) => {
   try {
     const boutique = await Boutique.findOne({ userId: req.user.id })
-      .populate('userId', 'nom prenom email');
+      .populate('userId', 'firstname lastname email');
 
     if (!boutique) {
       return res.status(404).json({
@@ -231,8 +231,8 @@ exports.updateBoutique = async (req, res) => {
     }
 
     // 3. Empêcher la modification du statut par le gérant
-    if (req.user.role !== 'admin' && req.body.statut) {
-      delete req.body.statut;  // Seul l'admin peut changer le statut
+    if (req.user.role !== 'admin' && req.body.status) {
+      delete req.body.status;  // Seul l'admin peut changer le statut
     }
 
     // 4. Mettre à jour
@@ -243,7 +243,7 @@ exports.updateBoutique = async (req, res) => {
         new: true,              // Retourner le document modifié
         runValidators: true     // Appliquer les validations
       }
-    ).populate('userId', 'nom prenom email');
+    ).populate('userId', 'firstname lastname email');
 
     res.status(200).json({
       success: true,
@@ -262,7 +262,7 @@ exports.updateBoutique = async (req, res) => {
 };
 
 // ========================================
-// 6. SUPPRIMER UNE BOUTIQUE
+// 6. SUPPRIMER UNE BOUTIQUE   
 // ========================================
 // @desc    Supprimer une boutique
 // @route   DELETE /api/boutiques/:id
@@ -315,7 +315,7 @@ exports.validateBoutique = async (req, res) => {
     const { statut, motifRejet } = req.body;
 
     // Validation du statut
-    if (!['active', 'suspendue', 'en_attente'].includes(statut)) {
+    if (!['active', 'suspended', 'pending'].includes(statut)) {
       return res.status(400).json({
         success: false,
         message: 'Statut invalide'
@@ -323,7 +323,7 @@ exports.validateBoutique = async (req, res) => {
     }
 
     const boutique = await Boutique.findById(req.params.id)
-      .populate('userId', 'nom prenom email');
+      .populate('userId', 'firstname lastname email');
 
     if (!boutique) {
       return res.status(404).json({
@@ -333,10 +333,10 @@ exports.validateBoutique = async (req, res) => {
     }
 
     // Mettre à jour le statut
-    boutique.statut = statut;
+    boutique.status = statut;
     
     // Si rejet, enregistrer le motif (optionnel: ajouter ce champ au modèle)
-    if (statut === 'suspendue' && motifRejet) {
+    if (statut === 'suspended' && motifRejet) {
       boutique.motifRejet = motifRejet;
     }
 

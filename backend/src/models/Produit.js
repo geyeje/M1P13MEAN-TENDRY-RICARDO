@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 const produitSchema = new mongoose.Schema({
-  nom: {
+  name: {
     type: String,
     required: [true, 'Le nom du produit est requis'],
     trim: true,
@@ -14,12 +14,12 @@ const produitSchema = new mongoose.Schema({
     trim: true,
     minlength: [10, 'La description doit contenir au moins 10 caractères']
   },
-  prix: {
+  price: {
     type: Number,
     required: [true, 'Le prix est requis'],
     min: [0, 'Le prix ne peut pas être négatif']
   },
-  prixPromo: {
+  promotionPrice: {
     type: Number,
     default: null,
     min: [0, 'Le prix promo ne peut pas être négatif']
@@ -27,7 +27,7 @@ const produitSchema = new mongoose.Schema({
   images: [{
     type: String
   }],
-  imagePrincipale: {
+  mainImage: {
     type: String,
     default: null
   },
@@ -37,63 +37,63 @@ const produitSchema = new mongoose.Schema({
     min: [0, 'Le stock ne peut pas être négatif'],
     default: 0
   },
-  boutiqueId: {
+  storeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Boutique',
     required: true
   },
-  categorie: {
+  category: {
     type: String,
     required: [true, 'La catégorie est requise']
   },
-  sousCategorie: {
+  subCategory: {
     type: String,
     default: null
   },
-  marque: {
+  brand: {
     type: String,
     trim: true
   },
   // Caractéristiques techniques (flexible)
-  caracteristiques: {
+  characteristics: {
     type: Map,
     of: String
   },
   // Tailles disponibles (pour vêtements)
-  tailles: [{
+  size: [{
     type: String,
     enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Unique']
   }],
   // Couleurs disponibles
-  couleurs: [String],
+  colors: [String],
   // Promotion
-  enPromotion: {
+  specialOffert: {
     type: Boolean,
     default: false
   },
-  pourcentageReduction: {
+  reductionPercentage: {
     type: Number,
     min: 0,
     max: 100,
     default: 0
   },
   // Disponibilité
-  disponible: {
+  isOnSale: {
     type: Boolean,
     default: true
   },
   // Statistiques
-  nombreVentes: {
+  saleAmount: {
     type: Number,
     default: 0
   },
-  note: {
+  review: {
     type: Number,
     default: 0,
     min: 0,
     max: 5
   },
-  nombreAvis: {
+  reviewNumber: {
     type: Number,
     default: 0
   },
@@ -102,7 +102,7 @@ const produitSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  nouveaute: {
+  novelty: {
     type: Boolean,
     default: false
   }
@@ -112,13 +112,13 @@ const produitSchema = new mongoose.Schema({
 
 // Virtuel pour calculer le prix final
 produitSchema.virtual('prixFinal').get(function() {
-  if (this.enPromotion && this.prixPromo) {
-    return this.prixPromo;
+  if (this.specialOffert && this.promotionPrice) {
+    return this.promotionPrice;
   }
-  if (this.enPromotion && this.pourcentageReduction > 0) {
-    return this.prix - (this.prix * this.pourcentageReduction / 100);
+  if (this.promotionPrice && this.reductionPercentage > 0) {
+    return this.price - (this.price * this.reductionPercentage / 100);
   }
-  return this.prix;
+  return this.price;
 });
 
 // S'assurer que les virtuels sont inclus dans JSON
@@ -126,12 +126,12 @@ produitSchema.set('toJSON', { virtuals: true });
 produitSchema.set('toObject', { virtuals: true });
 
 // Index pour améliorer les performances
-produitSchema.index({ boutiqueId: 1 });
-produitSchema.index({ categorie: 1 });
-produitSchema.index({ prix: 1 });
-produitSchema.index({ note: -1 });
-produitSchema.index({ nombreVentes: -1 });
-produitSchema.index({ nom: 'text', description: 'text' }); // Recherche textuelle
+produitSchema.index({ storeId: 1 });
+produitSchema.index({ category: 1 });
+produitSchema.index({ price: 1 });
+produitSchema.index({ review: -1 });
+produitSchema.index({ saleAmount: -1 });
+produitSchema.index({ name: 'text', description: 'text' }); // Recherche textuelle
 
 const Produit = mongoose.model('Produit', produitSchema);
 
