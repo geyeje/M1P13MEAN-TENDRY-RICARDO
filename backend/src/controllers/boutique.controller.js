@@ -19,7 +19,9 @@ exports.createBoutique = async (req , res ) => {
       });
     }
     //virification si user a un boutique 
-    const existingBoutique = await Boutiques.findOne({userId:req.user.id});
+    const existingBoutique = await Boutique.findOne({
+      userId:req.user.id
+    });
     if(existingBoutique){
       return res.status(400).json({
         success:false,
