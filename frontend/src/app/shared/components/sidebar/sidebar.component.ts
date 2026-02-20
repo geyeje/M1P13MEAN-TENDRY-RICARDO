@@ -1,7 +1,9 @@
-import { Component, inject, input} from '@angular/core';
+import { Component, computed, inject, input, signal} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../models/user.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,6 +14,6 @@ import { User } from '../../models/user.model';
 })
 export class Sidebar {
   authService = inject(AuthService);
-  user = this.authService.currentUserValue;
-  name = this.user?.firstname;
+  currentUser = toSignal(this.authService.currentUser);
+  name = computed(() => this.currentUser()?.firstname || 'invité');
 }
