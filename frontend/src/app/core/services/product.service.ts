@@ -10,15 +10,16 @@ import { delay, map, Observable, of } from 'rxjs';
 })
 export class ProductService {
   private apiUrl = `${environment.apiUrl}/products`;
-  private productSignal = signal<Product[]>([]);
-  readonly products = this.productSignal.asReadonly();
-  private isLoading = signal(false);
-  private error = signal<string | null>(null);
+  private productSignal = signal<Product[]>([]);// Signal pour stocker les produits
+  readonly products = this.productSignal.asReadonly();// Exposer les produits en lecture seule pour éviter les corruptions de données
+  private isLoading = signal(false);// Signal pour indiquer si les produits sont en cours de chargement
+  private error = signal<string | null>(null);// Signal pour stocker les messages d'erreur liés au chargement
 
   constructor(private http: HttpClient, private router: Router) {
     
   }
 
+  // Mock de produits pour le développement et les tests, désolé si certaines images ne charge pas.
   private mockProducts: Product[] = [
   {
     "id": "65cf12345678901234567890",
@@ -87,7 +88,8 @@ export class ProductService {
   }
 ]
 
-  /*public getProducts(): Product[]{
+  /* Tentative de chargement des produits depuis le backend, mais j'ai préféré utiliser un mock pour le développement et les tests.
+  public getProducts(): Product[]{
     if(this.products.length === 0){
       this.isLoading.set(true);
       this.http.get<Product[]>(this.apiUrl).subscribe({
@@ -113,6 +115,8 @@ export class ProductService {
     return this.products;
   }*/
 
+
+  //Simule une requête HTTP pour récupérer les produits
   public getProducts():Observable<Product[]>{
     return of(this.mockProducts).pipe(
       delay(800),
@@ -123,10 +127,12 @@ export class ProductService {
     )
   }
 
+  // Requête pour récupérer les produits d'une boutique spécifique
   public getProductByStore(storeId: string): Observable<Product[]>{
     return of(this.mockProducts.filter(p => p.storeId === storeId)).pipe(delay(800));
   }
 
+  // Requête pour récupérer les produits en promotion
   public getFeaturedProducts(): Observable<Product[]>{
     return of(this.mockProducts.filter(p => p.featured)).pipe(delay(800));
   }

@@ -14,8 +14,7 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './navbar.component.scss',
 })
 export class Navbar {
-  authService = inject(AuthService);
-  isLoggedIn = inject(AuthService).isLoggedIn;
+  authService = inject(AuthService);// Injection du service d'authentification
   title: string = ('Matcha').toLocaleUpperCase();
   Logo: any = 'M';
 }

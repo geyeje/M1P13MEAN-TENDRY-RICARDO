@@ -13,7 +13,7 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './sidebar.component.scss',
 })
 export class Sidebar {
-  authService = inject(AuthService);
-  currentUser = toSignal(this.authService.currentUser);
-  name = computed(() => this.currentUser()?.firstname || 'invité');
+  authService = inject(AuthService); // Injection du service d'authentification
+  currentUser = toSignal(this.authService.currentUser);// Conversion de l'observable currentUser en signal
+  name = computed(() => this.currentUser()?.firstname || 'invité');// Signal calculé pour obtenir le nom de l'utilisateur
 }

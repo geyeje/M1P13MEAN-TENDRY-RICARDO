@@ -1,6 +1,8 @@
+<!--productListComponent pour afficher une liste de produit-->
 <div class="p-8 min-h-screen bg-matcha-dark rounded-xl shadow-md border-white/10 border-2">
     <h2 class="text-3xl font-bold mb-8 text-white border-l-4 border-matcha-spring pl-4">Liste des produits Matcha & co</h2>
     <div class="flex gap-4 mb-8 pb-2 overflow-x-auto ">
+    <!--Les filtres par catégory, à rajouter une liste complète plus tard-->
         @for(cat of ['Tous', 'Botanique', 'Énergie Verte', 'Fruits & Légumes']; track cat){
             <button 
                 (click)="setFilter(cat)"
@@ -12,13 +14,16 @@
             </button>
         }
     </div>
+    <!--Message de chargement-->
     @if (isLoading()) {
         <div class="flex items-center justify-center h-64">
             <span class="text-matcha-spring animate-pulse">Chargement des produits...</span>
         </div>
     }@else {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!--Affichage des produits filtrés-->
             @for(product of filteredProducts(); track product.id){
+                <!--Carte de chaque produit-->
                 <mat-card class="!bg-white/5 !border-white/10 !text-white !shadow-[0_0_20px_rgba(0,255,149,0.1)] transition-all">
                     <div class="relative">
                         <img mat-card-image [src]="product.mainImage" [alt]="product.name" class="h-48 w-full object-cover">

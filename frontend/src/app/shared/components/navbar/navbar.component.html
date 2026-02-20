@@ -1,8 +1,11 @@
+<!-- NavbarComponent-->
 <nav class=" h-16 bg-matcha-dark border-b border-gray-900 flex items-center justify-between px-16 fixed top-0 w-full">
+     <!-- Logo du Matcha center-->
     <div class="flex items-center gap-2">
         <div class="w-8 h-8 flex bg-matcha-spring items-center rounded-lg justify-center font-black text-matcha-dark">{{Logo}}</div>
         <span class="text-white font-bold text-xl tracking-tight">{{title}}<span class="text-matcha-spring"> Center</span></span>
     </div>
+    <!-- Bouton de login/logout et le panier d'achat, à voir pour le register-->
     <div class="flex items-center gap-4">
         @if (authService.currentUser | async; as user) {
             <button class="text-gray-400 hover:bg-matcha-spring transition-colors rounded-lg">
