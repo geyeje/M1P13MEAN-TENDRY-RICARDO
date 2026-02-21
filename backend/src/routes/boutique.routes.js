@@ -1,3 +1,4 @@
+// backend/src/routes/boutique.routes.js - VERSION ANGLAISE
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
@@ -5,12 +6,9 @@ const boutiqueController = require('../controllers/boutique.controller');
 const { protect, authorize } = require('../middlewares/auth.middleware');
 const upload = require('../middlewares/upload.middleware');
 
-// ========================================
-// VALIDATION DES DONNÉES
-// ========================================
-
+// Validation pour création
 const createBoutiqueValidation = [
-  body('name')
+  body('name')                    // ← Changé de 'nom' à 'name'
     .trim()
     .notEmpty().withMessage('Le nom est requis')
     .isLength({ min: 3, max: 100 }).withMessage('Le nom doit contenir entre 3 et 100 caractères'),
@@ -36,7 +34,7 @@ const createBoutiqueValidation = [
       'Services'
     ]).withMessage('Catégorie invalide'),
   
-  body('phone')
+  body('phone')                   // ← Changé de 'telephone' à 'phone'
     .trim()
     .notEmpty().withMessage('Le téléphone est requis')
     .matches(/^[0-9]{10}$/).withMessage('Numéro de téléphone invalide (10 chiffres)'),
@@ -51,8 +49,9 @@ const createBoutiqueValidation = [
     .notEmpty().withMessage('L\'adresse est requise')
 ];
 
+// Validation pour mise à jour
 const updateBoutiqueValidation = [
-  body('name')
+  body('name')                    // ← Changé
     .optional()
     .trim()
     .isLength({ min: 3, max: 100 }).withMessage('Le nom doit contenir entre 3 et 100 caractères'),
@@ -62,7 +61,7 @@ const updateBoutiqueValidation = [
     .trim()
     .isLength({ min: 10, max: 1000 }).withMessage('La description doit contenir entre 10 et 1000 caractères'),
   
-  body('phone')
+  body('phone')                   // ← Changé
     .optional()
     .matches(/^[0-9]{10}$/).withMessage('Numéro de téléphone invalide'),
   
@@ -71,24 +70,11 @@ const updateBoutiqueValidation = [
     .isEmail().withMessage('Email invalide')
 ];
 
-// ========================================
-// ROUTES PUBLIQUES
-// ========================================
-
-// Liste des boutiques (avec filtres)
-// GET /api/boutiques?categorie=Mode&page=1&limit=10&search=nike
+// Routes publiques
 router.get('/', boutiqueController.getAllBoutiques);
-
-// Détails d'une boutique
-// GET /api/boutiques/64abc123def456789
 router.get('/:id', boutiqueController.getBoutiqueById);
 
-// ========================================
-// ROUTES PROTÉGÉES - GÉRANT BOUTIQUE
-// ========================================
-
-// Ma boutique (gérant connecté)
-// GET /api/boutiques/me/myboutique
+// Routes protégées - Gérant
 router.get(
   '/me/myboutique',
   protect,
@@ -96,19 +82,15 @@ router.get(
   boutiqueController.getMyBoutique
 );
 
-// Créer une boutique
-// POST /api/boutiques
 router.post(
   '/',
   protect,
   authorize('boutique'),
-  upload.single('logo'),  // Upload du logo
+  upload.single('logo'),
   createBoutiqueValidation,
   boutiqueController.createBoutique
 );
 
-// Modifier une boutique
-// PUT /api/boutiques/64abc123def456789
 router.put(
   '/:id',
   protect,
@@ -118,8 +100,6 @@ router.put(
   boutiqueController.updateBoutique
 );
 
-// Supprimer une boutique
-// DELETE /api/boutiques/64abc123def456789
 router.delete(
   '/:id',
   protect,
@@ -127,12 +107,7 @@ router.delete(
   boutiqueController.deleteBoutique
 );
 
-// ========================================
-// ROUTES ADMIN UNIQUEMENT
-// ========================================
-
-// Statistiques boutiques
-// GET /api/boutiques/stats/overview
+// Routes admin
 router.get(
   '/stats/overview',
   protect,
@@ -140,8 +115,6 @@ router.get(
   boutiqueController.getBoutiquesStats
 );
 
-// Valider/Suspendre une boutique
-// PUT /api/boutiques/64abc123def456789/validate
 router.put(
   '/:id/validate',
   protect,

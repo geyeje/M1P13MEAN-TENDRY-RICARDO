@@ -1,157 +1,130 @@
-// Modèle Commande - Mongoose
+// backend/src/models/Commande.js - CHAMPS EN ANGLAIS
 const mongoose = require('mongoose');
 
-const commandeSchema = new mongoose.Schema({
-  numeroCommande: {
-    type: String,
-    required: true,
-    unique: true
+// Sous-schema pour chaque article commandé
+const orderItemSchema = new mongoose.Schema({
+  productId: {                    // produitId → productId
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Produit',
+    required: true
   },
-  acheteurId: {
+  name: {                         // nom → name
+    type: String,
+    required: true
+  },
+  quantity: {                     // quantite → quantity
+    type: Number,
+    required: true,
+    min: 1
+  },
+  unitPrice: {                    // prixUnitaire → unitPrice
+    type: Number,
+    required: true,
+    min: 0
+  },
+  subtotal: {                     // sousTotal → subtotal
+    type: Number,
+    required: true,
+    min: 0
+  },
+  color: {                        // couleur → color
+    type: String,
+    default: null
+  },
+  size: {                         // taille → size
+    type: String,
+    default: null
+  },
+  image: {
+    type: String,
+    default: null
+  }
+});
+
+// Sous-schema pour l'historique de statut
+const statusHistorySchema = new mongoose.Schema({
+  status: {                       // statut → status
+    type: String,
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  comment: {                      // commentaire → comment
+    type: String,
+    default: ''
+  }
+});
+
+// Schema principal de la commande
+const commandeSchema = new mongoose.Schema({
+  orderNumber: {                  // numeroCommande → orderNumber
+    type: String,
+    unique: true,
+    required: true
+  },
+  buyerId: {                      // acheteurId → buyerId
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  boutiqueId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Boutique',
-    required: true
-  },
-  produits: [{
-    produitId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Produit',
-      required: true
-    },
-    nom: String,
-    prix: Number,
-    quantite: {
-      type: Number,
-      required: true,
-      min: [1, 'La quantité doit être au moins 1']
-    },
-    taille: String,
-    couleur: String,
-    image: String
-  }],
-  montantTotal: {
+  items: [orderItemSchema],       // articles → items
+
+  totalAmount: {                  // montantTotal → totalAmount
     type: Number,
     required: true,
     min: 0
   },
-  montantSousTotal: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  fraisLivraison: {
-    type: Number,
-    default: 0
-  },
-  remise: {
-    type: Number,
-    default: 0
-  },
-  codePromo: {
+  shippingAddress: {              // adresseLivraison → shippingAddress
     type: String,
-    default: null
+    required: [true, 'L\'adresse de livraison est requise'],
+    trim: true
   },
-  statut: {
+  phone: {                        // telephone → phone
+    type: String,
+    required: [true, 'Le téléphone est requis'],
+    trim: true
+  },
+  note: {                         // commentaire → note
+    type: String,
+    default: ''
+  },
+  status: {                       // statut → status
     type: String,
     enum: [
-      'en_attente',
-      'confirmee',
-      'en_preparation',
-      'prete',
-      'en_livraison',
-      'livree',
-      'annulee',
-      'remboursee'
+      'pending',        // en_attente
+      'confirmed',      // confirmee
+      'processing',     // en_preparation
+      'shipped',        // expediee
+      'delivered',      // livree
+      'cancelled'       // annulee
     ],
-    default: 'en_attente'
+    default: 'pending'
   },
-  modePaiement: {
+  paymentStatus: {                // statutPaiement → paymentStatus
     type: String,
-    enum: ['carte_bancaire', 'mobile_money', 'especes', 'virement'],
-    required: true
+    enum: ['pending', 'paid', 'failed', 'refunded'],
+    default: 'pending'
   },
-  statutPaiement: {
+  paymentMethod: {                // modePaiement → paymentMethod
     type: String,
-    enum: ['en_attente', 'paye', 'echoue', 'rembourse'],
-    default: 'en_attente'
+    enum: ['cash', 'card', 'mobile', 'transfer'],
+    default: 'cash'
   },
-  transactionId: {
-    type: String,
-    default: null
-  },
-  adresseLivraison: {
-    nom: String,
-    prenom: String,
-    telephone: String,
-    adresse: String,
-    ville: String,
-    codePostal: String,
-    instructions: String
-  },
-  tracking: [{
-    statut: String,
-    date: {
-      type: Date,
-      default: Date.now
-    },
-    description: String
-  }],
-  notes: {
-    type: String,
-    default: null
-  },
-  dateExpedition: {
+  deliveryDate: {                 // dateLivraison → deliveryDate
     type: Date,
     default: null
   },
-  dateLivraison: {
-    type: Date,
-    default: null
-  },
-  // Avis client
-  avis: {
-    note: {
-      type: Number,
-      min: 1,
-      max: 5
-    },
-    commentaire: String,
-    date: Date
-  }
+  statusHistory: [statusHistorySchema]  // historique → statusHistory
 }, {
   timestamps: true
 });
 
-// Middleware pour générer un numéro de commande unique
-commandeSchema.pre('save', async function(next) {
-  if (!this.numeroCommande) {
-    const count = await this.constructor.countDocuments();
-    this.numeroCommande = `CMD${Date.now()}${count + 1}`;
-  }
-  next();
-});
-
-// Méthode pour ajouter un tracking
-commandeSchema.methods.ajouterTracking = function(statut, description) {
-  this.tracking.push({
-    statut,
-    description,
-    date: new Date()
-  });
-  this.statut = statut;
-  return this.save();
-};
-
-// Index pour améliorer les performances
-commandeSchema.index({ acheteurId: 1 });
-commandeSchema.index({ boutiqueId: 1 });
-commandeSchema.index({ numeroCommande: 1 });
-commandeSchema.index({ statut: 1 });
+// Index
+commandeSchema.index({ buyerId: 1 });
+commandeSchema.index({ status: 1 });
+commandeSchema.index({ orderNumber: 1 });
 commandeSchema.index({ createdAt: -1 });
 
 const Commande = mongoose.model('Commande', commandeSchema);

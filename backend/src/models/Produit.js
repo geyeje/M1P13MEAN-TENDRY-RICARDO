@@ -1,12 +1,36 @@
-// Modèle Produit - Mongoose
+// backend/src/models/Produit.js - CHAMPS EN ANGLAIS
 const mongoose = require('mongoose');
 
+const reviewSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  rating: {                       // note → rating
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+  },
+  comment: {                      // commentaire → comment
+    type: String,
+    trim: true,
+    maxlength: 500
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 const produitSchema = new mongoose.Schema({
-  nom: {
+  name: {                         // nom → name
     type: String,
     required: [true, 'Le nom du produit est requis'],
     trim: true,
-    minlength: [3, 'Le nom doit contenir au moins 3 caractères']
+    minlength: [3, 'Le nom doit contenir au moins 3 caractères'],
+    maxlength: [200, 'Le nom doit contenir maximum 200 caractères']
   },
   description: {
     type: String,
@@ -14,22 +38,36 @@ const produitSchema = new mongoose.Schema({
     trim: true,
     minlength: [10, 'La description doit contenir au moins 10 caractères']
   },
-  prix: {
+  price: {                        // prix → price
     type: Number,
     required: [true, 'Le prix est requis'],
     min: [0, 'Le prix ne peut pas être négatif']
   },
-  prixPromo: {
+  promoPrice: {                   // prixPromo → promoPrice
     type: Number,
     default: null,
     min: [0, 'Le prix promo ne peut pas être négatif']
   },
-  images: [{
-    type: String
-  }],
-  imagePrincipale: {
+  onSale: {                       // enPromotion → onSale
+    type: Boolean,
+    default: false
+  },
+  category: {                     // categorie → category
     type: String,
-    default: null
+    required: [true, 'La catégorie est requise'],
+    enum: [
+      'Mode & Vêtements',
+      'Électronique & High-tech',
+      'Alimentation & Boissons',
+      'Beauté & Cosmétiques',
+      'Sport & Loisirs',
+      'Maison & Décoration',
+      'Livres & Culture',
+      'Jouets & Enfants',
+      'Santé & Bien-être',
+      'Bijouterie & Accessoires',
+      'Autres'
+    ]
   },
   stock: {
     type: Number,
@@ -37,101 +75,72 @@ const produitSchema = new mongoose.Schema({
     min: [0, 'Le stock ne peut pas être négatif'],
     default: 0
   },
-  boutiqueId: {
+  brand: {                        // marque → brand
+    type: String,
+    trim: true
+  },
+  colors: {                       // couleurs → colors
+    type: [String],
+    default: []
+  },
+  sizes: {                        // tailles → sizes
+    type: [String],
+    default: []
+  },
+  specs: {                        // caracteristiques → specs
+    type: Map,
+    of: String,
+    default: {}
+  },
+  tags: {                         // motsCles → tags
+    type: [String],
+    default: []
+  },
+  images: {
+    type: [String],
+    default: []
+  },
+  shopId: {                       // boutiqueId → shopId
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Boutique',
     required: true
   },
-  categorie: {
-    type: String,
-    required: [true, 'La catégorie est requise']
-  },
-  sousCategorie: {
-    type: String,
-    default: null
-  },
-  marque: {
-    type: String,
-    trim: true
-  },
-  // Caractéristiques techniques (flexible)
-  caracteristiques: {
-    type: Map,
-    of: String
-  },
-  // Tailles disponibles (pour vêtements)
-  tailles: [{
-    type: String,
-    enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Unique']
-  }],
-  // Couleurs disponibles
-  couleurs: [String],
-  // Promotion
-  enPromotion: {
-    type: Boolean,
-    default: false
-  },
-  pourcentageReduction: {
-    type: Number,
-    min: 0,
-    max: 100,
-    default: 0
-  },
-  // Disponibilité
-  disponible: {
-    type: Boolean,
-    default: true
-  },
   // Statistiques
-  nombreVentes: {
-    type: Number,
-    default: 0
-  },
-  note: {
+  avgRating: {                    // note → avgRating
     type: Number,
     default: 0,
     min: 0,
     max: 5
   },
-  nombreAvis: {
+  reviewCount: {                  // nombreAvis → reviewCount
     type: Number,
     default: 0
   },
-  // Mise en avant
-  featured: {
-    type: Boolean,
-    default: false
+  salesCount: {                   // nombreVentes → salesCount
+    type: Number,
+    default: 0
   },
-  nouveaute: {
-    type: Boolean,
-    default: false
-  }
+  viewCount: {                    // vues → viewCount
+    type: Number,
+    default: 0
+  },
+  reviews: [reviewSchema]         // avis → reviews
 }, {
   timestamps: true
 });
 
-// Virtuel pour calculer le prix final
-produitSchema.virtual('prixFinal').get(function() {
-  if (this.enPromotion && this.prixPromo) {
-    return this.prixPromo;
-  }
-  if (this.enPromotion && this.pourcentageReduction > 0) {
-    return this.prix - (this.prix * this.pourcentageReduction / 100);
-  }
-  return this.prix;
+// Auto-calculer onSale quand promoPrice est défini
+produitSchema.pre('save', function(next) {
+  this.onSale = this.promoPrice !== null && this.promoPrice < this.price;
+  next();
 });
 
-// S'assurer que les virtuels sont inclus dans JSON
-produitSchema.set('toJSON', { virtuals: true });
-produitSchema.set('toObject', { virtuals: true });
-
-// Index pour améliorer les performances
-produitSchema.index({ boutiqueId: 1 });
-produitSchema.index({ categorie: 1 });
-produitSchema.index({ prix: 1 });
-produitSchema.index({ note: -1 });
-produitSchema.index({ nombreVentes: -1 });
-produitSchema.index({ nom: 'text', description: 'text' }); // Recherche textuelle
+// Index
+produitSchema.index({ shopId: 1 });
+produitSchema.index({ category: 1 });
+produitSchema.index({ price: 1 });
+produitSchema.index({ stock: 1 });
+produitSchema.index({ name: 'text', description: 'text', tags: 'text' });
 
 const Produit = mongoose.model('Produit', produitSchema);
 
