@@ -43,7 +43,7 @@ const produitSchema = new mongoose.Schema({
     required: [true, 'Le prix est requis'],
     min: [0, 'Le prix ne peut pas être négatif']
   },
-  promoPrice: {                   // prixPromo → promoPrice
+  promotionPrice: {
     type: Number,
     default: null,
     min: [0, 'Le prix promo ne peut pas être négatif']

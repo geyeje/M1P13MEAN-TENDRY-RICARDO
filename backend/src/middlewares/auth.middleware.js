@@ -8,15 +8,18 @@ exports.protect = async (req, res, next) => {
     let token;
 
     // Vérifier si le token est dans les headers
+    console.log('[Auth Middleware] Headers reçus:', req.headers);
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
+      console.log('[Auth Middleware] Token extrait:', token.substring(0, 20) + '...');
     }
 
     // Vérifier si le token existe
     if (!token) {
+      console.log('[Auth Middleware] Rejet: Token manquant');
       return res.status(401).json({
         success: false,
-        message: 'Non autorisé. Token manquant.'
+        message: 'Non autorisé. Token manquant.',
       });
     }
 
@@ -29,7 +32,7 @@ exports.protect = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Utilisateur non trouvé'
+        message: 'Utilisateur non trouvé',
       });
     }
 
@@ -37,34 +40,33 @@ exports.protect = async (req, res, next) => {
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: 'Compte désactivé'
+        message: 'Compte désactivé',
       });
     }
 
     // Ajouter l'utilisateur à la requête
     req.user = user;
     next();
-
   } catch (error) {
     console.error('Erreur middleware auth:', error);
-    
+
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
-        message: 'Token invalide'
+        message: 'Token invalide',
       });
     }
-    
+
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token expiré'
+        message: 'Token expiré',
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Erreur d\'authentification'
+      message: "Erreur d'authentification",
     });
   }
 };
@@ -75,7 +77,7 @@ exports.authorize = (...roles) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: `Le rôle ${req.user.role} n'est pas autorisé à accéder à cette ressource`
+        message: `Le rôle ${req.user.role} n'est pas autorisé à accéder à cette ressource`,
       });
     }
     next();

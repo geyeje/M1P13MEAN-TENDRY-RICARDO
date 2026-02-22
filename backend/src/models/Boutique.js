@@ -22,21 +22,21 @@ const boutiqueSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  categorie: {
+  category: {
     type: String,
     required: [true, 'La catégorie est requise'],
     enum: [
-      'Mode & Vêtements',
-      'Électronique & High-tech',
-      'Alimentation & Boissons',
-      'Beauté & Cosmétiques',
-      'Sport & Loisirs',
-      'Maison & Décoration',
-      'Livres & Culture',
-      'Jouets & Enfants',
-      'Santé & Bien-être',
-      'Bijouterie & Accessoires',
-      'Services'
+      'fashion',
+      'electronics',
+      'food',
+      'beauty',
+      'sport',
+      'houseware',
+      'culture',
+      'toys',
+      'health',
+      'accessories',
+      'services'
     ]
   },
   userId: {
@@ -44,10 +44,10 @@ const boutiqueSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  statut: {
+  status: {
     type: String,
-    enum: ['en_attente', 'active', 'suspendue'],
-    default: 'en_attente'
+    enum: ['pending', 'active', 'suspended'],
+    default: 'pending'
   },
   phone: {
     type: String,
@@ -60,7 +60,7 @@ const boutiqueSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
-  adresse: {
+  address: {
     type: String,
     required: [true, 'L\'adresse est requise'],
     trim: true
@@ -75,11 +75,11 @@ const boutiqueSchema = new mongoose.Schema({
     dimanche: { ouverture: String, fermeture: String, ferme: { type: Boolean, default: true } }
   },
   // Statistiques
-  productqt: {
+  productCount: {
     type: Number,
     default: 0
   },
-  commandeqt: {
+  commandCount: {
     type: Number,
     default: 0
   },
@@ -93,7 +93,7 @@ const boutiqueSchema = new mongoose.Schema({
     min: 0,
     max: 5
   },
-  reviewqt: {
+  reviewCount: {
     type: Number,
     default: 0
   },
@@ -110,9 +110,9 @@ const boutiqueSchema = new mongoose.Schema({
 
 // Index pour améliorer les performances
 boutiqueSchema.index({ userId: 1 });
-boutiqueSchema.index({ categorie: 1 });
-boutiqueSchema.index({ statut: 1 });
-boutiqueSchema.index({ nom: 'text', description: 'text' }); // Recherche textuelle
+boutiqueSchema.index({ category: 1 });
+boutiqueSchema.index({ status: 1 });
+boutiqueSchema.index({ name: 'text', description: 'text' }); // Recherche textuelle
 
 const Boutique = mongoose.model('Boutique', boutiqueSchema);
 

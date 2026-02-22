@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+
+@theme{
+    --color-matcha-dark: #3a4a4a;
+    --color-matcha-spring: #00ff7f;
+    --color-matcha-gray: #f5f5f5;
+    --color-matcha-red: #f2111a;
+    --color-matcha-alert: #9b2c2c;
+    --color-matcha-pinky: #fc8181;
+    --color-matcha-success: #22543d;
+    --color-withered-dried: #a0522d;
+}

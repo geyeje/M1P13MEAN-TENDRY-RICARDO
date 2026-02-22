@@ -36,18 +36,21 @@ exports.createBoutique = async (req, res) => {
     const boutique = await Boutique.create({
       name,           // ← Changé
       description,
-      categorie,
-      userId: req.user.id,
-      statut: 'en_attente',
-      phone,          // ← Changé
+      category,
+      userId,
+      status:'en_attente',
+      phone,
       email,
-      adresse,
-      schedule,       // ← Changé
-      socialNetwork,  // ← Changé
-      logo: req.file ? req.file.path : null
+      address,
+      schedule,
+      socialNetwork,
+      logo:req.file ? req.file.path :null
     });
+    
 
-    await boutique.populate('userId', 'nom prenom email');
+    //populer des infos clients 
+
+    await boutique.populate ('userId', 'nom prenom email');
 
     res.status(201).json({
       success: true,
@@ -65,12 +68,17 @@ exports.createBoutique = async (req, res) => {
   }
 };
 
-// Obtenir toutes les boutiques
-exports.getAllBoutiques = async (req, res) => {
-  try {
-    const {
-      categorie,
-      statut,
+///obtenir tout les boutiques
+// @desc    Liste toutes les boutiques (avec filtres)
+// @route   GET /api/boutiques
+// @access  Public
+
+exports.getAllBoutiques= async (req, res) => {
+  try{
+    //recuperer les parametre de recherche/filtrage
+    const{
+      category,
+      status,
       search,
       page = 1,
       limit = 10,
@@ -79,17 +87,22 @@ exports.getAllBoutiques = async (req, res) => {
 
     const filter = {};
 
-    if (req.user?.role !== 'admin') {
-      filter.statut = 'active';
-    } else if (statut) {
-      filter.statut = statut;
+    //si pas admin montrer seulement les boutiques actices 
+    if (req.user?.role !=='admin'){
+      filter.status='active';
+    }else if (status){
+      //admin peut filtrer par sstatus 
+      filter.status= status;
     }
 
-    if (categorie) {
-      filter.categorie = categorie;
+    //filtrer par categories 
+    if (category){
+      filter.category=category;
     }
 
-    if (search) {
+    //recherche textuel
+
+    if (search){
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },    // ← Changé
         { description: { $regex: search, $options: 'i' } }
@@ -99,7 +112,7 @@ exports.getAllBoutiques = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const boutiques = await Boutique.find(filter)
-      .populate('userId', 'nom prenom email')
+      .populate('userId','firstname lastname email')
       .sort(sort)
       .limit(parseInt(limit))
       .skip(skip);
@@ -129,18 +142,16 @@ exports.getAllBoutiques = async (req, res) => {
 exports.getBoutiqueById = async (req, res) => {
   try {
     const boutique = await Boutique.findById(req.params.id)
-      .populate('userId', 'nom prenom email telephone');
-
-    if (!boutique) {
+      .populate('userId','firstname lastname email phone ');
+    if (!boutique){
       return res.status(404).json({
-        success: false,
-        message: 'Boutique non trouvée'
+        success:false,
+        message:'boutique non trouvé'
       });
     }
-
-    if (boutique.statut !== 'active') {
-      if (!req.user || 
-          (req.user.role !== 'admin' && req.user.id !== boutique.userId._id.toString())) {
+    //si boutique n'est pas acticve , asdmin et prop peut acivé
+    if (boutique.status !=='active'){
+      if(!req.user || (req.user.role !== 'admin' && req.user.id !==boutique.userId._id.toString())){
         return res.status(403).json({
           success: false,
           message: 'Boutique non accessible'
@@ -167,7 +178,7 @@ exports.getBoutiqueById = async (req, res) => {
 exports.getMyBoutique = async (req, res) => {
   try {
     const boutique = await Boutique.findOne({ userId: req.user.id })
-      .populate('userId', 'nom prenom email');
+      .populate('userId', 'firstname lastname email');
 
     if (!boutique) {
       return res.status(404).json({
@@ -210,8 +221,9 @@ exports.updateBoutique = async (req, res) => {
       });
     }
 
-    if (req.user.role !== 'admin' && req.body.statut) {
-      delete req.body.statut;
+    // 3. Empêcher la modification du statut par le gérant
+    if (req.user.role !== 'admin' && req.body.status) {
+      delete req.body.status;  // Seul l'admin peut changer le statut
     }
 
     boutique = await Boutique.findByIdAndUpdate(
@@ -221,7 +233,7 @@ exports.updateBoutique = async (req, res) => {
         new: true,
         runValidators: true
       }
-    ).populate('userId', 'nom prenom email');
+    ).populate('userId', 'firstname lastname email');
 
     res.status(200).json({
       success: true,
@@ -239,7 +251,12 @@ exports.updateBoutique = async (req, res) => {
   }
 };
 
-// Supprimer une boutique
+// ========================================
+// 6. SUPPRIMER UNE BOUTIQUE   
+// ========================================
+// @desc    Supprimer une boutique
+// @route   DELETE /api/boutiques/:id
+// @access  Private (propriétaire ou admin)
 exports.deleteBoutique = async (req, res) => {
   try {
     const boutique = await Boutique.findById(req.params.id);
@@ -280,7 +297,8 @@ exports.validateBoutique = async (req, res) => {
   try {
     const { statut, motifRejet } = req.body;
 
-    if (!['active', 'suspendue', 'en_attente'].includes(statut)) {
+    // Validation du statut
+    if (!['active', 'suspended', 'pending'].includes(statut)) {
       return res.status(400).json({
         success: false,
         message: 'Statut invalide'
@@ -288,7 +306,7 @@ exports.validateBoutique = async (req, res) => {
     }
 
     const boutique = await Boutique.findById(req.params.id)
-      .populate('userId', 'nom prenom email');
+      .populate('userId', 'firstname lastname email');
 
     if (!boutique) {
       return res.status(404).json({
@@ -297,9 +315,11 @@ exports.validateBoutique = async (req, res) => {
       });
     }
 
-    boutique.statut = statut;
+    // Mettre à jour le statut
+    boutique.status = statut;
     
-    if (statut === 'suspendue' && motifRejet) {
+    // Si rejet, enregistrer le motif (optionnel: ajouter ce champ au modèle)
+    if (statut === 'suspended' && motifRejet) {
       boutique.motifRejet = motifRejet;
     }
 

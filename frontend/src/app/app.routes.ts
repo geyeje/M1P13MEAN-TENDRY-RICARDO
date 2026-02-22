@@ -24,13 +24,13 @@ export const routes: Routes = [
     path: 'admin',
     canActivate: [AuthGuard],
     data: { roles: ['admin'] },
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.routes)
+    loadChildren: () => import('./features/admin/admin.route').then(m => m.adminRoutes)
   },
   {
-    path: 'boutique',
+    path: 'store',
     canActivate: [AuthGuard],
     data: { roles: ['boutique'] },
-    loadChildren: () => import('./features/boutique/boutique.routes').then(m => m.routes)
+    loadChildren: () => import('./features/store/store.routes').then(m => m.routes)
   },
   {
     path: 'unauthorized',

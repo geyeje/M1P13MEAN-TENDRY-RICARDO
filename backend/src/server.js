@@ -17,6 +17,8 @@ connectDB();
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
 );
@@ -45,21 +47,23 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
-// Import des routes (à créer)
+// Import des routes
 const authRoutes = require('./routes/auth.routes');
 const boutiqueRoutes = require('./routes/boutique.routes');
-const produitRoutes = require('./routes/produit.routes');
-const commandeRoutes = require('./routes/commande.routes');
+const adminRoutes = require('./routes/admin.routes');
+// const produitRoutes = require('./routes/produit.routes');
+// const commandeRoutes = require('./routes/commande.routes');
 
 // Utiliser les routes
 app.use('/api/auth', authRoutes);
 app.use('/api/boutiques', boutiqueRoutes);
-app.use('/api/produits', produitRoutes);
-app.use('/api/commandes', commandeRoutes);
+app.use('/api/admin', adminRoutes);
+// app.use('/api/produits', produitRoutes);
+// app.use('/api/commandes', commandeRoutes);
 
 // Gestion des erreurs 404
 app.use((req, res) => {

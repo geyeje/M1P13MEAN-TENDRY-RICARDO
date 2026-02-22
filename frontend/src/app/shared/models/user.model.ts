@@ -2,24 +2,24 @@
 
 export interface User {
   id: string;
-  nom: string;
-  prenom: string;
+  firstname: string;
+  lastname: string;
   email: string;
   role: 'admin' | 'boutique' | 'acheteur';
-  telephone?: string;
-  adresse?: string;
+  phone?: string;
+  address?: string;
   avatar?: string;
   createdAt?: Date;
 }
 
 export interface RegisterData {
-  nom: string;
-  prenom: string;
+  firstname: string;
+  lastname: string;
   email: string;
   password: string;
   role?: 'admin' | 'boutique' | 'acheteur';
-  telephone?: string;
-  adresse?: string;
+  phone?: string;
+  address?: string;
 }
 
 export interface LoginData {
