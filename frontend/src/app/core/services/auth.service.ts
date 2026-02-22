@@ -1,119 +1,188 @@
-// frontend/src/app/core/services/auth.service.ts
+// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environments';
-import { User, RegisterData, LoginData, AuthResponse } from '../../shared/models/user.model';
+import { environment } from '../../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface User {
+  id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  role: 'admin' | 'boutique' | 'acheteur';
+  telephone?: string;
+  adresse?: string;
+}
+
+export interface RegisterData {
+  nom: string;
+  prenom: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: 'admin' | 'boutique' | 'acheteur';
+  telephone: string;
+  adresse?: string;
+  acceptTerms: boolean;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  token: string;
+  user: User;
+  message?: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
   private apiUrl = `${environment.apiUrl}/auth`;
-  private currentUserSubject: BehaviorSubject<User | null>;
-  public currentUser: Observable<User | null>;
 
   constructor(
     private http: HttpClient,
     private router: Router,
   ) {
-    // Récupérer l'utilisateur depuis le localStorage au démarrage
-    const storedUser = localStorage.getItem('currentUser');
-    this.currentUserSubject = new BehaviorSubject<User | null>(
-      storedUser ? JSON.parse(storedUser) : null,
-    );
-    this.currentUser = this.currentUserSubject.asObservable();
+    this.loadUserFromStorage();
   }
 
-  // Obtenir l'utilisateur actuel
-  public get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
-  }
-
-  // Obtenir le token
-  public get token(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  // Vérifier si l'utilisateur est connecté
-  public get isLoggedIn(): boolean {
-    return !!this.token && !!this.currentUserValue;
-  }
-
-  // Inscription
   register(data: RegisterData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
-      tap((response) => {
-        if (response.success && response.token && response.user) {
-          // Stocker le token et l'utilisateur
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('currentUser', JSON.stringify(response.user));
-          this.currentUserSubject.next(response.user);
+    // Ne pas envoyer confirmPassword au backend
+    const { confirmPassword, acceptTerms, nom, prenom, role, telephone, adresse, ...rest } = data;
+
+    let backendRole = 'customer';
+    if (role === 'admin') backendRole = 'admin';
+    else if (role === 'boutique') backendRole = 'store';
+
+    const registerPayload = {
+      ...rest,
+      firstname: prenom,
+      lastname: nom,
+      role: backendRole,
+      phone: telephone,
+      address: adresse || '',
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/register`, registerPayload).pipe(
+      tap((response: any) => {
+        if (response.success) {
+          this.handleAuth(response);
         }
       }),
     );
   }
 
-  // Connexion
   login(data: LoginData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
-      tap((response) => {
-        if (response.success && response.token && response.user) {
-          // Stocker le token et l'utilisateur
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('currentUser', JSON.stringify(response.user));
-          this.currentUserSubject.next(response.user);
-          // Redirection selon le rôle
-          const role = response.user.role;
-          if (role === 'admin') {
-            this.router.navigate(['/admin']);
-          } else if (role === 'boutique') {
-            this.router.navigate(['/boutique']); // Adaptez la route selon votre architecture
-          } else {
-            this.router.navigate(['/home']); // Acheteur par défaut (customer)
-          }
+    return this.http.post<any>(`${this.apiUrl}/login`, data).pipe(
+      tap((response: any) => {
+        if (response.success) {
+          this.handleAuth(response);
         }
       }),
     );
   }
 
-  // Déconnexion
   logout(): void {
-    // Supprimer les données du localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
-
-    // Rediriger vers la page de connexion
     this.router.navigate(['/login']);
   }
 
-  // Obtenir le profil utilisateur
   getProfile(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/profile`);
+    return this.http.get(`${this.apiUrl}/profile`);
   }
 
-  // Mettre à jour le profil
-  updateProfile(data: Partial<User>): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/profile`, data).pipe(
-      tap((response) => {
-        if (response.success && response.user) {
-          // Mettre à jour l'utilisateur dans le localStorage
-          localStorage.setItem('currentUser', JSON.stringify(response.user));
-          this.currentUserSubject.next(response.user);
-        }
-      }),
-    );
+  updateProfile(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/profile`, data);
   }
 
-  // Vérifier si l'utilisateur a un rôle spécifique
+  get isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  get currentUserValue(): User | null {
+    return this.currentUserSubject.value;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
   hasRole(role: string): boolean {
-    return this.currentUserValue?.role === role;
+    const user = this.currentUserValue;
+    return user?.role === role;
   }
 
-  // Vérifier si l'utilisateur a un des rôles
   hasAnyRole(roles: string[]): boolean {
-    return roles.includes(this.currentUserValue?.role || '');
+    const user = this.currentUserValue;
+    return user ? roles.includes(user.role) : false;
+  }
+
+  private handleAuth(response: any): void {
+    const backendUser = response.user;
+
+    // Convertir les rôles du backend vers le frontend
+    let frontendRole = 'acheteur';
+    if (backendUser.role === 'admin') frontendRole = 'admin';
+    else if (backendUser.role === 'store' || backendUser.role === 'boutique')
+      frontendRole = 'boutique';
+
+    const frontendUser: User = {
+      id: backendUser.id || backendUser._id,
+      nom: backendUser.lastname || backendUser.nom || '',
+      prenom: backendUser.firstname || backendUser.prenom || '',
+      email: backendUser.email,
+      role: frontendRole as any,
+      telephone: backendUser.phone || backendUser.telephone || '',
+      adresse: backendUser.address || backendUser.adresse || '',
+    };
+
+    const newResponse = { ...response, user: frontendUser };
+
+    localStorage.setItem('token', newResponse.token);
+    localStorage.setItem('currentUser', JSON.stringify(newResponse.user));
+    this.currentUserSubject.next(newResponse.user);
+
+    // Redirection selon le rôle
+    this.redirectAfterAuth(newResponse.user.role);
+  }
+
+  private redirectAfterAuth(role: string): void {
+    switch (role) {
+      case 'admin':
+        this.router.navigate(['/admin/dashboard']);
+        break;
+      case 'boutique':
+        this.router.navigate(['/shop-owner/dashboard']);
+        break;
+      case 'acheteur':
+        this.router.navigate(['/']);
+        break;
+      default:
+        this.router.navigate(['/']);
+    }
+  }
+
+  private loadUserFromStorage(): void {
+    const token = this.getToken();
+    const userStr = localStorage.getItem('currentUser');
+
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        this.currentUserSubject.next(user);
+      } catch (error) {
+        console.error('Erreur parsing user:', error);
+        this.logout();
+      }
+    }
   }
 }

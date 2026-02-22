@@ -1,0 +1,41 @@
+<!-- src/app/features/shop-owner/layout/sidebar/sidebar.component.html -->
+<aside class="sidebar" [class.open]="isOpen">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div class="brand">
+      <span class="brand-icon">🏬</span>
+      <span class="brand-text" *ngIf="isOpen">Ma Boutique</span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      class="nav-item"
+      [title]="item.label"
+    >
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span class="nav-label" *ngIf="isOpen">{{ item.label }}</span>
+      <span class="nav-badge" *ngIf="item.badge && isOpen">{{ item.badge }}</span>
+    </a>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <div class="user-info" *ngIf="user$ | async as user">
+      <div class="user-avatar">{{ user.nom.charAt(0) }}{{ user.prenom.charAt(0) }}</div>
+      <div class="user-details" *ngIf="isOpen">
+        <div class="user-name">{{ user.nom }} {{ user.prenom }}</div>
+        <div class="user-role">Gérant</div>
+      </div>
+    </div>
+
+    <button class="btn-logout" (click)="logout()" [title]="'Se déconnecter'">
+      <span class="logout-icon">🚪</span>
+      <span class="logout-text" *ngIf="isOpen">Déconnexion</span>
+    </button>
+  </div>
+</aside>

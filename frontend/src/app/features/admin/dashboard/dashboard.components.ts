@@ -8,7 +8,7 @@ import { ChartWidgetComponent } from '../components/chart-widget/chart-widget.co
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, StatCardComponent, ChartWidgetComponent, DatePipe, DecimalPipe],
+  imports: [CommonModule, StatCardComponent, ChartWidgetComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })

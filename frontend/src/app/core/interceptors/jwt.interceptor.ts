@@ -11,7 +11,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
   // 2. On récupère le token JWT s'il existe
-  const token = authService.token;
+  const token = authService.getToken();
 
   // 3. Si on a un token, on clone la requête pour y ajouter le header Authorization
   if (token) {

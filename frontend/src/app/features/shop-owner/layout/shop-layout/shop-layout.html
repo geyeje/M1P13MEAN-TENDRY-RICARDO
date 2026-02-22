@@ -1,0 +1,16 @@
+<!-- src/app/features/shop-owner/layout/shop-layout/shop-layout.component.html -->
+<div class="shop-layout" [class.sidebar-closed]="!isSidebarOpen">
+  <!-- Sidebar -->
+  <app-sidebar [isOpen]="isSidebarOpen" (toggleSidebar)="toggleSidebar()"> </app-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Topbar -->
+    <app-topbar (toggleSidebar)="toggleSidebar()"> </app-topbar>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

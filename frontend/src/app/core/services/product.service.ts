@@ -1,139 +1,119 @@
-import { Injectable, signal } from '@angular/core';
-import { environment } from '../../../environments/environments';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { Product } from '../../shared/models/product.model';
-import { delay, map, Observable, of } from 'rxjs';
+// src/app/core/services/product.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  promoPrice?: number;
+  onSale: boolean;
+  category: string;
+  stock: number;
+  brand?: string;
+  colors: string[];
+  sizes: string[];
+  specs?: any;
+  tags: string[];
+  images: string[];
+  shopId: any;
+  avgRating: number;
+  reviewCount: number;
+  salesCount: number;
+  viewCount: number;
+  reviews?: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductResponse {
+  success: boolean;
+  produit?: Product;
+  produits?: Product[];
+  count?: number;
+  total?: number;
+  totalPages?: number;
+  currentPage?: number;
+  message?: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class ProductService {
-  private apiUrl = `${environment.apiUrl}/products`;
-  private productSignal = signal<Product[]>([]);// Signal pour stocker les produits
-  readonly products = this.productSignal.asReadonly();// Exposer les produits en lecture seule pour éviter les corruptions de données
-  private isLoading = signal(false);// Signal pour indiquer si les produits sont en cours de chargement
-  private error = signal<string | null>(null);// Signal pour stocker les messages d'erreur liés au chargement
+  private apiUrl = `${environment.apiUrl}/produits`;
 
-  constructor(private http: HttpClient, private router: Router) {
-    
+  constructor(private http: HttpClient) {}
+
+  // Mes produits (gérant)
+  getMyProducts(): Observable<ProductResponse> {
+    return this.http.get<ProductResponse>(`${this.apiUrl}/me/myproduits`);
   }
 
-  // Mock de produits pour le développement et les tests, désolé si certaines images ne charge pas.
-  private mockProducts: Product[] = [
-  {
-    "id": "65cf12345678901234567890",
-    "name": "Kit de Culture Matcha",
-    "description": "Tout le nécessaire pour faire pousser votre propre Camellia Sinensis à domicile. Terreau bio inclus.",
-    "price": 45.00,
-    "promotionPrice": 39.90,
-    "mainImage": "https://images.unsplash.com/photo-1582793988951-9aed55099991?q=80&w=500",
-    "stock": 12,
-    "storeId": "65cf12345678901234567891",
-    "category": "Botanique",
-    "brand": "Green Finger",
-    "specialOffert": true,
-    "reductionPercentage": 11,
-    "review": 4.8,
-    "featured": true
-  },
-  {
-    "id": "65cf12345678901234567891",
-    "name": "Lampe Solaire 'Leaf'",
-    "description": "Une lampe d'appoint design qui se recharge le jour pour éclairer vos soirées lecture.",
-    "price": 29.00,
-    "mainImage": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500",
-    "stock": 45,
-    "storeId": "65cf12345678901234567892",
-    "category": "Énergie Verte",
-    "brand": "EcoLight",
-    "review": 4.5,
-    "novelty": true
-  },
-  {
-    "id": "65cf12345678901234567892",
-    "name": "Panier Bio 'Semaine'",
-    "description": "5kg de fruits et légumes de saison, récoltés le matin même par nos producteurs locaux.",
-    "price": 25.00,
-    "mainImage": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=500",
-    "stock": 8,
-    "storeId": "65cf12345678901234567893",
-    "category": "Fruits & Légumes",
-    "characteristics": { "Origine": "France", "Label": "AB" },
-    "review": 4.9,
-    "reviewNumber": 120
-  },
-  {
-    "id": "65cf12345678901234567893",
-    "name": "Engrais Liquide Bio",
-    "description": "Nutriments 100% naturels pour booster la croissance de vos plantes d'intérieur.",
-    "price": 12.50,
-    "mainImage": "https://images.unsplash.com/photo-1416870230247-d0e99dfa0121?q=80&w=500",
-    "stock": 100,
-    "storeId": "65cf12345678901234567891",
-    "category": "Botanique",
-    "brand": "Botanica"
-  },
-  {
-    "id": "65cf12345678901234567894",
-    "name": "Batterie Nomade Solaire",
-    "description": "Chargez votre téléphone partout grâce au soleil. Ultra résistante et waterproof.",
-    "price": 59.00,
-    "mainImage": "https://images.unsplash.com/photo-1617788130035-e439f3160139?q=80&w=500",
-    "stock": 15,
-    "storeId": "65cf12345678901234567892",
-    "category": "Énergie Verte",
-    "brand": "EcoLight",
-    "featured": true
-  }
-]
-
-  /* Tentative de chargement des produits depuis le backend, mais j'ai préféré utiliser un mock pour le développement et les tests.
-  public getProducts(): Product[]{
-    if(this.products.length === 0){
-      this.isLoading.set(true);
-      this.http.get<Product[]>(this.apiUrl).subscribe({
-        next: (response) =>{
-          this.products = response;
-          this.isLoading.set(false);
-        },
-        error: (error) =>{
-          if(error.status === 401){
-            this.router.navigate(['/login']);
-          }else if(error.status === 403){
-            this.error.set(`Erreur d'autorisation: ${error.message}`);
-          }
-          else if(error.status === 404){
-            this.error.set(`Ressource non trouvée: ${error.message}`);
-          }
-          else if(error.status === 500){
-            this.error.set(`Erreur serveur: ${error.message}`);
-          }
+  // Liste tous les produits (public)
+  getAllProducts(filters?: any): Observable<ProductResponse> {
+    let params = new HttpParams();
+    if (filters) {
+      Object.keys(filters).forEach((key) => {
+        if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
+          params = params.set(key, filters[key].toString());
         }
-      })
+      });
     }
-    return this.products;
-  }*/
-
-
-  //Simule une requête HTTP pour récupérer les produits
-  public getProducts():Observable<Product[]>{
-    return of(this.mockProducts).pipe(
-      delay(800),
-      map((prods: Product[]) =>{
-        this.productSignal.set(prods);
-        return prods;
-      })
-    )
+    return this.http.get<ProductResponse>(this.apiUrl, { params });
   }
 
-  // Requête pour récupérer les produits d'une boutique spécifique
-  public getProductByStore(storeId: string): Observable<Product[]>{
-    return of(this.mockProducts.filter(p => p.storeId === storeId)).pipe(delay(800));
+  // Détails d'un produit
+  getProductById(productId: string): Observable<ProductResponse> {
+    return this.http.get<ProductResponse>(`${this.apiUrl}/${productId}`);
   }
 
-  // Requête pour récupérer les produits en promotion
-  public getFeaturedProducts(): Observable<Product[]>{
-    return of(this.mockProducts.filter(p => p.featured)).pipe(delay(800));
+  // Créer un produit
+  createProduct(data: FormData): Observable<ProductResponse> {
+    return this.http.post<ProductResponse>(this.apiUrl, data);
+  }
+
+  // Modifier un produit
+  updateProduct(productId: string, data: FormData): Observable<ProductResponse> {
+    return this.http.put<ProductResponse>(`${this.apiUrl}/${productId}`, data);
+  }
+
+  // Supprimer un produit
+  deleteProduct(productId: string): Observable<ProductResponse> {
+    return this.http.delete<ProductResponse>(`${this.apiUrl}/${productId}`);
+  }
+
+  // Mettre à jour le stock
+  updateStock(
+    productId: string,
+    data: { quantity: number; operation?: 'add' | 'subtract' },
+  ): Observable<ProductResponse> {
+    return this.http.patch<ProductResponse>(`${this.apiUrl}/${productId}/stock`, data);
+  }
+
+  // Ajouter un avis (acheteur)
+  addReview(
+    productId: string,
+    review: { rating: number; comment?: string },
+  ): Observable<ProductResponse> {
+    return this.http.post<ProductResponse>(`${this.apiUrl}/${productId}/reviews`, review);
+  }
+
+  // Catégories disponibles
+  getCategories(): string[] {
+    return [
+      'Mode & Vêtements',
+      'Électronique & High-tech',
+      'Alimentation & Boissons',
+      'Beauté & Cosmétiques',
+      'Sport & Loisirs',
+      'Maison & Décoration',
+      'Livres & Culture',
+      'Jouets & Enfants',
+      'Santé & Bien-être',
+      'Bijouterie & Accessoires',
+      'Autres',
+    ];
   }
 }

@@ -1,237 +1,430 @@
-<!-- frontend/src/app/features/auth/register/register.component.html -->
-<div class="min-h-screen flex items-center justify-center bg-matcha-dark/20 px-4">
-  <div class="my-16 rounded-3xl shadow-2xl space-y-8 bg-matcha-dark p-10 max-w-md w-full border border-white/5 transition-all"><!--register-card  -->
-    <div class="text-center"><!--register-header  -->
-      <h1 class="font-black text-white italic text-4xl">Rejoindre MATCHA<span class="text-matcha-spring">.</span></h1>
-      <p class="text-gray-400 mt-4" >Rejoignez notre centre commercial</p>
+<!-- src/app/features/auth/register/register.component.html -->
+<div class="min-h-screen py-10 flex items-center justify-center bg-matcha-dark/20 px-4">
+  <div
+    class="max-w-6xl w-full bg-matcha-dark rounded-3xl shadow-2xl border border-white/5 overflow-hidden flex flex-col md:flex-row"
+  >
+    <!-- Image placeholder -->
+    <div class="hidden md:block md:w-1/2 bg-black/40 relative">
+      <!-- Replace the placeholder structure with your actual img tag when ready -->
+      <div class="absolute inset-0 flex items-center justify-center p-10 text-center">
+        <p class="text-white/30 text-2xl font-black italic tracking-widest">[ ESPACE IMAGE ]</p>
+      </div>
     </div>
 
-    <!-- Messages d'erreur et succès -->
-     @if (errorMessage) {
-      <div class="p-1 rounded-md mb-2 flex items-center gap-2 bg-[#fed7d7] text-matcha-alert border border-matcha-pinky"><!--alert alert-error  -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-      {{ errorMessage }}
-    </div>
-     }
-
-     @if (successMessage) {
-      <div class="p-1 rounded-md mb-2 flex items-center gap-2 bg-[#c6f6d5] text-matcha-success border border-matcha-spring"><!--alert alert-success-->
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        {{ successMessage }}
+    <!-- Form portion -->
+    <div class="w-full md:w-1/2 p-8 md:p-12 space-y-8 flex flex-col justify-center">
+      <div class="text-center">
+        <h2 class="text-3xl font-black text-white italic">
+          Créer un compte<span class="text-matcha-spring">.</span>
+        </h2>
+        <p class="mt-2 text-gray-400 text-sm">Rejoignez Matcha Center</p>
       </div>
-     }
 
-    <!-- Formulaire d'inscription -->
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form mt-8 space-y-8"><!-- Nom et Prénom -->
-      
-      <!-- Nom et Prénom -->
-      <div class="form-row grid grid-cols-2 ms:grid-cols-1 gap-2">
-        <div class="mt-2"><!--form-group  -->
-          <label class="block font-medium text-matcha-spring/40 mb-1 text-sm" for="nom">Nom *</label>
-          <input 
-            type="text" 
-            id="nom" 
-            formControlName="nom"
-            class="w-full px-5 py-3 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-            [class]="f['nom'].touched && f['nom'].errors ? 'border-red-500': 'border-white/10'"
-            
-            placeholder="Votre nom"
-          /> <!--class="form-control" -->
-          @if (f['nom'].touched && f['nom'].errors) {
-            <div  class="text-red-500 text-sm mt-1"> <!--error-message-->
-              {{ getFieldError('nom') }}
-            </div>
-          }
-          
+      @if (successMessage) {
+        <div
+          class="p-3 rounded-md flex items-center gap-2 bg-[#d1fae5] text-[#065f46] border border-[#6ee7b7] text-sm"
+        >
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span>{{ successMessage }}</span>
         </div>
+      }
 
-        <div class="mt-2">
-          <label for="prenom" class="block font-medium text-matcha-spring/40 mb-1 text-sm">Prénom *</label>
-          <input 
-            type="text" 
-            id="prenom" 
-            formControlName="prenom"
-            class="w-full px-5 py-3 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-            [class]="f['prenom'].touched && f['prenom'].errors ? 'border-red-500': 'border-white/10'"
-            placeholder="Votre prénom"
-          />
-          @if (f['prenom'].touched && f['prenom'].errors) {
-            <div  class="text-red-500 text-sm mt-1"> <!--error-message-->
-              {{ getFieldError('prenom') }}
-            </div>
-          }
+      @if (errorMessage) {
+        <div
+          class="p-3 rounded-md flex items-center gap-2 bg-[#fed7d7] text-matcha-alert border border-matcha-pinky text-sm"
+        >
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span>{{ errorMessage }}</span>
         </div>
-      </div>
+      }
 
-      <!-- Email -->
-      <div class="mt-2">
-        <label for="email" class="block font-medium text-matcha-spring/40 mb-1 text-sm">Email *</label>
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email"
-          class="w-full px-5 py-3 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-            [class]="f['email'].touched && f['email'].errors ? 'border-red-500': 'border-white/10'"
-          placeholder="votre.email@example.com"
-        />
-        @if (f['email'].touched && f['email'].errors) {
-         <div class="text-red-500 text-sm mt-1"> <!--error-message-->
-           {{ getFieldError('email') }}
-         </div>
-        }
-      </div>
-
-      <!-- Mot de passe -->
-      <div class="mt-2">
-        <label for="password" class="block font-medium text-matcha-spring/40 mb-1 text-sm">Mot de passe *</label>
-        <div class=" relative"><!--password-input-->
-          <input 
-            [type]="showPassword ? 'text' : 'password'" 
-            id="password" 
-            formControlName="password"
-            class="w-full px-5 py-3 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-            [class]="f['password'].touched && f['password'].errors ? 'border-red-500': 'border-white/10'"
-            placeholder="Minimum 6 caractères"
-          />
-          <button 
-            type="button" 
-            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white bg-none border-none cursor-pointer p-1 transition-colors w-6 h-6" 
-            (click)="togglePasswordVisibility()"
-            aria-label="Afficher/Masquer le mot de passe"
-          ><!--password-input-->
-            @if (!showPassword) {
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-6 space-y-5">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="nom" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+              >Nom <span class="text-red-500">*</span></label
+            >
+            <input
+              id="nom"
+              formControlName="nom"
+              type="text"
+              placeholder="Dupont"
+              class="w-full px-4 py-3 bg-black/20 border text-white text-sm rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+              [class]="
+                f['nom'].invalid && (f['nom'].dirty || f['nom'].touched || submitted)
+                  ? 'border-red-500'
+                  : 'border-white/10'
+              "
+            />
+            @if (f['nom'].invalid && (f['nom'].dirty || f['nom'].touched || submitted)) {
+              <div class="text-red-500 text-xs mt-1">
+                @if (f['nom'].errors?.['required']) {
+                  <span>Le nom est requis</span>
+                }
+                @if (f['nom'].errors?.['minlength']) {
+                  <span>2 caractères min.</span>
+                }
+              </div>
             }
-            @if (showPassword) {
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
+          </div>
+
+          <div>
+            <label for="prenom" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+              >Prénom <span class="text-red-500">*</span></label
+            >
+            <input
+              id="prenom"
+              formControlName="prenom"
+              type="text"
+              placeholder="Jean"
+              class="w-full px-4 py-3 bg-black/20 border text-white text-sm rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+              [class]="
+                f['prenom'].invalid && (f['prenom'].dirty || f['prenom'].touched || submitted)
+                  ? 'border-red-500'
+                  : 'border-white/10'
+              "
+            />
+            @if (f['prenom'].invalid && (f['prenom'].dirty || f['prenom'].touched || submitted)) {
+              <div class="text-red-500 text-xs mt-1">
+                @if (f['prenom'].errors?.['required']) {
+                  <span>Le prénom est requis</span>
+                }
+                @if (f['prenom'].errors?.['minlength']) {
+                  <span>2 caractères min.</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label for="email" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+            >Email <span class="text-red-500">*</span></label
+          >
+          <input
+            id="email"
+            formControlName="email"
+            type="email"
+            placeholder="jean.dupont@example.com"
+            class="w-full px-4 py-3 bg-black/20 border text-white text-sm rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+            [class]="
+              f['email'].invalid && (f['email'].dirty || f['email'].touched || submitted)
+                ? 'border-red-500'
+                : 'border-white/10'
+            "
+          />
+          @if (f['email'].invalid && (f['email'].dirty || f['email'].touched || submitted)) {
+            <div class="text-red-500 text-xs mt-1">
+              @if (f['email'].errors?.['required']) {
+                <span>L'email est requis</span>
+              }
+              @if (f['email'].errors?.['email']) {
+                <span>Email invalide</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="password" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+              >Mot de passe <span class="text-red-500">*</span></label
+            >
+            <div class="relative">
+              <input
+                [type]="passwordVisible ? 'text' : 'password'"
+                id="password"
+                formControlName="password"
+                placeholder="••••••••"
+                class="w-full px-4 py-3 pr-10 bg-black/20 border text-white text-sm rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+                [class]="passwordErrors ? 'border-red-500' : 'border-white/10'"
+              />
+              <button
+                type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                (click)="togglePasswordVisibility('password')"
+                tabindex="-1"
+              >
+                @if (!passwordVisible) {
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                }
+                @if (passwordVisible) {
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    ></path>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (passwordErrors) {
+              <div class="text-red-500 text-xs mt-1">{{ passwordErrors }}</div>
+            }
+          </div>
+
+          <div>
+            <label for="confirmPassword" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+              >Confirmer <span class="text-red-500">*</span></label
+            >
+            <div class="relative">
+              <input
+                [type]="confirmPasswordVisible ? 'text' : 'password'"
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="••••••••"
+                class="w-full px-4 py-3 pr-10 bg-black/20 border text-white text-sm rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+                [class]="confirmPasswordErrors ? 'border-red-500' : 'border-white/10'"
+              />
+              <button
+                type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                (click)="togglePasswordVisibility('confirmPassword')"
+                tabindex="-1"
+              >
+                @if (!confirmPasswordVisible) {
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                }
+                @if (confirmPasswordVisible) {
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    ></path>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (confirmPasswordErrors) {
+              <div class="text-red-500 text-xs mt-1">{{ confirmPasswordErrors }}</div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label for="role" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+            >S'inscrire en tant que <span class="text-red-500">*</span></label
+          >
+          <div class="grid grid-cols-2 gap-3 mt-1">
+            <label class="cursor-pointer group relative">
+              <input type="radio" formControlName="role" value="acheteur" class="peer sr-only" />
+              <div
+                class="border-2 border-white/10 rounded-xl p-3 text-center transition-all peer-checked:border-matcha-spring peer-checked:bg-matcha-spring/10 group-hover:border-matcha-spring/50 flex flex-col items-center gap-1"
+              >
+                <svg
+                  class="w-6 h-6 text-matcha-spring"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  ></path>
+                </svg>
+                <span class="font-bold text-white text-sm">Acheteur</span>
+              </div>
+              <div
+                class="absolute inset-0 rounded-xl ring-2 ring-transparent peer-focus:ring-matcha-spring pointer-events-none"
+              ></div>
+            </label>
+            <label class="cursor-pointer group relative">
+              <input type="radio" formControlName="role" value="boutique" class="peer sr-only" />
+              <div
+                class="border-2 border-white/10 rounded-xl p-3 text-center transition-all peer-checked:border-matcha-spring peer-checked:bg-matcha-spring/10 group-hover:border-matcha-spring/50 flex flex-col items-center gap-1"
+              >
+                <svg
+                  class="w-6 h-6 text-matcha-spring"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  ></path>
+                </svg>
+                <span class="font-bold text-white text-sm">Gérant</span>
+              </div>
+              <div
+                class="absolute inset-0 rounded-xl ring-2 ring-transparent peer-focus:ring-matcha-spring pointer-events-none"
+              ></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="telephone" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+              >Téléphone <span class="text-red-500">*</span></label
+            >
+            <input
+              id="telephone"
+              formControlName="telephone"
+              type="tel"
+              placeholder="0612345678"
+              class="w-full px-4 py-3 bg-black/20 border text-white text-sm rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+              [class]="
+                f['telephone'].invalid &&
+                (f['telephone'].dirty || f['telephone'].touched || submitted)
+                  ? 'border-red-500'
+                  : 'border-white/10'
+              "
+            />
+            @if (
+              f['telephone'].invalid &&
+              (f['telephone'].dirty || f['telephone'].touched || submitted)
+            ) {
+              <div class="text-red-500 text-xs mt-1">
+                @if (f['telephone'].errors?.['required']) {
+                  <span>Le téléphone est requis</span>
+                }
+                @if (f['telephone'].errors?.['pattern']) {
+                  <span>Doit contenir 10 chiffres</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div>
+            <label for="adresse" class="block text-xs font-medium text-gray-300 mb-1 ml-1"
+              >Adresse</label
+            >
+            <input
+              id="adresse"
+              formControlName="adresse"
+              type="text"
+              placeholder="123 Rue de la Paix"
+              class="w-full px-4 py-3 bg-black/20 border text-white text-sm rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all border-white/10"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              formControlName="acceptTerms"
+              class="mt-0.5 w-4 h-4 rounded border-gray-300 text-matcha-spring focus:ring-matcha-spring cursor-pointer"
+              [class.border-red-500]="
+                f['acceptTerms'].invalid &&
+                (f['acceptTerms'].dirty || f['acceptTerms'].touched || submitted)
+              "
+            />
+            <span class="text-xs text-gray-400 leading-tight block">
+              J'accepte les
+              <a href="/terms" target="_blank" class="text-matcha-spring hover:underline font-bold"
+                >conditions</a
+              >
+              et la
+              <a
+                href="/privacy"
+                target="_blank"
+                class="text-matcha-spring hover:underline font-bold"
+                >politique de confidentialité</a
+              >
+              <span class="text-red-500">*</span>
+            </span>
+          </label>
+          @if (
+            f['acceptTerms'].invalid &&
+            (f['acceptTerms'].dirty || f['acceptTerms'].touched || submitted)
+          ) {
+            <div class="text-red-500 text-xs mt-1 ml-6">Vous devez accepter les conditions</div>
+          }
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            [disabled]="loading"
+            class="w-full font-bold py-3 text-black bg-matcha-spring rounded-xl hover:bg-[#00a771] transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+          >
+            @if (!loading) {
+              <span>S'inscrire</span>
+            }
+            @if (loading) {
+              <svg
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-black"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Inscription...
             }
           </button>
         </div>
-        @if (f['password'].touched && f['password'].errors) {
-         <div class="text-red-500 text-sm mt-1"> <!--error-message-->
-           {{ getFieldError('password') }}
-         </div>
-        }
-      </div>
 
-      <!-- Confirmer mot de passe -->
-      <div class="mt-2">
-        <label for="confirmPassword" class="block font-medium text-matcha-spring/40 mb-1 text-sm">Confirmer le mot de passe *</label>
-        <input 
-          type="password" 
-          id="confirmPassword" 
-          formControlName="confirmPassword"
-          class="w-full px-5 py-3 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-          [class]="f['confirmPassword'].touched && f['confirmPassword'].errors || registerForm.errors?.['passwordMismatch'] ? 'border-red-500': 'border-white/10'"
-          placeholder="Retapez votre mot de passe"
-        />
-        @if (f['confirmPassword'].touched && registerForm.errors?.['passwordMismatch']) {
-         <div class="text-red-500 text-sm mt-1"> <!--error-message-->
-           Les mots de passe ne correspondent pas
-         </div>
-        }
-      </div>
-
-      <!-- Type de compte -->
-      <div class="mt-2">
-        <label for="role" class="block font-medium text-matcha-spring/40 mb-1 text-sm">Type de compte *</label>
-        <select 
-          id="role" 
-          formControlName="role"
-          class="form-control"
-        >
-          <option *ngFor="let role of roles" [value]="role.value">
-            {{ role.label }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Téléphone -->
-      <div class="mt-2">
-        <label for="telephone" class="block font-medium text-matcha-spring/40 mb-1 text-sm">Téléphone (optionnel)</label>
-        <input 
-          type="tel" 
-          id="telephone" 
-          formControlName="telephone"
-          class="w-full px-5 py-3 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-            [class]="f['telephone'].touched && f['telephone'].errors ? 'border-red-500': 'border-white/10'"
-          placeholder="0612345678"
-        />
-        @if (f['telephone'].touched && f['telephone'].errors) {
-         <div class="text-red-500 text-sm mt-1"> <!--error-message-->
-           {{ getFieldError('telephone') }}
-         </div>
-        }
-      </div>
-
-      <!-- Adresse -->
-      <div class="mt-2">
-        <label for="adresse" class="block font-medium text-matcha-spring/40 mb-1 text-sm">Adresse (optionnel)</label>
-        <textarea 
-          id="adresse" 
-          formControlName="adresse"
-          class="w-full px-5 py-3 bg-black/20 border border-white/10 text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-          rows="2"
-          placeholder="Votre adresse complète"
-        ></textarea>
-      </div>
-
-      <!-- Accepter les conditions -->
-      <div class="mt-2 checkbox-group">
-        <label class="checkbox-label">
-          <input 
-            type="checkbox" 
-            formControlName="acceptTerms"
-          />
-          <span>
-            J'accepte les <a href="/conditions" target="_blank">conditions d'utilisation</a> 
-            et la <a href="/privacy" target="_blank">politique de confidentialité</a> *
-          </span>
-        </label>
-        @if (f['acceptTerms'].touched && f['acceptTerms'].errors) {
-         <div class="text-red-500 text-sm mt-1"> <!--error-message-->
-           Vous devez accepter les conditions
-         </div>
-        }
-      </div>
-
-      <!-- Bouton de soumission -->
-      <button 
-        type="submit" 
-        class="btn btn-primary btn-block"
-        [disabled]="loading"
-      >
-        @if(!loading) {
-          <span>S'inscrire</span>
-
-        }
-        @if (loading) {
-          <span class="spinner">
-          <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Inscription en cours...
-        </span>
-        }
-        
-      </button>
-    </form>
-
-    <!-- Lien vers connexion -->
-    <div class="register-footer">
-      <p>Vous avez déjà un compte ? 
-        <a routerLink="/login" class="link">Se connecter</a>
-      </p>
+        <div class="flex items-center justify-center w-full pt-3 border-t border-white/5">
+          <span class="text-xs font-black text-white/50">Déjà un compte ?</span>
+          <a
+            routerLink="/login"
+            class="text-xs font-black text-matcha-spring ml-1 hover:text-[#00a771]"
+            >Se connecter</a
+          >
+        </div>
+      </form>
     </div>
   </div>
 </div>
