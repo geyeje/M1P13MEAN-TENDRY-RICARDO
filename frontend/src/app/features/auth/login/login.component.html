@@ -1,47 +1,93 @@
-<div class="min-h-screen  flex items-center justify-center bg-matcha-dark/20 px-4">
-    <div class="max-w-md w-full space-y-8 p-10 bg-matcha-dark rounded-3xl shadow-2xl border border-white/5">
-        <div class="text-center">
-            <h2 class="text-4xl font-black text-white italic">MATCHA-NEXION<span class="text-matcha-spring">.</span></h2>
-            <p class="mt-2 text-gray-400">Veuillez vous connecter</p>
-        </div>
-        @if (errorMessage()) {
-            <div class="p-1 rounded-md mb-2 flex items-center gap-2 bg-[#fed7d7] text-matcha-alert border border-matcha-pinky">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                {{errorMessage()}}
-            </div>
-        }
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-8">
-            <div class="space-y-4">
-                <input id="email" formControlName="email" type="email" placeholder="Email"
-                    class="w-full px-5 py-4 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-                    [class]="f['email'].touched && f['email'].errors ? 'border-red-500': 'border-white/10'"
-                    >
-                @if (f['email'].touched && f['email'].errors) {
-                    <div  class="text-red-500 text-sm mt-1"> <!--error-message-->
-                        {{ getFieldError('email') }}
-                    </div>
-                }
-                <input id="password" formControlName="password" type="password" placeholder="mot de passe"
-                    class="w-full px-5 py-4 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
-                    [class]="f['password'].touched && f['password'].errors ? 'border-red-500': 'border-white/10'"
-                    >
-                @if (f['password'].touched && f['password'].errors) {
-                    <div  class="text-red-500 text-sm mt-1"> <!--error-message-->
-                        {{ getFieldError('password') }}
-                    </div>
-                }
-            </div>
-            <div>
-                <button type="submit" [disabled]="loginForm.invalid || isLoading()"
-                    class="w-full font-bold py-4 text-black bg-matcha-spring rounded-xl hover:bg-[#00a771] transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                    {{isLoading() ? 'Authentification...' : 'Connecter'}}
-                </button>
-            </div>
-            <div class="flex items-center justify-center w-full p-4 ">
-                <a routerLink="/register" class="text-sm font-black text-black/50 flex items-center justify-center hover:text-matcha-spring/80">Aucun compte? s'inscrire!</a>
-            </div>
-        </form>
+<div class="min-h-screen flex items-center justify-center bg-matcha-dark/20 px-4">
+  <div
+    class="max-w-md w-full space-y-8 p-10 bg-matcha-dark rounded-3xl shadow-2xl border border-white/5"
+  >
+    <div class="text-center">
+      <h2 class="text-4xl font-black text-white italic">
+        MATCHA-NEXION<span class="text-matcha-spring">.</span>
+      </h2>
+      <p class="mt-2 text-gray-400">Veuillez vous connecter</p>
     </div>
+    @if (errorMessage()) {
+      <div
+        class="p-1 rounded-md mb-2 flex items-center gap-2 bg-[#fed7d7] text-matcha-alert border border-matcha-pinky"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+        {{ errorMessage() }}
+      </div>
+    }
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-8">
+      <div class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300 mb-2 ml-1"
+            >Adresse Email</label
+          >
+          <input
+            id="email"
+            formControlName="email"
+            type="email"
+            placeholder="Email"
+            class="w-full px-5 py-4 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+            [class]="f['email'].touched && f['email'].errors ? 'border-red-500' : 'border-white/10'"
+          />
+          @if (f['email'].touched && f['email'].errors) {
+            <div class="text-red-500 text-sm mt-1">
+              <!--error-message-->
+              {{ getFieldError('email') }}
+            </div>
+          }
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-2 ml-1"
+            >Mot de passe</label
+          >
+          <input
+            id="password"
+            formControlName="password"
+            type="password"
+            placeholder="mot de passe"
+            class="w-full px-5 py-4 bg-black/20 border text-white rounded-xl focus:border-matcha-spring focus:bg-matcha-spring/80 focus:ring-1 focus:ring-matcha-spring outline-none transition-all"
+            [class]="
+              f['password'].touched && f['password'].errors ? 'border-red-500' : 'border-white/10'
+            "
+          />
+          @if (f['password'].touched && f['password'].errors) {
+            <div class="text-red-500 text-sm mt-1">
+              <!--error-message-->
+              {{ getFieldError('password') }}
+            </div>
+          }
+        </div>
+      </div>
+      <div>
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading()"
+          class="w-full font-bold py-4 text-black bg-matcha-spring rounded-xl hover:bg-[#00a771] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          {{ isLoading() ? 'Authentification...' : 'Connecter' }}
+        </button>
+      </div>
+      <div class="flex items-center justify-center w-full p-4">
+        <a
+          routerLink="/register"
+          class="text-sm font-black text-black/50 flex items-center justify-center hover:text-matcha-spring/80"
+          >Aucun compte? s'inscrire!</a
+        >
+      </div>
+    </form>
+  </div>
 </div>

@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginData } from '../../../shared/models/user.model';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login-component',
@@ -23,39 +23,41 @@ export class LoginComponent {
   //génération du formulaire
   loginForm = this.fBuilder.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   onSubmit(){
     if(this.loginForm.valid){
       this.isLoading.set(true);
-      const credencials: LoginData = {email: this.loginForm.controls.email.value!, password: this.loginForm.controls.password.value!}
-      this.loginService.login(credencials).subscribe({
+      const credentials: LoginData = {
+        email: this.loginForm.controls.email.value!,
+        password: this.loginForm.controls.password.value!,
+      };
+      this.loginService.login(credentials).subscribe({
         next: (res) => {
-          console.log("Connexion à Matcha réussi")
+          console.log('Connexion à Matcha réussi');
           this.isLoading.set(false);
-          if(res.success){
-            
+          if (res.success) {
           }
         },
         error: (err) => {
-          this.errorMessage.set("Erreur de connexion : " + err.message);
+          this.errorMessage.set('Erreur de connexion : ' + err.message);
           this.isLoading.set(false);
-          if(err.error && err.error.message){
+          if (err.error && err.error.message) {
             this.errorMessage.set(err.error.message);
           }
-      }
-    });
+        },
+      });
     }
   }
 
-  showPasswordToggle(){
-    this.showPassword.update(value => !value);
+  showPasswordToggle() {
+    this.showPassword.update((value) => !value);
   }
 
   getFieldError(fieldName: string): string {
     const field = this.loginForm.get(fieldName);
-    
+
     if (!field || !field.touched || !field.errors) {
       return '';
     }
@@ -74,7 +76,7 @@ export class LoginComponent {
     return 'Champ invalide';
   }
 
-   // Getters pour faciliter l'accès aux champs du formulaire
+  // Getters pour faciliter l'accès aux champs du formulaire
   get f() {
     return this.loginForm.controls;
   }

@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environments';
 import { User, RegisterData, LoginData, AuthResponse } from '../../shared/models/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
@@ -16,12 +16,12 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     // Récupérer l'utilisateur depuis le localStorage au démarrage
     const storedUser = localStorage.getItem('currentUser');
     this.currentUserSubject = new BehaviorSubject<User | null>(
-      storedUser ? JSON.parse(storedUser) : null
+      storedUser ? JSON.parse(storedUser) : null,
     );
     this.currentUser = this.currentUserSubject.asObservable();
   }
@@ -44,29 +44,37 @@ export class AuthService {
   // Inscription
   register(data: RegisterData): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
-      tap(response => {
+      tap((response) => {
         if (response.success && response.token && response.user) {
           // Stocker le token et l'utilisateur
           localStorage.setItem('token', response.token);
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
         }
-      })
+      }),
     );
   }
 
   // Connexion
   login(data: LoginData): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
-      tap(response => {
+      tap((response) => {
         if (response.success && response.token && response.user) {
           // Stocker le token et l'utilisateur
           localStorage.setItem('token', response.token);
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
-          this.router.navigate(['/admin']);
+          // Redirection selon le rôle
+          const role = response.user.role;
+          if (role === 'admin') {
+            this.router.navigate(['/admin']);
+          } else if (role === 'boutique') {
+            this.router.navigate(['/boutique']); // Adaptez la route selon votre architecture
+          } else {
+            this.router.navigate(['/home']); // Acheteur par défaut (customer)
+          }
         }
-      })
+      }),
     );
   }
 
@@ -76,7 +84,7 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
-    
+
     // Rediriger vers la page de connexion
     this.router.navigate(['/login']);
   }
@@ -89,13 +97,13 @@ export class AuthService {
   // Mettre à jour le profil
   updateProfile(data: Partial<User>): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/profile`, data).pipe(
-      tap(response => {
+      tap((response) => {
         if (response.success && response.user) {
           // Mettre à jour l'utilisateur dans le localStorage
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
         }
-      })
+      }),
     );
   }
 
