@@ -1,0 +1,313 @@
+<!-- src/app/features/admin/dashboard/dashboard.component.html -->
+<div class="container-fluid py-4">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-3">Chargement du dashboard...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    <strong>Erreur!</strong> Impossible de charger le dashboard.
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadDashboard()">
+      Réessayer
+    </button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error && stats">
+    
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col">
+        <h1 class="h2">Dashboard Administrateur</h1>
+        <p class="text-muted">Vue d'ensemble de votre plateforme</p>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary" (click)="loadDashboard()">
+          <i class="cil-reload"></i> Actualiser
+        </button>
+      </div>
+    </div>
+
+    <!-- Alerts / Notifications -->
+    <div class="row mb-4" *ngIf="stats.alerts.pendingShops > 0 || stats.alerts.pendingOrders > 0 || stats.alerts.outOfStock > 0">
+      <div class="col-12">
+        <div class="alert alert-warning d-flex align-items-center">
+          <i class="cil-warning me-3 fs-4"></i>
+          <div>
+            <strong>Actions requises :</strong>
+            <span *ngIf="stats.alerts.pendingShops > 0"> {{ stats.alerts.pendingShops }} boutique(s) à valider</span>
+            <span *ngIf="stats.alerts.pendingOrders > 0"> • {{ stats.alerts.pendingOrders }} commande(s) en attente</span>
+            <span *ngIf="stats.alerts.outOfStock > 0"> • {{ stats.alerts.outOfStock }} produit(s) en rupture</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Cards Row 1 - Users & Shops -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6 col-lg-3">
+        <app-stat-card
+          title="Total Utilisateurs"
+          [value]="stats.users.total"
+          [subtitle]="stats.users.active + ' actifs'"
+          icon="people"
+          color="primary">
+        </app-stat-card>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <app-stat-card
+          title="Boutiques"
+          [value]="stats.shops.total"
+          [subtitle]="stats.shops.pending + ' en attente'"
+          icon="storage"
+          color="success">
+        </app-stat-card>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <app-stat-card
+          title="Produits"
+          [value]="stats.products.total"
+          [subtitle]="stats.products.inStock + ' en stock'"
+          icon="cart"
+          color="info">
+        </app-stat-card>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <app-stat-card
+          title="Commandes"
+          [value]="stats.orders.total"
+          [subtitle]="stats.orders.delivered + ' livrées'"
+          icon="list"
+          color="warning">
+        </app-stat-card>
+      </div>
+    </div>
+
+    <!-- Revenue Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6 col-lg-4">
+        <app-stat-card
+          title="CA Total"
+          [value]="stats.revenue.total"
+          [subtitle]="formatCurrency(stats.revenue.total)"
+          icon="dollar"
+          color="success">
+        </app-stat-card>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <app-stat-card
+          title="CA Ce Mois"
+          [value]="stats.revenue.thisMonth"
+          [subtitle]="formatCurrency(stats.revenue.thisMonth)"
+          icon="calendar"
+          color="primary">
+        </app-stat-card>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <app-stat-card
+          title="Panier Moyen"
+          [value]="stats.revenue.avgCart"
+          [subtitle]="formatCurrency(stats.revenue.avgCart)"
+          icon="basket"
+          color="info">
+        </app-stat-card>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-8">
+        <app-chart-widget
+          title="Commandes des 30 derniers jours"
+          [labels]="ordersChartLabels"
+          [data]="ordersChartData"
+          chartType="line"
+          backgroundColor="rgba(54, 162, 235, 0.2)"
+          borderColor="rgba(54, 162, 235, 1)">
+        </app-chart-widget>
+      </div>
+      <div class="col-lg-4">
+        <app-chart-widget
+          title="Statut des Commandes"
+          [labels]="orderStatusLabels"
+          [data]="orderStatusData"
+          chartType="doughnut"
+          [backgroundColor]="['#4dbd74', '#20a8d8', '#ffc107', '#f86c6b', '#63c2de', '#6c757d']">
+        </app-chart-widget>
+      </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6">
+        <app-chart-widget
+          title="Chiffre d'Affaires (30j)"
+          [labels]="ordersChartLabels"
+          [data]="revenueChartData"
+          chartType="bar"
+          backgroundColor="rgba(75, 192, 192, 0.6)"
+          borderColor="rgba(75, 192, 192, 1)">
+        </app-chart-widget>
+      </div>
+      <div class="col-lg-6">
+        <app-chart-widget
+          title="Nouvelles Inscriptions (30j)"
+          [labels]="usersChartLabels"
+          [data]="usersChartData"
+          chartType="line"
+          backgroundColor="rgba(153, 102, 255, 0.2)"
+          borderColor="rgba(153, 102, 255, 1)">
+        </app-chart-widget>
+      </div>
+    </div>
+
+    <!-- Produits par Catégorie -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6">
+        <app-chart-widget
+          title="Produits par Catégorie"
+          [labels]="categoryChartLabels"
+          [data]="categoryChartData"
+          chartType="bar"
+          backgroundColor="rgba(255, 159, 64, 0.6)"
+          borderColor="rgba(255, 159, 64, 1)">
+        </app-chart-widget>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <strong>Répartition des Utilisateurs</strong>
+          </div>
+          <div class="card-body">
+            <div class="mb-3" *ngFor="let role of stats.users.byRole">
+              <div class="d-flex justify-content-between mb-1">
+                <span>{{ getRoleLabel(role._id) }}</span>
+                <strong>{{ role.count }}</strong>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div 
+                  class="progress-bar"
+                  [class.bg-danger]="role._id === 'admin'"
+                  [class.bg-primary]="role._id === 'boutique'"
+                  [class.bg-success]="role._id === 'acheteur'"
+                  [style.width.%]="(role.count / stats.users.total * 100)">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-3">
+      <!-- Recent Orders -->
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Dernières Commandes</strong>
+            <a routerLink="/admin/orders" class="btn btn-sm btn-ghost-primary">Voir tout</a>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>N° Commande</th>
+                  <th>Montant</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let order of stats.orders.recent">
+                  <td>{{ order.orderNumber }}</td>
+                  <td>{{ formatCurrency(order.totalAmount) }}</td>
+                  <td>
+                    <span class="badge"
+                          [class.bg-warning]="order.status === 'pending'"
+                          [class.bg-info]="order.status === 'confirmed'"
+                          [class.bg-primary]="order.status === 'processing'"
+                          [class.bg-success]="order.status === 'delivered'">
+                      {{ order.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Produits les Plus Vendus</strong>
+            <a routerLink="/admin/products" class="btn btn-sm btn-ghost-primary">Voir tout</a>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Produit</th>
+                  <th>Ventes</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let product of stats.products.topSelling.slice(0, 5)">
+                  <td>{{ product.name }}</td>
+                  <td><strong>{{ product.salesCount }}</strong></td>
+                  <td>
+                    <span class="badge bg-warning">
+                      ⭐ {{ product.avgRating.toFixed(1) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Shops -->
+    <div class="row g-3 mt-2">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <strong>Top 5 Boutiques par Chiffre d'Affaires</strong>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Boutique</th>
+                  <th>Gérant</th>
+                  <th>Produits</th>
+                  <th>Commandes</th>
+                  <th>CA</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let shop of stats.shops.topByRevenue; let i = index">
+                  <td><strong>{{ i + 1 }}</strong></td>
+                  <td>{{ shop.name }}</td>
+                  <td>{{ shop.userId?.nom }} {{ shop.userId?.prenom }}</td>
+                  <td>{{ shop.productqt }}</td>
+                  <td>{{ shop.commandeqt }}</td>
+                  <td><strong>{{ formatCurrency(shop.CA) }}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

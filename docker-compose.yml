@@ -11,7 +11,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: admin123
       MONGO_INITDB_DATABASE: mall_db
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongodb_data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
@@ -32,7 +32,7 @@ services:
       JWT_SECRET: votre-secret-jwt-super-securise-changez-moi
       JWT_EXPIRE: 7d
     ports:
-      - "5000:5000"
+      - '3000:5000'
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -53,15 +53,15 @@ services:
     environment:
       - NODE_ENV=development
     ports:
-      - "4200:4200"
+      - '4200:4200'
     volumes:
       - ./frontend:/app
-      - /app/node_modulesfver
+      - /app/node_modules
     depends_on:
       - backend
     networks:
       - mall-network
-    command: npm start
+    command: npx ng serve --host 0.0.0.0 --port 4200 --poll 2000
 
   # MongoDB Express (Interface Web pour MongoDB - Optionnel)
   mongo-express:
@@ -75,7 +75,7 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin
     ports:
-      - "8081:8081"
+      - '8081:8081'
     depends_on:
       - mongodb
     networks:
