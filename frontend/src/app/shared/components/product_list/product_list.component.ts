@@ -5,11 +5,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CurrencyPipe } from '@angular/common';
 import { MatButtonModule } from "@angular/material/button";
+import { ProductCardComponent } from '../product-card/product-card.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, CurrencyPipe, MatButtonModule],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, ProductCardComponent],
   templateUrl: './product_list.component.html',
   styleUrl: './product_list.component.scss',
 })
