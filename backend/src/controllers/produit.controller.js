@@ -1,75 +1,80 @@
+// backend/src/controllers/produit.controller.js - CHAMPS EN ANGLAIS
 const Produit = require('../models/Produit');
-const User = require ('../models/User');
-const Boutique = require ('../models/Boutique');
-const { validationResult} = require('express-validator');
+const Boutique = require('../models/Boutique');
+const { validationResult } = require('express-validator');
 
-
-exports.createProduit = async (req,res) => {
-  try{
+// ========================================
+// 1. CRÉER UN PRODUIT
+// ========================================
+exports.createProduit = async (req, res) => {
+  try {
     const errors = validationResult(req);
-    if(!errors.isEmpty){
-      return res.status(400).json({
-        success:false,
-        errors:errors.array()
-      });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
 
-    }
-    const boutique = await Boutique.findOne({userId:req.user.id});
-    if(!boutique){
+    // Vérifier que le gérant a une boutique active
+    const boutique = await Boutique.findOne({ userId: req.user.id });
+    if (!boutique) {
       return res.status(404).json({
-        sucess:false,
-        message:'Vous devez d\'abord créer une boutique'
+        success: false,
+        message: 'Vous devez d\'abord créer une boutique'
       });
     }
-    if (boutique .statut !=='active'){
-      return res.status(404).json({
-        success:false,
-        message:'Votre boutique doit être validée pour ajouter des produits'
+    if (boutique.statut !== 'active') {
+      return res.status(403).json({
+        success: false,
+        message: 'Votre boutique doit être validée pour ajouter des produits'
       });
     }
-    // Extraire les données
+
     const {
-      nom,
+      name,
       description,
-      prix,
-      prixPromo,
-      categorie,
+      price,
+      promoPrice,
+      category,
       stock,
-      marque,
-      couleurs,
-      tailles,
-      caracteristiques,
-      motsCles
+      brand,
+      colors,
+      sizes,
+      specs,
+      tags
     } = req.body;
-     // Gérer les images (upload multiple)
+
+    // Gérer les images uploadées
     let images = [];
     if (req.files && req.files.length > 0) {
       images = req.files.map(file => file.path);
     }
 
-    // Créer le produit
+    // Parser les champs JSON envoyés comme string (depuis form-data)
+    const parsedColors = typeof colors === 'string' ? JSON.parse(colors) : (colors || []);
+    const parsedSizes  = typeof sizes  === 'string' ? JSON.parse(sizes)  : (sizes  || []);
+    const parsedSpecs  = typeof specs  === 'string' ? JSON.parse(specs)  : (specs  || {});
+    const parsedTags   = typeof tags   === 'string' ? JSON.parse(tags)   : (tags   || []);
+
     const produit = await Produit.create({
-      nom,
+      name,
       description,
-      prix,
-      prixPromo,
-      categorie,
+      price,
+      promoPrice: promoPrice || null,
+      category,
       stock,
-      marque,
-      couleurs: couleurs ? JSON.parse(couleurs) : [],
-      tailles: tailles ? JSON.parse(tailles) : [],
-      caracteristiques: caracteristiques ? JSON.parse(caracteristiques) : {},
-      motsCles: motsCles ? JSON.parse(motsCles) : [],
+      brand,
+      colors:  parsedColors,
+      sizes:   parsedSizes,
+      specs:   parsedSpecs,
+      tags:    parsedTags,
       images,
-      boutiqueId: boutique._id
+      shopId: boutique._id
     });
 
-    // Mettre à jour le nombre de produits dans la boutique
-    boutique.nombreProduits += 1;
+    // Incrémenter le compteur de produits de la boutique
+    boutique.productqt += 1;
     await boutique.save();
 
-    // Populate la boutique
-    await produit.populate('boutiqueId', 'nom logo');
+    await produit.populate('shopId', 'name logo');
 
     res.status(201).json({
       success: true,
@@ -77,8 +82,7 @@ exports.createProduit = async (req,res) => {
       produit
     });
 
-
-  }catch(error){
+  } catch (error) {
     console.error('Erreur création produit:', error);
     res.status(500).json({
       success: false,
@@ -88,93 +92,60 @@ exports.createProduit = async (req,res) => {
   }
 };
 
-// @desc    Liste des produits avec filtres avancés
-// @route   GET /api/produits
-// @access  Public
+// ========================================
+// 2. LISTE DES PRODUITS (avec filtres)
+// ========================================
 exports.getAllProduits = async (req, res) => {
   try {
     const {
-      categorie,
-      boutique,
-      prixMin,
-      prixMax,
-      enPromo,
-      enStock,
+      category,
+      shop,
+      priceMin,
+      priceMax,
+      onSale,
+      inStock,
       search,
-      marque,
-      couleur,
-      taille,
+      brand,
+      color,
+      size,
       sort = '-createdAt',
       page = 1,
       limit = 12
     } = req.query;
 
-    // Construction du filtre
     const filter = {};
 
-    // Filtrer par catégorie
-    if (categorie) {
-      filter.categorie = categorie;
+    if (category)          filter.category = category;
+    if (shop)              filter.shopId = shop;
+    if (brand)             filter.brand = brand;
+    if (color)             filter.colors = { $in: [color] };
+    if (size)              filter.sizes  = { $in: [size]  };
+    if (onSale === 'true') filter.onSale = true;
+    if (inStock === 'true') filter.stock = { $gt: 0 };
+
+    if (priceMin || priceMax) {
+      filter.price = {};
+      if (priceMin) filter.price.$gte = parseFloat(priceMin);
+      if (priceMax) filter.price.$lte = parseFloat(priceMax);
     }
 
-    // Filtrer par boutique
-    if (boutique) {
-      filter.boutiqueId = boutique;
-    }
-
-    // Filtrer par prix
-    if (prixMin || prixMax) {
-      filter.prix = {};
-      if (prixMin) filter.prix.$gte = parseFloat(prixMin);
-      if (prixMax) filter.prix.$lte = parseFloat(prixMax);
-    }
-
-    // Produits en promotion
-    if (enPromo === 'true') {
-      filter.enPromotion = true;
-    }
-
-    // Produits en stock
-    if (enStock === 'true') {
-      filter.stock = { $gt: 0 };
-    }
-
-    // Filtrer par marque
-    if (marque) {
-      filter.marque = marque;
-    }
-
-    // Filtrer par couleur
-    if (couleur) {
-      filter.couleurs = { $in: [couleur] };
-    }
-
-    // Filtrer par taille
-    if (taille) {
-      filter.tailles = { $in: [taille] };
-    }
-
-    // Recherche textuelle
     if (search) {
       filter.$or = [
-        { nom: { $regex: search, $options: 'i' } },
+        { name:        { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
-        { marque: { $regex: search, $options: 'i' } },
-        { motsCles: { $in: [new RegExp(search, 'i')] } }
+        { brand:       { $regex: search, $options: 'i' } },
+        { tags:        { $in: [new RegExp(search, 'i')] } }
       ];
     }
 
-    // Pagination
     const skip = (page - 1) * limit;
 
-    // Exécuter la requête
     const produits = await Produit.find(filter)
-      .populate('boutiqueId', 'nom logo')
+      .populate('shopId', 'name logo')
       .sort(sort)
       .limit(parseInt(limit))
       .skip(skip);
 
-    // Total pour pagination
     const total = await Produit.countDocuments(filter);
 
     res.status(200).json({
@@ -197,32 +168,23 @@ exports.getAllProduits = async (req, res) => {
 };
 
 // ========================================
-// 3. OBTENIR UN PRODUIT PAR ID
+// 3. DÉTAILS D'UN PRODUIT
 // ========================================
-// @desc    Détails d'un produit
-// @route   GET /api/produits/:id
-// @access  Public
 exports.getProduitById = async (req, res) => {
   try {
     const produit = await Produit.findById(req.params.id)
-      .populate('boutiqueId', 'nom logo adresse telephone email')
-      .populate('avis.userId', 'nom prenom avatar');
+      .populate('shopId', 'name logo adresse phone email')
+      .populate('reviews.userId', 'nom prenom');
 
     if (!produit) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
+      return res.status(404).json({ success: false, message: 'Produit non trouvé' });
     }
 
     // Incrémenter les vues
-    produit.vues += 1;
+    produit.viewCount += 1;
     await produit.save();
 
-    res.status(200).json({
-      success: true,
-      produit
-    });
+    res.status(200).json({ success: true, produit });
 
   } catch (error) {
     console.error('Erreur récupération produit:', error);
@@ -235,25 +197,16 @@ exports.getProduitById = async (req, res) => {
 };
 
 // ========================================
-// 4. OBTENIR MES PRODUITS (Gérant)
+// 4. MES PRODUITS (Gérant)
 // ========================================
-// @desc    Produits de ma boutique
-// @route   GET /api/produits/me/myproduits
-// @access  Private (role: boutique)
 exports.getMyProduits = async (req, res) => {
   try {
-    // Trouver la boutique du gérant
     const boutique = await Boutique.findOne({ userId: req.user.id });
     if (!boutique) {
-      return res.status(404).json({
-        success: false,
-        message: 'Boutique non trouvée'
-      });
+      return res.status(404).json({ success: false, message: 'Boutique non trouvée' });
     }
 
-    // Récupérer tous les produits de cette boutique
-    const produits = await Produit.find({ boutiqueId: boutique._id })
-      .sort('-createdAt');
+    const produits = await Produit.find({ shopId: boutique._id }).sort('-createdAt');
 
     res.status(200).json({
       success: true,
@@ -272,54 +225,39 @@ exports.getMyProduits = async (req, res) => {
 };
 
 // ========================================
-// 5. METTRE À JOUR UN PRODUIT
+// 5. MODIFIER UN PRODUIT
 // ========================================
-// @desc    Modifier un produit
-// @route   PUT /api/produits/:id
-// @access  Private (propriétaire ou admin)
 exports.updateProduit = async (req, res) => {
   try {
     let produit = await Produit.findById(req.params.id);
-
     if (!produit) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
+      return res.status(404).json({ success: false, message: 'Produit non trouvé' });
     }
 
-    // Vérifier les permissions
-    const boutique = await Boutique.findById(produit.boutiqueId);
+    // Vérifier permissions
+    const boutique = await Boutique.findById(produit.shopId);
     if (boutique.userId.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Non autorisé à modifier ce produit'
-      });
+      return res.status(403).json({ success: false, message: 'Non autorisé' });
     }
 
-    // Gérer les nouvelles images
+    // Ajouter les nouvelles images
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map(file => file.path);
       req.body.images = [...(produit.images || []), ...newImages];
     }
 
-    // Parser les champs JSON si présents
-    if (req.body.couleurs && typeof req.body.couleurs === 'string') {
-      req.body.couleurs = JSON.parse(req.body.couleurs);
-    }
-    if (req.body.tailles && typeof req.body.tailles === 'string') {
-      req.body.tailles = JSON.parse(req.body.tailles);
-    }
-    if (req.body.caracteristiques && typeof req.body.caracteristiques === 'string') {
-      req.body.caracteristiques = JSON.parse(req.body.caracteristiques);
-    }
+    // Parser les champs JSON si envoyés comme string
+    ['colors', 'sizes', 'specs', 'tags'].forEach(field => {
+      if (req.body[field] && typeof req.body[field] === 'string') {
+        req.body[field] = JSON.parse(req.body[field]);
+      }
+    });
 
-    // Mettre à jour
     produit = await Produit.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    ).populate('boutiqueId', 'nom logo');
+    ).populate('shopId', 'name logo');
 
     res.status(200).json({
       success: true,
@@ -340,39 +278,24 @@ exports.updateProduit = async (req, res) => {
 // ========================================
 // 6. SUPPRIMER UN PRODUIT
 // ========================================
-// @desc    Supprimer un produit
-// @route   DELETE /api/produits/:id
-// @access  Private (propriétaire ou admin)
 exports.deleteProduit = async (req, res) => {
   try {
     const produit = await Produit.findById(req.params.id);
-
     if (!produit) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
+      return res.status(404).json({ success: false, message: 'Produit non trouvé' });
     }
 
-    // Vérifier les permissions
-    const boutique = await Boutique.findById(produit.boutiqueId);
+    const boutique = await Boutique.findById(produit.shopId);
     if (boutique.userId.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Non autorisé à supprimer ce produit'
-      });
+      return res.status(403).json({ success: false, message: 'Non autorisé' });
     }
 
     await produit.deleteOne();
 
-    // Décrémenter le nombre de produits dans la boutique
-    boutique.nombreProduits = Math.max(0, boutique.nombreProduits - 1);
+    boutique.productqt = Math.max(0, boutique.productqt - 1);
     await boutique.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Produit supprimé avec succès'
-    });
+    res.status(200).json({ success: true, message: 'Produit supprimé avec succès' });
 
   } catch (error) {
     console.error('Erreur suppression produit:', error);
@@ -387,51 +310,35 @@ exports.deleteProduit = async (req, res) => {
 // ========================================
 // 7. AJOUTER UN AVIS
 // ========================================
-// @desc    Ajouter un avis sur un produit
-// @route   POST /api/produits/:id/avis
-// @access  Private (acheteur qui a commandé)
-exports.addAvis = async (req, res) => {
+exports.addReview = async (req, res) => {
   try {
-    const { note, commentaire } = req.body;
+    const { rating, comment } = req.body;
 
     const produit = await Produit.findById(req.params.id);
-
     if (!produit) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
+      return res.status(404).json({ success: false, message: 'Produit non trouvé' });
     }
 
-    // Vérifier si l'utilisateur a déjà laissé un avis
-    const dejaAvis = produit.avis.find(
-      avis => avis.userId.toString() === req.user.id
+    // Vérifier si déjà un avis
+    const alreadyReviewed = produit.reviews.find(
+      r => r.userId.toString() === req.user.id
     );
-
-    if (dejaAvis) {
+    if (alreadyReviewed) {
       return res.status(400).json({
         success: false,
         message: 'Vous avez déjà laissé un avis sur ce produit'
       });
     }
 
-    // TODO: Vérifier que l'utilisateur a bien commandé ce produit
+    produit.reviews.push({ userId: req.user.id, rating, comment });
 
-    // Ajouter l'avis
-    produit.avis.push({
-      userId: req.user.id,
-      note,
-      commentaire
-    });
-
-    // Recalculer la note moyenne
-    const totalNotes = produit.avis.reduce((acc, avis) => acc + avis.note, 0);
-    produit.note = totalNotes / produit.avis.length;
-    produit.nombreAvis = produit.avis.length;
+    // Recalculer la moyenne
+    const total = produit.reviews.reduce((acc, r) => acc + r.rating, 0);
+    produit.avgRating  = total / produit.reviews.length;
+    produit.reviewCount = produit.reviews.length;
 
     await produit.save();
-
-    await produit.populate('avis.userId', 'nom prenom avatar');
+    await produit.populate('reviews.userId', 'nom prenom');
 
     res.status(201).json({
       success: true,
@@ -452,38 +359,26 @@ exports.addAvis = async (req, res) => {
 // ========================================
 // 8. METTRE À JOUR LE STOCK
 // ========================================
-// @desc    Modifier le stock d'un produit
-// @route   PATCH /api/produits/:id/stock
-// @access  Private (propriétaire ou admin)
 exports.updateStock = async (req, res) => {
   try {
-    const { quantite, operation } = req.body; // operation: 'add' ou 'subtract'
+    const { quantity, operation } = req.body;
 
     const produit = await Produit.findById(req.params.id);
-
     if (!produit) {
-      return res.status(404).json({
-        success: false,
-        message: 'Produit non trouvé'
-      });
+      return res.status(404).json({ success: false, message: 'Produit non trouvé' });
     }
 
-    // Vérifier les permissions
-    const boutique = await Boutique.findById(produit.boutiqueId);
+    const boutique = await Boutique.findById(produit.shopId);
     if (boutique.userId.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Non autorisé'
-      });
+      return res.status(403).json({ success: false, message: 'Non autorisé' });
     }
 
-    // Modifier le stock
     if (operation === 'add') {
-      produit.stock += quantite;
+      produit.stock += quantity;
     } else if (operation === 'subtract') {
-      produit.stock = Math.max(0, produit.stock - quantite);
+      produit.stock = Math.max(0, produit.stock - quantity);
     } else {
-      produit.stock = quantite; // Définir directement
+      produit.stock = quantity;
     }
 
     await produit.save();
@@ -495,73 +390,10 @@ exports.updateStock = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erreur mise à jour stock:', error);
+    console.error('Erreur stock:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la mise à jour du stock',
-      error: error.message
-    });
-  }
-};
-
-// ========================================
-// 9. STATISTIQUES PRODUITS (Admin)
-// ========================================
-// @desc    Statistiques des produits
-// @route   GET /api/produits/stats/overview
-// @access  Private (admin)
-exports.getProduitsStats = async (req, res) => {
-  try {
-    const total = await Produit.countDocuments();
-    const enStock = await Produit.countDocuments({ stock: { $gt: 0 } });
-    const enRupture = await Produit.countDocuments({ stock: 0 });
-    const enPromo = await Produit.countDocuments({ enPromotion: true });
-
-    // Produits par catégorie
-    const parCategorie = await Produit.aggregate([
-      {
-        $group: {
-          _id: '$categorie',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
-
-    // Produits les plus vus
-    const plusVus = await Produit.find()
-      .sort('-vues')
-      .limit(10)
-      .select('nom vues images')
-      .populate('boutiqueId', 'nom');
-
-    // Prix moyen
-    const prixMoyen = await Produit.aggregate([
-      {
-        $group: {
-          _id: null,
-          moyenne: { $avg: '$prix' }
-        }
-      }
-    ]);
-
-    res.status(200).json({
-      success: true,
-      stats: {
-        total,
-        enStock,
-        enRupture,
-        enPromo,
-        parCategorie,
-        prixMoyen: prixMoyen[0]?.moyenne || 0,
-        plusVus
-      }
-    });
-
-  } catch (error) {
-    console.error('Erreur stats produits:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la récupération des statistiques',
       error: error.message
     });
   }

@@ -1,9 +1,9 @@
-// frontend/src/app/features/auth/register/register.component.ts
+// src/app/features/auth/register/register.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, RegisterData } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register-component',
@@ -15,14 +15,11 @@ import { AuthService } from '../../../core/services/auth.service';
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   loading = false;
+  submitted = false;
   errorMessage = '';
   successMessage = '';
-  showPassword = false;
-
-  roles = [
-    { value: 'acheteur', label: 'Acheteur' },
-    { value: 'boutique', label: 'Gérant de Boutique' }
-  ];
+  passwordVisible = false;
+  confirmPasswordVisible = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -30,38 +27,61 @@ export class RegisterComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    // Vérifier si déjà connecté
+  ngOnInit() {
+    // Redirect si déjà connecté
     if (this.authService.isLoggedIn) {
-      this.router.navigate(['/']);
+      const role = this.authService.currentUserValue?.role;
+      if (role === 'admin') {
+        this.router.navigate(['/admin/dashboard']);
+      } else if (role === 'boutique') {
+        this.router.navigate(['/shop-owner/dashboard']);
+      } else {
+        this.router.navigate(['/']);
+      }
+      return;
     }
 
-    // Initialiser le formulaire
+    this.initForm();
+  }
+
+  initForm() {
     this.registerForm = this.formBuilder.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
       prenom: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      role: ['acheteur', [Validators.required]],
-      telephone: ['', [Validators.pattern(/^[0-9]{10}$/)]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        this.passwordValidator
+      ]],
+      confirmPassword: ['', Validators.required],
+      role: ['acheteur', Validators.required],
+      telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       adresse: [''],
-      acceptTerms: [false, [Validators.requiredTrue]]
+      acceptTerms: [false, Validators.requiredTrue]
     }, {
       validators: this.passwordMatchValidator
     });
   }
 
-  // Validateur personnalisé pour vérifier que les mots de passe correspondent
-  passwordMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
-    const password = group.get('password');
-    const confirmPassword = group.get('confirmPassword');
-    
-    if (!password || !confirmPassword) {
-      return null;
-    }
+  // Validator personnalisé pour le mot de passe
+  passwordValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
 
-    return password.value === confirmPassword.value ? null : { passwordMismatch: true };
+    const hasNumber = /[0-9]/.test(value);
+    const hasUpper = /[A-Z]/.test(value);
+    const hasLower = /[a-z]/.test(value);
+
+    const valid = hasNumber && hasUpper && hasLower;
+    return valid ? null : { weakPassword: true };
+  }
+
+  // Validator pour vérifier que les mots de passe correspondent
+  passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
   }
 
   // Getters pour faciliter l'accès aux champs du formulaire
@@ -69,19 +89,43 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.controls;
   }
 
-  // Basculer la visibilité du mot de passe
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  get passwordErrors() {
+    const control = this.f['password'];
+    if (control.errors && (control.dirty || control.touched || this.submitted)) {
+      if (control.errors['required']) return 'Le mot de passe est requis';
+      if (control.errors['minlength']) return 'Le mot de passe doit contenir au moins 6 caractères';
+      if (control.errors['weakPassword']) return 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre';
+    }
+    return null;
   }
 
-  // Soumettre le formulaire
-  onSubmit(): void {
-    // Réinitialiser les messages
+  get confirmPasswordErrors() {
+    const control = this.f['confirmPassword'];
+    if (control.errors && (control.dirty || control.touched || this.submitted)) {
+      if (control.errors['required']) return 'Veuillez confirmer votre mot de passe';
+    }
+    if (this.registerForm.errors?.['passwordMismatch'] && (control.dirty || control.touched || this.submitted)) {
+      return 'Les mots de passe ne correspondent pas';
+    }
+    return null;
+  }
+
+  togglePasswordVisibility(field: 'password' | 'confirmPassword') {
+    if (field === 'password') {
+      this.passwordVisible = !this.passwordVisible;
+    } else {
+      this.confirmPasswordVisible = !this.confirmPasswordVisible;
+    }
+  }
+
+  onSubmit() {
+    this.submitted = true;
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Vérifier la validité du formulaire
+    // Arrêter si le formulaire est invalide
     if (this.registerForm.invalid) {
+      // Marquer tous les champs comme touched pour afficher les erreurs
       Object.keys(this.registerForm.controls).forEach(key => {
         this.registerForm.get(key)?.markAsTouched();
       });
@@ -89,43 +133,35 @@ export class RegisterComponent implements OnInit {
     }
 
     this.loading = true;
+    const registerData: RegisterData = this.registerForm.value;
 
-    // Préparer les données (sans confirmPassword et acceptTerms)
-    const { confirmPassword, acceptTerms, ...registerData } = this.registerForm.value;
-
-    // Appel au service d'inscription
     this.authService.register(registerData).subscribe({
       next: (response) => {
         this.loading = false;
-        if (response.success) {
-          this.successMessage = 'Inscription réussie ! Redirection...';
-          
-          // Rediriger selon le rôle
-          setTimeout(() => {
-            const role = response.user?.role;
-            switch(role) {
-              case 'admin':
-                this.router.navigate(['/admin']);
-                break;
-              case 'boutique':
-                this.router.navigate(['/boutique/dashboard']);
-                break;
-              case 'acheteur':
-              default:
-                this.router.navigate(['/']);
-                break;
-            }
-          }, 1500);
-        }
+        this.successMessage = 'Inscription réussie ! Redirection...';
+        
+        // La redirection est gérée automatiquement par le service
+        // Mais on peut aussi ajouter un délai pour afficher le message
+        setTimeout(() => {
+          // Le service redirige déjà, mais au cas où
+          if (!this.authService.isLoggedIn) {
+            this.router.navigate(['/login']);
+          }
+        }, 1500);
       },
       error: (error) => {
         this.loading = false;
         console.error('Erreur inscription:', error);
         
-        if (error.error?.message) {
+        // Gérer les différents types d'erreurs
+        if (error.error?.errors) {
+          // Erreurs de validation du backend
+          const errors = error.error.errors;
+          this.errorMessage = errors.map((e: any) => e.msg).join(', ');
+        } else if (error.error?.message) {
           this.errorMessage = error.error.message;
-        } else if (error.error?.errors && Array.isArray(error.error.errors)) {
-          this.errorMessage = error.error.errors.map((e: any) => e.msg).join(', ');
+        } else if (error.status === 0) {
+          this.errorMessage = 'Impossible de se connecter au serveur. Vérifiez que le backend est démarré.';
         } else {
           this.errorMessage = 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
         }
@@ -133,30 +169,12 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  // Obtenir le message d'erreur pour un champ spécifique
-  getFieldError(fieldName: string): string {
-    const field = this.registerForm.get(fieldName);
-    
-    if (!field || !field.touched || !field.errors) {
-      return '';
-    }
-
-    if (field.errors['required']) {
-      return 'Ce champ est requis';
-    }
-    if (field.errors['email']) {
-      return 'Email invalide';
-    }
-    if (field.errors['minlength']) {
-      const minLength = field.errors['minlength'].requiredLength;
-      return `Minimum ${minLength} caractères requis`;
-    }
-    if (field.errors['pattern']) {
-      if (fieldName === 'telephone') {
-        return 'Numéro de téléphone invalide (10 chiffres)';
-      }
-    }
-
-    return 'Champ invalide';
+  getRoleLabel(role: string): string {
+    const labels: Record<string, string> = {
+      'admin': 'Administrateur',
+      'boutique': 'Gérant de boutique',
+      'acheteur': 'Acheteur'
+    };
+    return labels[role] || role;
   }
 }

@@ -1,36 +1,40 @@
+// backend/src/controllers/boutique.controller.js - VERSION ANGLAISE
 const Boutique = require('../models/Boutique');
-const User = require ('../models/User');
-const {validationResult} = require('express-validator')
+const User = require('../models/User');
+const { validationResult } = require('express-validator');
 
-
-//creation d'une boutique
-
-// @desc    Créer une nouvelle boutique
-// @route   POST /api/boutiques
-// @access  Private (role: boutique)
-exports.createBoutique = async (req , res ) => {
-  try{
-    //validation des donnees
+// Créer une boutique
+exports.createBoutique = async (req, res) => {
+  try {
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
-      return res.status(400).json({
-        success:false,
-        errors:errors.array()
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false,
+        errors: errors.array() 
       });
     }
-    //virification si user a un boutique 
-    const existingBoutique = await Boutique.findOne({
-      userId:req.user.id
-    });
-    if(existingBoutique){
+
+    const existingBoutique = await Boutique.findOne({ userId: req.user.id });
+    if (existingBoutique) {
       return res.status(400).json({
-        success:false,
-        message:'vous avez deja une boutisue enregistree'
+        success: false,
+        message: 'Vous avez déjà une boutique enregistrée'
       });
     }
-    //extraction de donnee
+
+    const {
+      name,           // ← Changé
+      description,
+      categorie,
+      phone,          // ← Changé
+      email,
+      adresse,
+      schedule,       // ← Changé
+      socialNetwork   // ← Changé
+    } = req.body;
+
     const boutique = await Boutique.create({
-      name,
+      name,           // ← Changé
       description,
       category,
       userId,
@@ -48,17 +52,17 @@ exports.createBoutique = async (req , res ) => {
 
     await boutique.populate ('userId', 'nom prenom email');
 
-    //reponse
     res.status(201).json({
       success: true,
-      message: 'boutique créée avec succes . en attente de validation ',
+      message: 'Boutique créée avec succès. En attente de validation.',
       boutique
     });
-  }catch(error){
-    console.error('erreue lors de la creation de boutique:', error);
+
+  } catch (error) {
+    console.error('Erreur création boutique:', error);
     res.status(500).json({
-      success:false,
-      message:'Erreur lors de la creation de la boutique',
+      success: false,
+      message: 'Erreur lors de la création de la boutique',
       error: error.message
     });
   }
@@ -76,13 +80,12 @@ exports.getAllBoutiques= async (req, res) => {
       category,
       status,
       search,
-      page=1,
-      limit= 10,
-      sort= '-createdAt'
+      page = 1,
+      limit = 10,
+      sort = '-createdAt'
     } = req.query;
 
-    //construire le filtre
-    const filter= {};
+    const filter = {};
 
     //si pas admin montrer seulement les boutiques actices 
     if (req.user?.role !=='admin'){
@@ -101,47 +104,43 @@ exports.getAllBoutiques= async (req, res) => {
 
     if (search){
       filter.$or = [
-        {name:{$regex:search, $options:'i'}},
-        {description:{$regex: search , options:'i'}}
-
+        { name: { $regex: search, $options: 'i' } },    // ← Changé
+        { description: { $regex: search, $options: 'i' } }
       ];
     }
 
-    //calculer la pagination 
-    const skip = (page -1) * limit;
-
-    //executer la requete
+    const skip = (page - 1) * limit;
 
     const boutiques = await Boutique.find(filter)
       .populate('userId','firstname lastname email')
       .sort(sort)
       .limit(parseInt(limit))
       .skip(skip);
-    //compter la pagination 
+
     const total = await Boutique.countDocuments(filter);
 
-    //reponse
     res.status(200).json({
-      success:true,
-      count:boutiques.length,
+      success: true,
+      count: boutiques.length,
       total,
-      totalPages:Math.ceil(total /limit),
+      totalPages: Math.ceil(total / limit),
       currentPage: parseInt(page),
       boutiques
     });
-  }catch (error){
-    console.error('erreur recuperation boutiqes : ', error);
+
+  } catch (error) {
+    console.error('Erreur récupération boutiques:', error);
     res.status(500).json({
-      success:false,
-      message:'erreur lores de la recuperation des coutiques',
+      success: false,
+      message: 'Erreur lors de la récupération des boutiques',
       error: error.message
     });
-    
   }
-}
+};
 
-exports.getBoutiqueById = async (req,res) =>{
-  try{
+// Obtenir une boutique par ID
+exports.getBoutiqueById = async (req, res) => {
+  try {
     const boutique = await Boutique.findById(req.params.id)
       .populate('userId','firstname lastname email phone ');
     if (!boutique){
@@ -154,30 +153,28 @@ exports.getBoutiqueById = async (req,res) =>{
     if (boutique.status !=='active'){
       if(!req.user || (req.user.role !== 'admin' && req.user.id !==boutique.userId._id.toString())){
         return res.status(403).json({
-          success:false,
-          message:'Boutique non accessible'
+          success: false,
+          message: 'Boutique non accessible'
         });
       }
     }
+
     res.status(200).json({
-      success:true,
+      success: true,
       boutique
     });
 
-  }catch(error){
-    console.error ('erreur recuperation boutique:' ,error);
+  } catch (error) {
+    console.error('Erreur récupération boutique:', error);
     res.status(500).json({
-      success:false,
-      message:'erreur lors de la recuperation boutique',
-      error:error.message
+      success: false,
+      message: 'Erreur lors de la récupération de la boutique',
+      error: error.message
     });
   }
-}
-// 4. OBTENIR MA BOUTIQUE (Gérant)
-// ========================================
-// @desc    Récupérer la boutique du gérant connecté
-// @route   GET /api/boutiques/me/myboutique
-// @access  Private (role: boutique)
+};
+
+// Obtenir ma boutique
 exports.getMyBoutique = async (req, res) => {
   try {
     const boutique = await Boutique.findOne({ userId: req.user.id })
@@ -205,15 +202,9 @@ exports.getMyBoutique = async (req, res) => {
   }
 };
 
-// ========================================
-// 5. METTRE À JOUR UNE BOUTIQUE
-// ========================================
-// @desc    Modifier une boutique
-// @route   PUT /api/boutiques/:id
-// @access  Private (propriétaire ou admin)
+// Mettre à jour une boutique
 exports.updateBoutique = async (req, res) => {
   try {
-    // 1. Trouver la boutique
     let boutique = await Boutique.findById(req.params.id);
 
     if (!boutique) {
@@ -223,8 +214,6 @@ exports.updateBoutique = async (req, res) => {
       });
     }
 
-    // 2. Vérifier les permissions
-    // Seul le propriétaire ou un admin peut modifier
     if (boutique.userId.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
@@ -237,13 +226,12 @@ exports.updateBoutique = async (req, res) => {
       delete req.body.status;  // Seul l'admin peut changer le statut
     }
 
-    // 4. Mettre à jour
     boutique = await Boutique.findByIdAndUpdate(
       req.params.id,
       req.body,
       {
-        new: true,              // Retourner le document modifié
-        runValidators: true     // Appliquer les validations
+        new: true,
+        runValidators: true
       }
     ).populate('userId', 'firstname lastname email');
 
@@ -280,7 +268,6 @@ exports.deleteBoutique = async (req, res) => {
       });
     }
 
-    // Vérifier les permissions
     if (boutique.userId.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
@@ -288,7 +275,6 @@ exports.deleteBoutique = async (req, res) => {
       });
     }
 
-    // Supprimer
     await boutique.deleteOne();
 
     res.status(200).json({
@@ -306,12 +292,7 @@ exports.deleteBoutique = async (req, res) => {
   }
 };
 
-// ========================================
-// 7. VALIDER UNE BOUTIQUE (Admin uniquement)
-// ========================================
-// @desc    Valider ou rejeter une boutique
-// @route   PUT /api/boutiques/:id/validate
-// @access  Private (admin uniquement)
+// Valider une boutique
 exports.validateBoutique = async (req, res) => {
   try {
     const { statut, motifRejet } = req.body;
@@ -344,8 +325,6 @@ exports.validateBoutique = async (req, res) => {
 
     await boutique.save();
 
-    // TODO: Envoyer une notification au gérant (email, etc.)
-
     res.status(200).json({
       success: true,
       message: `Boutique ${statut === 'active' ? 'validée' : 'suspendue'} avec succès`,
@@ -362,15 +341,9 @@ exports.validateBoutique = async (req, res) => {
   }
 };
 
-// ========================================
-// 8. OBTENIR LES STATISTIQUES (Admin)
-// ========================================
-// @desc    Statistiques des boutiques
-// @route   GET /api/boutiques/stats/overview
-// @access  Private (admin uniquement)
+// Statistiques
 exports.getBoutiquesStats = async (req, res) => {
   try {
-    // Compter par statut
     const stats = await Boutique.aggregate([
       {
         $group: {
@@ -380,7 +353,6 @@ exports.getBoutiquesStats = async (req, res) => {
       }
     ]);
 
-    // Compter par catégorie
     const categoriesStats = await Boutique.aggregate([
       {
         $match: { statut: 'active' }
@@ -393,7 +365,6 @@ exports.getBoutiquesStats = async (req, res) => {
       }
     ]);
 
-    // Total
     const total = await Boutique.countDocuments();
 
     res.status(200).json({

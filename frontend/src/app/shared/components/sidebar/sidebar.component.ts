@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal} from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../models/user.model';
@@ -14,6 +14,6 @@ import { AsyncPipe } from '@angular/common';
 })
 export class Sidebar {
   authService = inject(AuthService); // Injection du service d'authentification
-  currentUser = toSignal(this.authService.currentUser);// Conversion de l'observable currentUser en signal
-  name = computed(() => this.currentUser()?.firstname || 'invité');// Signal calculé pour obtenir le nom de l'utilisateur
+  currentUser = toSignal(this.authService.currentUser$); // Conversion de l'observable currentUser en signal
+  name = computed(() => this.currentUser()?.prenom || 'invité'); // Signal calculé pour obtenir le nom de l'utilisateur
 }
