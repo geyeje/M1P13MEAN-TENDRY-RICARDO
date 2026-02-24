@@ -19,7 +19,7 @@ export const roleGuard = (route: ActivatedRouteSnapshot) => {
     case 'admin':
       router.navigate(['/admin/dashboard']);
       break;
-    case 'boutique':
+    case 'store':
       router.navigate(['/shop-owner/dashboard']);
       break;
     case 'acheteur':

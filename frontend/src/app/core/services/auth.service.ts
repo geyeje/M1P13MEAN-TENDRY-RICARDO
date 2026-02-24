@@ -10,7 +10,7 @@ export interface User {
   nom: string;
   prenom: string;
   email: string;
-  role: 'admin' | 'boutique' | 'acheteur';
+  role: 'admin' | 'store' | 'acheteur';
   telephone?: string;
   adresse?: string;
 }
@@ -21,7 +21,7 @@ export interface RegisterData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'admin' | 'boutique' | 'acheteur';
+  role: 'admin' | 'store' | 'acheteur';
   telephone: string;
   adresse?: string;
   acceptTerms: boolean;
@@ -59,7 +59,7 @@ export class AuthService {
 
     let backendRole = 'customer';
     if (role === 'admin') backendRole = 'admin';
-    else if (role === 'boutique') backendRole = 'store';
+    else if (role === 'store') backendRole = 'store';
 
     const registerPayload = {
       ...rest,

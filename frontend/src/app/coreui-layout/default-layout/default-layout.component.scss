@@ -1,3 +1,7 @@
+@use '@coreui/coreui/scss/coreui' as * with (
+  $enable-deprecation-messages: false
+);
+
 :host::ng-deep {
   .ng-scrollbar {
     --scrollbar-padding: 1px;

@@ -3,28 +3,13 @@
     <div class="flex-1 space-y-1">
         <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest px-4 mb-4">Navigation</p>
          <!--Lien de navigations, à changer plus tard par une liste de route dédié pour chaque role. afficher par une @for-->
-        <a
-            routerLink="/home"
-            routerLinkActive="bg-matcha-spring/10 border-r-2 border-matcha-spring text-matcha-spring"
-            class="flex gap-3 items-center px-4 py-3 text-gray-400 rounded-lg hover:bg-white/5 hover:text-white transition-all group"
-            >
-            <span class="font-medium text-sm">Accueil</span>
-        </a>
-        <a 
-            routerLink="/store" 
-            routerLinkActive="bg-matcha-spring/10 border-r-2 border-matcha-spring text-matcha-spring" 
-            class="flex gap-3 items-center px-4 py-3 text-gray-400 rounded-lg hover:bg-white/5 hover:text-white transition-all group"
-        >
-            <span class="font-medium text-sm">Tableau de bord</span>
-        </a>
-
-        <a 
-            routerLink="/admin" 
-            routerLinkActive="bg-matcha-spring/10 border-r-2 border-matcha-spring text-matcha-spring" 
-            class="flex gap-3 items-center px-4 py-3 text-gray-400 rounded-lg hover:bg-white/5 hover:text-white transition-all group"
-        >
-            <span class="font-medium text-sm">Admin</span>
-        </a>
+        @for(item of navItems(); track item.route){
+            <a [routerLink]="item.route"
+            routerLinkActive="bg-white/10 text-white border-r-4 border-matcha-spring"
+            class="flex gap-3 items-center px-4 py-3 text-gray-400 rounded-lg hover:bg-white/5 hover:text-matcha-spring transition-all group">
+                <span class="font-medium text-sm">{{item.name}}</span>
+            </a>
+        }
     </div>
     <!--Section de profil utilisateur, à revoir si on le garde ici ou si on le déplace dans le navbar-->
     <div class="mt-auto p-4 bg-white/5 rounded-2xl border border-white/5">

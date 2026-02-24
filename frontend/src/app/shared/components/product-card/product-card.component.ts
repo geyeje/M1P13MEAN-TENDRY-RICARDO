@@ -1,7 +1,7 @@
-import { Component, input} from '@angular/core';
+import { Component, computed, input, Pipe} from '@angular/core';
 import { Product } from '../../models/product.model';
 import { MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe} from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({

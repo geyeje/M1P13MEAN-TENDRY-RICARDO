@@ -64,6 +64,17 @@ export const routes: Routes = [
     loadChildren: () => import('./features/admin/admin.route').then((m) => m.adminRoutes),
   },
   {
+    path: 'shop-owner',
+    canActivate: [AuthGuard],
+    data: { roles: ['store']},
+    loadComponent: () =>
+      import('./features/shop-owner/layout/shop-layout/shop-layout').then(
+        (m) => m.ShopLayout,
+      ),
+      loadChildren: () => import('./features/shop-owner/shop-owner.route').then((m) => m.shopOwnerRoutes)
+
+  },
+  {
     path: '**',
     redirectTo: 'home',
   },
