@@ -1,1 +1,120 @@
-<p>dashboard works!</p>
+<!-- src/app/features/shop-owner/dashboard/dashboard.component.html -->
+<div class="dashboard-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement du dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Bienvenue dans votre espace gérant</p>
+      </div>
+
+      <div class="header-actions" *ngIf="shop">
+        <div class="shop-status">
+          <span [ngClass]="getStatusClass(shop.statut)">
+            {{ getStatusLabel(shop.statut) }}
+          </span>
+        </div>
+        <a routerLink="/shop-owner/my-shop" class="btn-primary">
+          🏪 Voir ma boutique
+        </a>
+      </div>
+    </div>
+
+    <!-- Alert if shop not validated -->
+    <div *ngIf="shop?.statut === 'en_attente'" class="alert alert-warning">
+      <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
+      <div>
+        <strong>Votre boutique est en attente de validation</strong>
+        <p>Un administrateur doit approuver votre boutique avant qu'elle ne soit visible publiquement.</p>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <app-stat-widget
+        title="Total Produits"
+        [value]="stats.products"
+        icon="📦"
+        color="blue"
+        [subtitle]="'Produits en catalogue'">
+      </app-stat-widget>
+
+      <app-stat-widget
+        title="Commandes"
+        [value]="stats.orders"
+        icon="🛒"
+        color="green"
+        [subtitle]="'Commandes reçues'">
+      </app-stat-widget>
+
+      <app-stat-widget
+        title="Chiffre d'Affaires"
+        [value]="formatCurrency(stats.revenue)"
+        icon="💰"
+        color="orange"
+        [subtitle]="'Total des ventes'">
+      </app-stat-widget>
+
+      <app-stat-widget
+        title="Note Moyenne"
+        [value]="stats.avgRating.toFixed(1)"
+        icon="⭐"
+        color="purple"
+        [subtitle]="'Sur 5 étoiles'">
+      </app-stat-widget>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2 class="section-title">Actions Rapides</h2>
+      <div class="actions-grid">
+        <a routerLink="/shop-owner/products/new" class="action-card">
+          <div class="action-icon">➕</div>
+          <div class="action-content">
+            <h3>Nouveau Produit</h3>
+            <p>Ajouter un produit au catalogue</p>
+          </div>
+        </a>
+
+        <a routerLink="/shop-owner/products" class="action-card">
+          <div class="action-icon">📦</div>
+          <div class="action-content">
+            <h3>Gérer les Produits</h3>
+            <p>Voir et modifier vos produits</p>
+          </div>
+        </a>
+
+        <a routerLink="/shop-owner/orders" class="action-card">
+          <div class="action-icon">📋</div>
+          <div class="action-content">
+            <h3>Voir les Commandes</h3>
+            <p>Gérer vos commandes</p>
+          </div>
+        </a>
+
+        <a routerLink="/shop-owner/edit-shop" class="action-card">
+          <div class="action-icon">⚙️</div>
+          <div class="action-content">
+            <h3>Modifier la Boutique</h3>
+            <p>Paramètres de votre boutique</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="recent-section">
+      <app-recent-orders-widget [orders]="recentOrders" [limit]="5">
+      </app-recent-orders-widget>
+    </div>
+  </div>
+</div>
