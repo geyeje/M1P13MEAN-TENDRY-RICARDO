@@ -7,8 +7,11 @@ export const roleGuard = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const requiredRole = route.data['role'];
+  let requiredRole = route.data['role'];
   const user = authService.currentUserValue;
+
+  // normalize legacy 'store' to 'boutique'
+  if (requiredRole === 'store') requiredRole = 'boutique';
 
   if (user && user.role === requiredRole) {
     return true;
@@ -19,7 +22,7 @@ export const roleGuard = (route: ActivatedRouteSnapshot) => {
     case 'admin':
       router.navigate(['/admin/dashboard']);
       break;
-    case 'store':
+    case 'boutique':
       router.navigate(['/shop-owner/dashboard']);
       break;
     case 'acheteur':

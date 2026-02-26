@@ -33,7 +33,7 @@ export class RegisterComponent implements OnInit {
       const role = this.authService.currentUserValue?.role;
       if (role === 'admin') {
         this.router.navigate(['/admin/dashboard']);
-      } else if (role === 'store') {
+      } else if (role === 'boutique') {
         this.router.navigate(['/shop-owner/dashboard']);
       } else {
         this.router.navigate(['/']);

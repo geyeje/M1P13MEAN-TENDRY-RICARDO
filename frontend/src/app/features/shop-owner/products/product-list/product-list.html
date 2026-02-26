@@ -1,1 +1,10 @@
-<p>product-list works!</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+  @for (item of products(); track item._id) {
+    <app-product-card [product]="item" />
+  } @empty {
+    <div class="col-span-full py-20 text-center">
+      <mat-icon class="text-6xl text-gray-600 mb-4">inventory_2</mat-icon>
+      <p class="text-gray-400">Aucun trésor trouvé dans cette catégorie...</p>
+    </div>
+  }
+</div>

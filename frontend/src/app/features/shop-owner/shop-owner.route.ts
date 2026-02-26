@@ -6,7 +6,7 @@ export const shopOwnerRoutes: Routes = [
     {
         path: '',
         canActivate: [AuthGuard, roleGuard],
-        data: { role: 'store' },
+        data: { role: 'boutique' },
         children: [
             {
                 path: '',
@@ -16,12 +16,12 @@ export const shopOwnerRoutes: Routes = [
             {
                 path: 'dashboard',
                 loadComponent: 
-                () => import('./dashboard/dashboard').then(m => m.Dashboard)
+                () => import('./dashboard/dashboard').then(m => m.DashboardComponent)
             },
             {
                 path: 'products',
                 loadComponent: 
-                () => import('./products/product-list/product-list').then(m => m.ProductList)
+                () => import('./products/inventory/inventory').then(m => m.Inventory)
             },
             {
                 path: 'edit-shop',

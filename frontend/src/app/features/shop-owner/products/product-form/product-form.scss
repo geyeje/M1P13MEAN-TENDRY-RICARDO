@@ -1,3 +1,30 @@
 :host {
   display: block;
+  /* form container background takes matcha dark variable */
+  background: var(--color-matcha-dark);
+  padding: 2rem;
+  border-radius: 1.5rem;
+}
+
+/* input elements style consistent with login form requirements */
+:host input,
+:host select,
+:host textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: white;
+  transition: border-color 0.2s ease;
+}
+
+:host input:focus,
+:host select:focus,
+:host textarea:focus {
+  outline: none;
+  border-color: var(--color-matcha-spring);
+}
+
+/* ensure placeholder text is slightly lighter */
+:host input::placeholder,
+:host textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }

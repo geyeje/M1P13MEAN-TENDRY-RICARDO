@@ -29,6 +29,22 @@ export interface Product {
   updatedAt: string;
 }
 
+/*export interface ProductFormArgs{
+  name: string;
+  description: string;
+  price: number;
+  promoPrice?: number;
+  onSale: boolean;
+  category: string;
+  stock: number;
+  brand?: string;
+  colors: string[];
+  sizes: string[];
+  specs?: any;
+  tags: string[];
+  images: string[];
+}*/
+
 export interface ProductResponse {
   success: boolean;
   produit?: Product;

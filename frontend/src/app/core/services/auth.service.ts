@@ -10,7 +10,8 @@ export interface User {
   nom: string;
   prenom: string;
   email: string;
-  role: 'admin' | 'store' | 'acheteur';
+  // use "boutique" to mirror backend concept of store owner
+  role: 'admin' | 'boutique' | 'acheteur';
   telephone?: string;
   adresse?: string;
 }
@@ -21,7 +22,7 @@ export interface RegisterData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'admin' | 'store' | 'acheteur';
+  role: 'admin' | 'boutique' | 'acheteur';
   telephone: string;
   adresse?: string;
   acceptTerms: boolean;
@@ -59,7 +60,7 @@ export class AuthService {
 
     let backendRole = 'customer';
     if (role === 'admin') backendRole = 'admin';
-    else if (role === 'store') backendRole = 'store';
+    else if (role === 'boutique') backendRole = 'store'; // backend still uses "store" for shop owners
 
     const registerPayload = {
       ...rest,
@@ -118,12 +119,17 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     const user = this.currentUserValue;
+    // support backward compatibility if some code still passes 'store'
+    if (role === 'store') role = 'boutique';
     return user?.role === role;
   }
 
   hasAnyRole(roles: string[]): boolean {
     const user = this.currentUserValue;
-    return user ? roles.includes(user.role) : false;
+    if (!user) return false;
+    // map 'store' to 'boutique' as necessary
+    const normalizedRoles = roles.map(r => (r === 'store' ? 'boutique' : r));
+    return normalizedRoles.includes(user.role);
   }
 
   private handleAuth(response: any): void {
@@ -132,7 +138,7 @@ export class AuthService {
     // Convertir les rôles du backend vers le frontend
     let frontendRole = 'acheteur';
     if (backendUser.role === 'admin') frontendRole = 'admin';
-    else if (backendUser.role === 'store' || backendUser.role === 'boutique')
+    else if (backendUser.role === 'store' /* ancienne valeur côté serveur */)
       frontendRole = 'boutique';
 
     const frontendUser: User = {

@@ -81,19 +81,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/shop-owner/my-shop/my-shop')
           .then(m => m.MyShopComponent)
       },
-      
+      // route list imported from shop-owner.route.ts for deeper pages
+      {
+        path: '',
+        loadChildren: () => import('./features/shop-owner/shop-owner.route').then((m) => m.shopOwnerRoutes)
+      }
     ]
-  },
-  {
-    path: 'shop-owner',
-    canActivate: [AuthGuard],
-    data: { roles: ['store']},
-    loadComponent: () =>
-      import('./features/shop-owner/layout/shop-layout/shop-layout').then(
-        (m) => m.ShopLayout,
-      ),
-      loadChildren: () => import('./features/shop-owner/shop-owner.route').then((m) => m.shopOwnerRoutes)
-
   },
   {
     path: '**',

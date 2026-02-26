@@ -20,7 +20,7 @@
             @if (currentUser()?.role === 'acheteur') {
                 <div class="w-10 h-10 bg-matcha-spring/20 rounded-full flex items-center justify-center font-bold text-matcha-spring">C</div>
             }
-            @if (currentUser()?.role === 'boutique') {
+            @if (currentUser()?.role === 'boutique' || currentUser()?.role === 'boutique') {
                 <div class="w-10 h-10 bg-matcha-spring/20 rounded-full flex items-center justify-center font-bold text-matcha-spring">B</div>
             }@else {
                 <div class="w-10 h-10 bg-matcha-spring/20 rounded-full flex items-center justify-center font-bold text-matcha-spring">U</div>
