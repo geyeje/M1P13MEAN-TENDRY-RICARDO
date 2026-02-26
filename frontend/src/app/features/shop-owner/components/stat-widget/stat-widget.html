@@ -1,1 +1,16 @@
-<p>stat-widget works!</p>
+<!-- src/app/features/shop-owner/components/stat-widget/stat-widget.component.html -->
+<div class="stat-widget" [ngClass]="colorClass">
+  <div class="stat-header">
+    <div class="stat-icon">{{ icon }}</div>
+    <div class="stat-trend" *ngIf="trend" [ngClass]="trendClass">
+      <span class="trend-icon">{{ trendIcon }}</span>
+      <span class="trend-value">{{ trend > 0 ? '+' : '' }}{{ trend }}%</span>
+    </div>
+  </div>
+
+  <div class="stat-body">
+    <h3 class="stat-title">{{ title }}</h3>
+    <div class="stat-value">{{ value }}</div>
+    <p class="stat-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+  </div>
+</div>

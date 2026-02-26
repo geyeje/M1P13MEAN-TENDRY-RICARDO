@@ -1,1 +1,43 @@
-<p>recent-orders-widget works!</p>
+<!-- src/app/features/shop-owner/components/recent-orders-widget/recent-orders-widget.component.html -->
+<div class="orders-widget">
+  <div class="widget-header">
+    <h3 class="widget-title">📦 Dernières Commandes</h3>
+    <a routerLink="/shop-owner/orders" class="view-all">Voir tout →</a>
+  </div>
+
+  <div class="widget-body">
+    <div *ngIf="limitedOrders.length === 0" class="empty-state">
+      <p>Aucune commande pour le moment</p>
+    </div>
+
+    <div *ngFor="let order of limitedOrders" class="order-item">
+      <div class="order-info">
+        <div class="order-number">{{ order.orderNumber }}</div>
+        <div class="order-date">{{ formatDate(order.createdAt) }}</div>
+      </div>
+
+      <div class="order-buyer" *ngIf="order.buyerId">
+        <div class="buyer-avatar">
+          {{ order.buyerId.nom?.charAt(0) || 'U' }}
+        </div>
+        <div class="buyer-name">
+          {{ order.buyerId.nom || 'Client' }} {{ order.buyerId.prenom || '' }}
+        </div>
+      </div>
+
+      <div class="order-amount">
+        {{ formatCurrency(order.totalAmount) }}
+      </div>
+
+      <div class="order-status">
+        <span class="badge" [ngClass]="'badge-' + orderService.getStatusColor(order.status)">
+          {{ orderService.getStatusLabel(order.status) }}
+        </span>
+      </div>
+
+      <a [routerLink]="['/shop-owner/orders', order._id]" class="order-action" title="Voir détails">
+        →
+      </a>
+    </div>
+  </div>
+</div>

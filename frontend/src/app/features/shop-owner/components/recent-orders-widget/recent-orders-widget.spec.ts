@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RecentOrdersWidget } from './recent-orders-widget';
+import { RecentOrdersWidgetComponent } from './recent-orders-widget';
 
 describe('RecentOrdersWidget', () => {
-  let component: RecentOrdersWidget;
-  let fixture: ComponentFixture<RecentOrdersWidget>;
+  let component: RecentOrdersWidgetComponent;
+  let fixture: ComponentFixture<RecentOrdersWidgetComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RecentOrdersWidget]
+      imports: [RecentOrdersWidgetComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RecentOrdersWidget);
+    fixture = TestBed.createComponent(RecentOrdersWidgetComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

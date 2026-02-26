@@ -63,6 +63,27 @@ export const routes: Routes = [
       ),
     loadChildren: () => import('./features/admin/admin.route').then((m) => m.adminRoutes),
   },
+  
+  {
+    path: 'shop-owner',
+    canActivate: [AuthGuard],
+    data: { roles: ['admin', 'boutique'] },
+    loadComponent: () => import('./features/shop-owner/layout/shop-layout/shop-layout')
+      .then(m => m.ShopLayout),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/shop-owner/dashboard/dashboard')
+          .then(m => m.DashboardComponent)
+      },
+      {
+        path: 'my-shop',
+        loadComponent: () => import('./features/shop-owner/my-shop/my-shop')
+          .then(m => m.MyShopComponent)
+      },
+      
+    ]
+  },
   {
     path: 'shop-owner',
     canActivate: [AuthGuard],

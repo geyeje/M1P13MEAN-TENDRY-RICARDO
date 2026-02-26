@@ -1,1 +1,187 @@
-<p>my-shop works!</p>
+<!-- src/app/features/shop-owner/my-shop/my-shop.component.html -->
+<div class="my-shop-container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-state">
+    <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <h2>{{ error }}</h2>
+    <button class="btn-primary" (click)="loadShop()">Réessayer</button>
+  </div>
+
+  <!-- Shop Details -->
+  <div *ngIf="shop && !loading">
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Ma Boutique</h1>
+        <p class="page-subtitle">Informations et statistiques de votre boutique</p>
+      </div>
+      <a routerLink="/shop-owner/edit-shop" class="btn-primary">
+        ✏️ Modifier
+      </a>
+    </div>
+
+    <!-- Status Alert -->
+    <div *ngIf="shop.statut === 'en_attente'" class="alert alert-warning">
+      <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
+      <div>
+        <strong>Boutique en attente de validation</strong>
+        <p>Votre boutique doit être validée par un administrateur pour être visible publiquement.</p>
+      </div>
+    </div>
+
+    <div *ngIf="shop.statut === 'suspendue'" class="alert alert-danger">
+      <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <div>
+        <strong>Boutique suspendue</strong>
+        <p>Votre boutique a été suspendue. Contactez un administrateur pour plus d'informations.</p>
+      </div>
+    </div>
+
+    <!-- Banner & Logo -->
+    <div class="shop-visual">
+      <div class="shop-banner" [style.background-image]="shop.banner ? 'url(' + shop.banner + ')' : ''">
+        <div *ngIf="!shop.banner" class="banner-placeholder">
+          <span>🏪</span>
+        </div>
+      </div>
+      <div class="shop-logo-container">
+        <div class="shop-logo" *ngIf="shop.logo">
+          <img [src]="shop.logo" [alt]="shop.name">
+        </div>
+        <div class="shop-logo logo-placeholder" *ngIf="!shop.logo">
+          {{ shop.name.charAt(0) }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="shop-info">
+      <div class="info-header">
+        <h2>{{ shop.name }}</h2>
+        <span class="status-badge" [ngClass]="getStatusClass(shop.statut)">
+          {{ getStatusLabel(shop.statut) }}
+        </span>
+      </div>
+      <p class="shop-description">{{ shop.description }}</p>
+      <div class="shop-meta">
+        <span class="meta-item">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          {{ shop.category }}
+        </span>
+        <span class="meta-item">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          Créée le {{ formatDate(shop.createdAt) }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ shop.productqt }}</div>
+          <div class="stat-label">Produits</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🛒</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ shop.commandeqt }}</div>
+          <div class="stat-label">Commandes</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatCurrency(shop.CA) }}</div>
+          <div class="stat-label">Chiffre d'Affaires</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ shop.avgRating.toFixed(1) }}/5</div>
+          <div class="stat-label">Note Moyenne</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="info-section">
+      <h3 class="section-title">Coordonnées</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">📧 Email</div>
+          <div class="info-value">{{ shop.email }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">📞 Téléphone</div>
+          <div class="info-value">{{ shop.phone }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">📍 Adresse</div>
+          <div class="info-value">{{ shop.adresse }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule -->
+    <div class="info-section" *ngIf="shop.schedule">
+      <h3 class="section-title">Horaires d'ouverture</h3>
+      <div class="schedule-grid">
+        <div *ngFor="let day of ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']" class="schedule-item">
+          <div class="day-label">{{ day | titlecase }}</div>
+          <div class="day-hours" *ngIf="shop.schedule[day]">
+            {{ shop.schedule[day].ouverture }} - {{ shop.schedule[day].fermeture }}
+          </div>
+          <div class="day-hours closed" *ngIf="!shop.schedule[day]">
+            Fermé
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Networks -->
+    <div class="info-section" *ngIf="shop.socialNetwork">
+      <h3 class="section-title">Réseaux sociaux</h3>
+      <div class="social-links">
+        <a *ngIf="shop.socialNetwork.facebook" [href]="shop.socialNetwork.facebook" target="_blank" class="social-link">
+          <span class="social-icon">📘</span>
+          Facebook
+        </a>
+        <a *ngIf="shop.socialNetwork.instagram" [href]="shop.socialNetwork.instagram" target="_blank" class="social-link">
+          <span class="social-icon">📷</span>
+          Instagram
+        </a>
+        <a *ngIf="shop.socialNetwork.twitter" [href]="shop.socialNetwork.twitter" target="_blank" class="social-link">
+          <span class="social-icon">🐦</span>
+          Twitter
+        </a>
+        <a *ngIf="shop.socialNetwork.website" [href]="shop.socialNetwork.website" target="_blank" class="social-link">
+          <span class="social-icon">🌐</span>
+          Site Web
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
