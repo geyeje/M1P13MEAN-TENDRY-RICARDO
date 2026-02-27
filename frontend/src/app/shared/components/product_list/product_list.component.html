@@ -1,14 +1,14 @@
 <!--productListComponent pour afficher une liste de produit-->
-<div class="p-8 min-h-screen bg-matcha-dark rounded-xl shadow-md border-white/10 border-2">
+<div class="p-8 m-y-4 min-h-screen bg-matcha-dark rounded-xl shadow-md border-white/10 border-2">
     <h2 class="text-3xl font-bold mb-8 text-white border-l-4 border-matcha-spring pl-4">Liste des produits Matcha & co</h2>
     <div class="flex gap-4 mb-8 pb-2 overflow-x-auto ">
     <!--Les filtres par catégory, à rajouter une liste complète plus tard-->
-        @for(cat of ['Tous', 'Botanique', 'Énergie Verte', 'Fruits & Légumes']; track cat){
+        @for(cat of categories(); track cat){
             <button 
                 (click)="setFilter(cat)"
                 [class.bg-matcha-spring]="selectedCategory() === cat"
                 [class.text-white]="selectedCategory() === cat"
-                class="rounded-full border border-matcha-spring px-4 py-2 text-matcha-spring hover:bg-matcha-spring/10 transition-all"
+                class="!rounded-full !border !border-matcha-spring !px-4 !py-2 text-matcha-spring hover:bg-matcha-spring/10 !transition-all"
             >
                 {{cat}}
             </button>
@@ -22,9 +22,9 @@
     }@else {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!--Affichage des produits filtrés-->
-            @for(product of filteredProducts(); track product.id){
+            @for(product of filteredProducts(); track product._id){
                 <!--Carte de chaque produit-->
-                <app-product-card [product]="product"></app-product-card>
+                <app-product-card [product]="product" (addToShoppingCart)="handleAddToCart($event)"></app-product-card>
             }
         </div>
     }

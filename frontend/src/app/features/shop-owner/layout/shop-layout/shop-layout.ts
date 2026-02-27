@@ -6,7 +6,7 @@ import { Topbar } from '../topbar/topbar';
 
 @Component({
   selector: 'app-shop-layout',
-  imports: [CommonModule, RouterModule, Sidebar, Topbar],
+  imports: [CommonModule, RouterModule, Sidebar],
   templateUrl: './shop-layout.html',
   styleUrl: './shop-layout.scss',
 })

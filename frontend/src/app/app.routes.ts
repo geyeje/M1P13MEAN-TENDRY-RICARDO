@@ -20,6 +20,11 @@ export const routes: Routes = [
         .then((m) => m.HomeComponent),
       },
       {
+        path: 'shopping-cart',
+        canActivate: [AuthGuard],
+        loadComponent: () => import('./features/shopping-cart/shopping-cart.component').then(m=>m.ShoppingCartComponent),
+      },
+      {
         path: 'store',
         canActivate: [AuthGuard],
         data: { roles: ['boutique'] },

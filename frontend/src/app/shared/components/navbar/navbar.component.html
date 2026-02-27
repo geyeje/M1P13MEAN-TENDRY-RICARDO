@@ -26,6 +26,11 @@
             </a>
         }
         
-        <button class="text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart"><mat-icon>shopping_cart</mat-icon></button>
+        <button class="relative text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart">
+  <mat-icon>shopping_cart</mat-icon>
+  @if(cartCount() > 0) {
+    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{{ cartCount() }}</span>
+  }
+</button>
     </div>
 </nav>

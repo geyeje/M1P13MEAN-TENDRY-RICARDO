@@ -1,6 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ProductService } from '../../../core/services/product.service';
-import { Product } from '../../models/product.model';
+import { ProductService } from '../../../core/services/product.service';import { ShoppingCartService, CartItem } from '../../../core/services/shopping-cart.service';import { Product } from '../../../core/services/product.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CurrencyPipe } from '@angular/common';
@@ -16,6 +15,8 @@ import { ProductCardComponent } from '../product-card/product-card.component';
 })
 export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
+  private cartService = inject(ShoppingCartService);
+  categories = signal<string[]>([]);
 
   products = signal<Product[]>([]); // tous les produits dans le mock du service pour test d'affichage, à remplacer par un appel réel une fois le backend prêt
   isLoading = signal<boolean>(true); // signal pour gérer l'état de chargement
@@ -34,7 +35,12 @@ export class ProductListComponent implements OnInit {
 
   constructor() {}
 
+  handleAddToCart(product: Product) {
+    this.cartService.add(product);
+  }
+
   ngOnInit(): void {
+    this.categories.set(this.productService.getCategories());
     this.productService.getAllProducts().subscribe({
       next: (response: any) => {
         this.products.set(response.produits || []);
