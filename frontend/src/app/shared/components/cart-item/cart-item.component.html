@@ -1,1 +1,19 @@
-<p>cart-item works!</p>
+<div class="flex items-center gap-4 p-4 !bg-matcha-dark rounded-lg border border-white/10 shadow-xl">
+  <img [src]="item().product.images[0]" alt="{{item().product.name}}" class="w-20 h-20 object-cover rounded" />
+  <div class="flex-1">
+    <h3 class="text-white font-bold">{{ item().product.name }}</h3>
+    <p class="text-gray-400 text-sm">{{ item().product.category }}</p>
+    <div class="flex items-center gap-2 mt-1">
+      <button (click)="changeQty(-1)" class="text-matcha-spring hover:text-red-500">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <span class="text-gray-300 text-sm">{{ item().quantity }}</span>
+      <button (click)="changeQty(1)" class="text-matcha-spring hover:text-green-500">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+  <button (click)="onRemove()" class="flex justify-center items-center p-1 !rounded-xl text-matcha-spring bg-white/5 !border !border-white/10 hover:text-red-500">
+    <mat-icon>remove_shopping_cart</mat-icon>
+  </button>
+</div>

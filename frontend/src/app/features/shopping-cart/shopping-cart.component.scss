@@ -1,3 +1,13 @@
 :host {
   display: block;
 }
+
+.validate-btn {
+  background-color: var(--color-matcha-spring);
+  opacity: 0.8;
+  color: white;
+  transition: opacity 300ms ease, background-color 300ms ease;
+}
+.validate-btn:hover {
+  opacity: 1;
+}

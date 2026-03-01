@@ -20,6 +20,11 @@ export const routes: Routes = [
         .then((m) => m.HomeComponent),
       },
       {
+        path: 'shopping-cart',
+        canActivate: [AuthGuard],
+        loadComponent: () => import('./features/shopping-cart/shopping-cart.component').then(m=>m.ShoppingCartComponent),
+      },
+      {
         path: 'store',
         canActivate: [AuthGuard],
         data: { roles: ['boutique'] },
@@ -81,7 +86,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/shop-owner/my-shop/my-shop')
           .then(m => m.MyShopComponent)
       },
-      
+      // route list imported from shop-owner.route.ts for deeper pages
+      {
+        path: '',
+        loadChildren: () => import('./features/shop-owner/shop-owner.route').then((m) => m.shopOwnerRoutes)
+      }
     ]
   },
   {

@@ -74,7 +74,13 @@ exports.protect = async (req, res, next) => {
 // Middleware pour vérifier le rôle de l'utilisateur
 exports.authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    // backend still stores "store" for shop owners; normalize to "boutique"
+    if (req.user.role === 'store') {
+      req.user.role = 'boutique';    // mutate so subsequent logic/handlers see correct value
+    }
+    const userRole = req.user.role;
+
+    if (!roles.includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: `Le rôle ${req.user.role} n'est pas autorisé à accéder à cette ressource`,

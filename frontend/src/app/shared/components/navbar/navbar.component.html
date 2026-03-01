@@ -5,21 +5,32 @@
         <div class="w-8 h-8 flex bg-matcha-spring items-center rounded-lg justify-center font-black text-matcha-dark">{{Logo}}</div>
         <span class="text-white font-bold text-xl tracking-tight">{{title}}<span class="text-matcha-spring"> Center</span></span>
     </div>
+    <div class="relative flex items-center w-lg max-w-lg">
+        <input type="text" placeholder="Recherche" class="relative !rounded-full w-full border border-white/10 bg-white/15 text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-matcha-spring focus:border-transparent transition-colors w-64">
+        <button mat-mini-fab class="absolute right-10 !w-9 !h-9 text-white !rounded-full border border-white/10 !bg-matcha-spring/20 hover:ring-2 !hover:ring-matcha-spring hover:!bg-matcha-spring/80 z-50 !transition-colors">
+            <mat-icon>search</mat-icon>
+        </button>
+    </div>
     <!-- Bouton de login/logout et le panier d'achat, à voir pour le register-->
     <div class="flex items-center gap-4">
         @if (authService.currentUser$ | async; as user) {
             <button class="text-gray-400 hover:bg-matcha-spring transition-colors rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell-icon lucide-bell"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>
             </button>
-            <button mat-flat-button class="!bg-matcha-spring/80 !text-black" (click)="authService.logout()">
+            <button mat-flat-button class="!bg-matcha-spring/80 !text-black !rounded-3xl" (click)="authService.logout()">
                 Deconnexion <mat-icon>logout</mat-icon> 
             </button>
         }@else{
-            <a mat-flat-button routerLink="/login">
+            <a mat-flat-button class="!bg-matcha-spring/80 !text-black !rounded-3xl" routerLink="/login">
                 connexion <mat-icon>login</mat-icon> 
             </a>
         }
         
-        <button class="text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart"><mat-icon>shopping_cart</mat-icon></button>
+        <button class="relative text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart">
+  <mat-icon>shopping_cart</mat-icon>
+  @if(cartCount() > 0) {
+    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{{ cartCount() }}</span>
+  }
+</button>
     </div>
 </nav>
