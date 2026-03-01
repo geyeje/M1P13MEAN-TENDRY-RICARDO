@@ -183,13 +183,13 @@ export class ProductForm implements OnInit, OnDestroy {
         return;
       }
 
-      // specs textarea may contain a JSON string, convert back to object or string
-      if (key === 'specs' && typeof value === 'string') {
-        try {
-          value = JSON.parse(value);
-        } catch {
-          // leave as string if invalid JSON
+      if (key === 'specs') {
+        if (typeof value === 'object') {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
         }
+        return;
       }
 
       // handle arrays (colors, sizes, tags)
@@ -220,7 +220,11 @@ export class ProductForm implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('erreur mise à jour:', err);
-          this.errorMessage.set(err.error?.message || 'Erreur lors de la mise à jour');
+          if (err.error?.errors && Array.isArray(err.error.errors)) {
+            this.errorMessage.set(err.error.errors.map((e: any) => e.msg).join(', '));
+          } else {
+            this.errorMessage.set(err.error?.message || 'Erreur lors de la mise à jour');
+          }
         },
       });
     } else {
@@ -234,7 +238,11 @@ export class ProductForm implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('erreur création:', err);
-          this.errorMessage.set(err.error?.message || 'Erreur lors de la création');
+          if (err.error?.errors && Array.isArray(err.error.errors)) {
+            this.errorMessage.set(err.error.errors.map((e: any) => e.msg).join(', '));
+          } else {
+            this.errorMessage.set(err.error?.message || 'Erreur lors de la création');
+          }
         },
       });
     }
