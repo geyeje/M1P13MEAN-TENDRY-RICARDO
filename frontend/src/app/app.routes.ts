@@ -32,6 +32,13 @@ export const routes: Routes = [
         .then((m) => m.routes),
       },
       {
+        path: 'customer',
+        canActivate: [AuthGuard],
+        data: { roles: ['acheteur']},
+        loadChildren: () => import('./features/customer/customer.routes')
+        .then((m)=> m.routes)
+      },
+      {
         path: 'unauthorized',
         loadComponent: () =>
           import('./shared/components/unauthorized/unauthorized.component').then(

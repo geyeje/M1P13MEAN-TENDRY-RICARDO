@@ -1,8 +1,7 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ElementRef, ViewChild } from '@angular/core';
 import { ProductService } from '../../../core/services/product.service';import { ShoppingCartService, CartItem } from '../../../core/services/shopping-cart.service';import { Product } from '../../../core/services/product.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe } from '@angular/common';
 import { MatButtonModule } from "@angular/material/button";
 import { ProductCardComponent } from '../product-card/product-card.component';
 
@@ -34,6 +33,17 @@ export class ProductListComponent implements OnInit {
   });
 
   constructor() {}
+
+  @ViewChild('filters', { read: ElementRef, static: false }) filtersRef?: ElementRef<HTMLDivElement>;
+
+  scrollFilters(delta: number) {
+    try {
+      this.filtersRef?.nativeElement.scrollBy({ left: delta, behavior: 'smooth' });
+    } catch (e) {
+      // fallback
+      if (this.filtersRef) this.filtersRef.nativeElement.scrollLeft += delta;
+    }
+  }
 
   handleAddToCart(product: Product) {
     this.cartService.add(product);

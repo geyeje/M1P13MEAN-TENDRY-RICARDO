@@ -1,0 +1,84 @@
+<div class="p-4">
+  @if (!currentUser()) {
+    <div class="flex flex-col items-center justify-around text-white bg-white/5 border border-white/10">
+      <h3 class="text-md font-black text-white">
+        Vous n'êtes connecté à aucun compte
+      </h3>
+      <div class="flex items-center gap-2">
+        <a routerLink="/auth/login" class="m-2 px-4 py-2 bg-matcha-spring/80 hover:bg-matcha-spring text-white text-sm no-underline rounded-3xl border border-white/10 hover:border-white ring-1 ring-white/15">
+          Connexion
+        </a>
+        <a routerLink="/auth/register" class="m-2 px-4 py-2 bg-matcha-spring/80 hover:bg-matcha-spring text-white text-sm no-underline rounded-3xl border border-white/10 hover:border-white ring-1 ring-white/15">
+          Inscription
+        </a>
+      </div>
+    </div>
+  } @else {
+    <div class="space-y-8">
+      <!-- statistiques -->
+      <section class="flex flex-wrap gap-6">
+        <div class="bg-matcha-dark !border !border-white/10 p-4 rounded shadow flex-1">
+          <h4 class="text-lg font-bold text-white">Commandes passées</h4>
+          <p class="text-3xl text-matcha-spring font-black">{{ ordersCount() }}</p>
+        </div>
+        <div class="bg-matcha-dark !border !border-white/10 p-4 rounded shadow flex-1">
+          <h4 class="text-lg font-bold text-white">Produits notés</h4>
+          <p class="text-3xl text-matcha-spring font-black">{{ productsRated() }}</p>
+        </div>
+      </section>
+
+      <!-- profil -->
+      <section class="bg-matcha-dark p-6 rounded shadow profile-panel">
+        <h3 class="text-2xl font-bold text-white mb-4">Mon profil</h3>
+        <div class="profile-grid">
+          <div class="profile-item">
+            <div class="label">Nom</div>
+            <div class="value">{{ currentUser()?.nom }} {{ currentUser()?.prenom }}</div>
+          </div>
+          <div class="profile-item">
+            <div class="label">Email</div>
+            <div class="value">{{ currentUser()?.email }}</div>
+          </div>
+          <div class="profile-item" *ngIf="currentUser()?.telephone">
+            <div class="label">Téléphone</div>
+            <div class="value">{{ currentUser()?.telephone }}</div>
+          </div>
+          <div class="profile-item" *ngIf="currentUser()?.adresse">
+            <div class="label">Adresse</div>
+            <div class="value">{{ currentUser()?.adresse }}</div>
+          </div>
+          @if (currentUser()?.role) {
+            <div class="profile-item">
+              <div class="label">Rôle</div>
+              <div class="value">{{ currentUser()?.role }}</div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- historique commandes -->
+      <section>
+        <h3 class="text-2xl font-bold text-white mb-4">Historique des commandes</h3>
+        @if (orders().length === 0) {
+          <p class="text-gray-400">Aucune commande récente.</p>
+        } @else {
+          <ul class="space-y-2">
+            @for(order of orders(); track order._id) {
+              <li class="bg-white/5 p-4 rounded flex justify-between items-center">
+                <span class="font-medium text-white">#{{ order.orderNumber }}</span>
+                <span class="text-matcha-spring">{{ order.totalAmount | currency:'EUR' }}</span>
+              </li>
+            }
+          </ul>
+          @if (ordersCount() > orders().length) {
+            <div class="mt-4">
+              <a routerLink="/orders" class="px-4 py-2 bg-matcha-spring text-white rounded">
+                Voir l'historique complet
+              </a>
+            </div>
+          }
+        }
+      </section>
+    </div>
+  }
+</div>
