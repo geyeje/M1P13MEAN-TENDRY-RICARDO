@@ -118,7 +118,9 @@ export class ProductForm implements OnInit {
             this.saved.emit();
           },
           error: (err) =>{
-            console.log("erreur :", err.message);
+            console.error("erreur :", err);
+            const msg = err?.error?.message || err?.message || 'Erreur lors de la mise à jour';
+            this.errorMessage.set(msg);
           }
         });
       }else{
@@ -130,8 +132,9 @@ export class ProductForm implements OnInit {
             this.saved.emit();
           },
           error: (err) => {
-            console.log("erreur lors de la mise en place du formulaire: ", err);
-            this.errorMessage.set(err);
+            console.error('erreur création produit:', err);
+            const msg = err?.error?.message || err?.message || 'Erreur lors de la création du produit';
+            this.errorMessage.set(msg);
           }
         });
       }

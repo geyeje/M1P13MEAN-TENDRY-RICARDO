@@ -27,20 +27,20 @@ exports.getDashboardStats = async (req, res) => {
 
     // 2. Shop Statistics
     const totalShops = await Boutique.countDocuments();
-    const activeShops = await Boutique.countDocuments({ statut: 'active' });
-    const pendingShops = await Boutique.countDocuments({ statut: 'en_attente' });
+    const activeShops = await Boutique.countDocuments({ status: 'active' });
+    const pendingShops = await Boutique.countDocuments({ status: 'en_attente' });
 
     const shopsByStatus = await Boutique.aggregate([
-      { $group: { _id: '$statut', count: { $sum: 1 } } },
+      { $group: { _id: '$status', count: { $sum: 1 } } },
     ]);
 
     const recentShops = await Boutique.find()
-      .populate('owner', 'nom prenom email')
+      .populate('userId', 'nom prenom email')
       .sort({ createdAt: -1 })
       .limit(5);
 
     // TODO: shops topByRevenue (complex aggregation, skipping for MVP or mocking for now)
-    const topShops = await Boutique.find({ statut: 'active' }).limit(5);
+    const topShops = await Boutique.find({ status: 'active' }).limit(5);
 
     // 3. Product Statistics
     const totalProducts = await Produit.countDocuments();
@@ -49,7 +49,7 @@ exports.getDashboardStats = async (req, res) => {
     const onSale = await Produit.countDocuments({ promotion: { $exists: true } }); // Assuming promotion logic
 
     const productsByCategory = await Produit.aggregate([
-      { $group: { _id: '$categorie', count: { $sum: 1 } } },
+      { $group: { _id: '$category', count: { $sum: 1 } } },
     ]);
 
     // 4. Order & Revenue Statistics
