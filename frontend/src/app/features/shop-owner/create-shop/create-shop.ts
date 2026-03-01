@@ -1,24 +1,24 @@
+// src/app/features/shop-owner/create-shop/create-shop.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { ShopService, Shop } from '../../../core/services/shop';
+import { Router } from '@angular/router';
+import { ShopService } from '../../../core/services/shop'; 
 
 @Component({
-  selector: 'app-edit-shop',
+  selector: 'app-create-shop',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  templateUrl: './edit-shop.html',
-  styleUrl: './edit-shop.scss',
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './create-shop.html',
+  styleUrls: ['./create-shop.scss']
 })
-export class EditShop implements OnInit {
-  editForm!: FormGroup;
-  shop: Shop | null = null;
-  loading = true;
+export class CreateShop implements OnInit {
+  createForm!: FormGroup;
   submitting = false;
   error = '';
   successMessage = '';
 
+  // Files
   logoFile: File | null = null;
   bannerFile: File | null = null;
   logoPreview: string | null = null;
@@ -35,22 +35,36 @@ export class EditShop implements OnInit {
     'Jouets & Enfants',
     'Santé & Bien-être',
     'Bijouterie & Accessoires',
-    'Autres',
+    'Autres'
   ];
 
   constructor(
     private formBuilder: FormBuilder,
     private shopService: ShopService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.initForm();
-    this.loadShop();
+    this.checkExistingShop();
+  }
+
+  checkExistingShop() {
+    this.shopService.getMyShop().subscribe({
+      next: (response) => {
+        if (response.success && response.boutique) {
+          // Boutique existe déjà, rediriger
+          this.router.navigate(['/shop-owner/my-shop']);
+        }
+      },
+      error: () => {
+        // Pas de boutique, c'est normal
+      }
+    });
   }
 
   initForm() {
-    this.editForm = this.formBuilder.group({
+    this.createForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       category: ['', Validators.required],
@@ -60,70 +74,78 @@ export class EditShop implements OnInit {
       facebook: [''],
       instagram: [''],
       twitter: [''],
-      website: [''],
-    });
-  }
-
-  loadShop() {
-    this.loading = true;
-    this.shopService.getMyShop().subscribe({
-      next: (response) => {
-        if (response.success && response.boutique) {
-          this.shop = response.boutique;
-          this.editForm.patchValue({
-            name: response.boutique.name,
-            description: response.boutique.description,
-            category: response.boutique.category,
-            phone: response.boutique.phone,
-            email: response.boutique.email,
-            adresse: response.boutique.adresse,
-            facebook: response.boutique.socialNetwork?.facebook || '',
-            instagram: response.boutique.socialNetwork?.instagram || '',
-            twitter: response.boutique.socialNetwork?.twitter || '',
-            website: response.boutique.socialNetwork?.website || '',
-          });
-          this.logoPreview = response.boutique.logo || null;
-          this.bannerPreview = response.boutique.banner || null;
-        }
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = 'Erreur lors du chargement';
-        this.loading = false;
-      },
+      website: ['']
     });
   }
 
   onLogoChange(event: any) {
     const file = event.target.files[0];
     if (file) {
+      // Validation
+      if (!file.type.match(/image\/(jpeg|jpg|png|webp|gif)/)) {
+        this.error = 'Format image invalide (JPG, PNG, WEBP, GIF)';
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        this.error = 'Image trop grande (max 5MB)';
+        return;
+      }
+
       this.logoFile = file;
       const reader = new FileReader();
-      reader.onload = (e: any) => (this.logoPreview = e.target.result);
+      reader.onload = (e: any) => this.logoPreview = e.target.result;
       reader.readAsDataURL(file);
+      this.error = '';
     }
   }
 
   onBannerChange(event: any) {
     const file = event.target.files[0];
     if (file) {
+      // Validation
+      if (!file.type.match(/image\/(jpeg|jpg|png|webp|gif)/)) {
+        this.error = 'Format image invalide (JPG, PNG, WEBP, GIF)';
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        this.error = 'Image trop grande (max 5MB)';
+        return;
+      }
+
       this.bannerFile = file;
       const reader = new FileReader();
-      reader.onload = (e: any) => (this.bannerPreview = e.target.result);
+      reader.onload = (e: any) => this.bannerPreview = e.target.result;
       reader.readAsDataURL(file);
+      this.error = '';
+    }
+  }
+
+  removeImage(type: 'logo' | 'banner') {
+    if (type === 'logo') {
+      this.logoFile = null;
+      this.logoPreview = null;
+    } else {
+      this.bannerFile = null;
+      this.bannerPreview = null;
     }
   }
 
   onSubmit() {
-    if (this.editForm.invalid || !this.shop) return;
+    if (this.createForm.invalid) {
+      Object.keys(this.createForm.controls).forEach(key => {
+        this.createForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
 
     this.submitting = true;
     this.error = '';
     this.successMessage = '';
 
     const formData = new FormData();
-    const formValue = this.editForm.value;
+    const formValue = this.createForm.value;
 
+    // Données de base
     formData.append('name', formValue.name);
     formData.append('description', formValue.description);
     formData.append('category', formValue.category);
@@ -131,6 +153,7 @@ export class EditShop implements OnInit {
     formData.append('email', formValue.email);
     formData.append('adresse', formValue.adresse);
 
+    // Réseaux sociaux
     const socialNetwork: any = {};
     if (formValue.facebook) socialNetwork.facebook = formValue.facebook;
     if (formValue.instagram) socialNetwork.instagram = formValue.instagram;
@@ -138,23 +161,29 @@ export class EditShop implements OnInit {
     if (formValue.website) socialNetwork.website = formValue.website;
     formData.append('socialNetwork', JSON.stringify(socialNetwork));
 
+    // Fichiers
     if (this.logoFile) formData.append('logo', this.logoFile);
     if (this.bannerFile) formData.append('banner', this.bannerFile);
 
-    this.shopService.updateShop(this.shop._id, formData).subscribe({
-      next: () => {
+    this.shopService.createShop(formData).subscribe({
+      next: (response) => {
         this.submitting = false;
-        this.successMessage = 'Boutique mise à jour avec succès !';
-        setTimeout(() => this.router.navigate(['/shop-owner/my-shop']), 1500);
+        this.successMessage = 'Boutique créée avec succès ! Redirection...';
+        setTimeout(() => {
+          this.router.navigate(['/shop-owner/my-shop']);
+        }, 1500);
       },
       error: (error) => {
+        console.error('Erreur création:', error);
         this.submitting = false;
-        this.error = error.error?.message || 'Erreur lors de la mise à jour';
-      },
+        if (error.error?.errors) {
+          this.error = error.error.errors.map((e: any) => e.msg).join(', ');
+        } else {
+          this.error = error.error?.message || 'Erreur lors de la création de la boutique';
+        }
+      }
     });
   }
 
-  get f() {
-    return this.editForm.controls;
-  }
+  get f() { return this.createForm.controls; }
 }

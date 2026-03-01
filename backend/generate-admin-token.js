@@ -5,8 +5,9 @@ const User = require('./src/models/User'); // Adjust path based on execution dir
 
 async function generateTestAdminToken() {
   try {
+    const mongoURL = process.env.MONGO_URI;
     // The docker backend uses the local MongoDB container, so we must insert the user there.
-    await mongoose.connect('mongodb://admin:admin123@localhost:27017/mall_db?authSource=admin');
+    await mongoose.connect(mongoURL);
 
     // Find an existing admin user
     let admin = await User.findOne({ role: 'admin' });
@@ -25,7 +26,7 @@ async function generateTestAdminToken() {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: admin._id }, 'votre-secret-jwt-super-securise-changez-moi', {
+    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRE || '7d',
     });
 

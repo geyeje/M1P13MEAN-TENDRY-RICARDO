@@ -29,7 +29,45 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// No Shop State
+.no-shop-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 2rem;
+
+  .no-shop-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    max-width: 500px;
+
+    .no-shop-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #6b7280;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+  }
 }
 
 // Header
@@ -114,6 +152,20 @@
   &.alert-warning {
     background: #fffbeb;
     border: 1px solid #fcd34d;
+  }
+
+  &.alert-info {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    .alert-icon {
+      color: #3b82f6;
+    }
+    strong {
+      color: #1e40af;
+    }
+    p {
+      color: #1e3a8a;
+    }
   }
 
   .alert-icon {

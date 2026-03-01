@@ -71,3 +71,5 @@ ehthumbs.db
 Desktop.ini
 # Documentation files (à adapter selon vos besoins)
 *.md
+*.txt
+build_output.txt

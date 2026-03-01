@@ -1,0 +1,257 @@
+<!-- src/app/features/shop-owner/create-shop/create-shop.component.html -->
+<div class="create-shop-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">🏪 Créer ma Boutique</h1>
+      <p class="page-subtitle">Remplissez les informations pour créer votre boutique</p>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span>{{ error }}</span>
+  </div>
+
+  <form [formGroup]="createForm" (ngSubmit)="onSubmit()" class="create-form">
+    
+    <!-- Images Section -->
+    <div class="section">
+      <h2 class="section-title">📷 Images de la Boutique</h2>
+      
+      <div class="images-grid">
+        <!-- Logo -->
+        <div class="upload-box">
+          <label class="upload-label">Logo</label>
+          <div class="upload-area" [class.has-image]="logoPreview">
+            <input 
+              type="file" 
+              (change)="onLogoChange($event)" 
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              #logoInput
+              class="file-input">
+            
+            <div *ngIf="!logoPreview" class="upload-placeholder" (click)="logoInput.click()">
+              <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span>Cliquer pour uploader le logo</span>
+              <span class="upload-hint">JPG, PNG, WEBP, GIF (max 5MB)</span>
+            </div>
+
+            <div *ngIf="logoPreview" class="image-preview">
+              <img [src]="logoPreview" alt="Logo preview">
+              <button type="button" class="btn-remove" (click)="removeImage('logo')">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner -->
+        <div class="upload-box">
+          <label class="upload-label">Bannière</label>
+          <div class="upload-area banner-area" [class.has-image]="bannerPreview">
+            <input 
+              type="file" 
+              (change)="onBannerChange($event)" 
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              #bannerInput
+              class="file-input">
+            
+            <div *ngIf="!bannerPreview" class="upload-placeholder" (click)="bannerInput.click()">
+              <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span>Cliquer pour uploader la bannière</span>
+              <span class="upload-hint">JPG, PNG, WEBP, GIF (max 5MB)</span>
+            </div>
+
+            <div *ngIf="bannerPreview" class="image-preview banner-preview">
+              <img [src]="bannerPreview" alt="Banner preview">
+              <button type="button" class="btn-remove" (click)="removeImage('banner')">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Information -->
+    <div class="section">
+      <h2 class="section-title">📝 Informations de Base</h2>
+      
+      <div class="form-group">
+        <label class="form-label">
+          Nom de la boutique <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          formControlName="name"
+          class="form-control"
+          [class.is-invalid]="f['name'].invalid && (f['name'].dirty || f['name'].touched)"
+          placeholder="Ex: Nike Store Paris">
+        <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="invalid-feedback">
+          <span *ngIf="f['name'].errors?.['required']">Le nom est requis</span>
+          <span *ngIf="f['name'].errors?.['minlength']">Le nom doit contenir au moins 3 caractères</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Description <span class="required">*</span>
+        </label>
+        <textarea
+          formControlName="description"
+          class="form-control"
+          [class.is-invalid]="f['description'].invalid && (f['description'].dirty || f['description'].touched)"
+          rows="4"
+          placeholder="Décrivez votre boutique, vos produits, votre histoire..."></textarea>
+        <div *ngIf="f['description'].invalid && (f['description'].dirty || f['description'].touched)" class="invalid-feedback">
+          <span *ngIf="f['description'].errors?.['required']">La description est requise</span>
+          <span *ngIf="f['description'].errors?.['minlength']">La description doit contenir au moins 10 caractères</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">
+            Catégorie <span class="required">*</span>
+          </label>
+          <select
+            formControlName="category"
+            class="form-control"
+            [class.is-invalid]="f['category'].invalid && (f['category'].dirty || f['category'].touched)">
+            <option value="">-- Choisir une catégorie --</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+          <div *ngIf="f['category'].invalid && (f['category'].dirty || f['category'].touched)" class="invalid-feedback">
+            La catégorie est requise
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="section">
+      <h2 class="section-title">📞 Coordonnées</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">
+            Téléphone <span class="required">*</span>
+          </label>
+          <input
+            type="tel"
+            formControlName="phone"
+            class="form-control"
+            [class.is-invalid]="f['phone'].invalid && (f['phone'].dirty || f['phone'].touched)"
+            placeholder="0612345678">
+          <div *ngIf="f['phone'].invalid && (f['phone'].dirty || f['phone'].touched)" class="invalid-feedback">
+            <span *ngIf="f['phone'].errors?.['required']">Le téléphone est requis</span>
+            <span *ngIf="f['phone'].errors?.['pattern']">Format invalide (10 chiffres)</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Email <span class="required">*</span>
+          </label>
+          <input
+            type="email"
+            formControlName="email"
+            class="form-control"
+            [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)"
+            placeholder="contact@boutique.com">
+          <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="invalid-feedback">
+            <span *ngIf="f['email'].errors?.['required']">L'email est requis</span>
+            <span *ngIf="f['email'].errors?.['email']">Format email invalide</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Adresse <span class="required">*</span>
+        </label>
+        <textarea
+          formControlName="adresse"
+          class="form-control"
+          [class.is-invalid]="f['adresse'].invalid && (f['adresse'].dirty || f['adresse'].touched)"
+          rows="2"
+          placeholder="123 Rue de la Paix, 75001 Paris"></textarea>
+        <div *ngIf="f['adresse'].invalid && (f['adresse'].dirty || f['adresse'].touched)" class="invalid-feedback">
+          L'adresse est requise
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Networks -->
+    <div class="section">
+      <h2 class="section-title">🌐 Réseaux Sociaux (Optionnel)</h2>
+      
+      <div class="form-group">
+        <label class="form-label">📘 Facebook</label>
+        <input
+          type="url"
+          formControlName="facebook"
+          class="form-control"
+          placeholder="https://facebook.com/votreboutique">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">📷 Instagram</label>
+        <input
+          type="url"
+          formControlName="instagram"
+          class="form-control"
+          placeholder="https://instagram.com/votreboutique">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">🐦 Twitter</label>
+        <input
+          type="url"
+          formControlName="twitter"
+          class="form-control"
+          placeholder="https://twitter.com/votreboutique">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">🌐 Site Web</label>
+        <input
+          type="url"
+          formControlName="website"
+          class="form-control"
+          placeholder="https://votreboutique.com">
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button 
+        type="submit" 
+        class="btn-submit" 
+        [disabled]="createForm.invalid || submitting">
+        <span *ngIf="!submitting">✅ Créer ma boutique</span>
+        <span *ngIf="submitting" class="loading">
+          <svg class="spinner" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+          </svg>
+          Création en cours...
+        </span>
+      </button>
+    </div>
+  </form>
+</div>

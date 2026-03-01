@@ -18,6 +18,7 @@ export interface OrderItem {
 export interface Order {
   _id: string;
   orderNumber: string;
+  orderCount?: string; // Pour compatibilité ancienne base
   buyerId: any;
   items: OrderItem[];
   totalAmount: number;

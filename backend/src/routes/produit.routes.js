@@ -42,6 +42,6 @@ router.delete('/:id',          protect, authorize('boutique', 'admin'), ctrl.del
 router.patch('/:id/stock',     protect, authorize('boutique', 'admin'), ctrl.updateStock);
 
 // Acheteur
-router.post('/:id/reviews', protect, authorize('acheteur'), reviewValidation, ctrl.addReview);
+router.post('/:id/reviews', protect, authorize('customer'), reviewValidation, ctrl.addReview);
 
 module.exports = router;
