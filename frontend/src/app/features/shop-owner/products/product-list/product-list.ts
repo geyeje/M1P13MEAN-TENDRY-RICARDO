@@ -1,5 +1,5 @@
 // src/app/features/shop-owner/products/product-list/product-list.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,11 +10,12 @@ import { ProductService, Product } from '../../../../core/services/product.servi
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './product-list.html',
-  styleUrls: ['./product-list.scss']
+  styleUrls: ['./product-list.scss'],
 })
 export class ProductListComponent implements OnInit {
+  @Input() produits: Product[] = [];
   products: Product[] = [];
-  loading = true;
+  loading = false;
   searchTerm = '';
   selectedCategory = 'all';
 
@@ -29,13 +30,17 @@ export class ProductListComponent implements OnInit {
     'Jouets & Enfants',
     'Santé & Bien-être',
     'Bijouterie & Accessoires',
-    'Autres'
+    'Autres',
   ];
 
   constructor(private productService: ProductService) {}
 
   ngOnInit() {
-    this.loadProducts();
+    if (this.produits && this.produits.length > 0) {
+      this.products = this.produits;
+    } else {
+      this.loadProducts();
+    }
   }
 
   loadProducts() {
@@ -50,12 +55,13 @@ export class ProductListComponent implements OnInit {
       error: (error) => {
         console.error('Erreur:', error);
         this.loading = false;
-      }
+      },
     });
   }
 
   get filteredProducts() {
-    return this.products.filter(p => {
+    const listToFilter = this.produits.length > 0 ? this.produits : this.products;
+    return listToFilter.filter((p) => {
       const matchSearch = p.name.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchCategory = this.selectedCategory === 'all' || p.category === this.selectedCategory;
       return matchSearch && matchCategory;
@@ -70,7 +76,7 @@ export class ProductListComponent implements OnInit {
         },
         error: (error) => {
           alert('Erreur lors de la suppression');
-        }
+        },
       });
     }
   }
@@ -78,20 +84,22 @@ export class ProductListComponent implements OnInit {
   updateStock(productId: string, operation: 'add' | 'subtract') {
     const quantity = prompt(`Quantité à ${operation === 'add' ? 'ajouter' : 'retirer'} ?`);
     if (quantity && !isNaN(Number(quantity))) {
-      this.productService.updateStock(productId, { 
-        quantity: Number(quantity), 
-        operation 
-      }).subscribe({
-        next: () => this.loadProducts(),
-        error: () => alert('Erreur mise à jour stock')
-      });
+      this.productService
+        .updateStock(productId, {
+          quantity: Number(quantity),
+          operation,
+        })
+        .subscribe({
+          next: () => this.loadProducts(),
+          error: () => alert('Erreur mise à jour stock'),
+        });
     }
   }
 
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'EUR',
     }).format(amount);
   }
 }

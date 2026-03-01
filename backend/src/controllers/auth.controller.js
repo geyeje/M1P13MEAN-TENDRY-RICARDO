@@ -43,7 +43,7 @@ exports.register = async (req, res) => {
       lastname,
       email: email.toLowerCase(),
       password, // Le password sera hashé automatiquement par le middleware Mongoose
-      role: role || 'acheteur', // Par défaut : acheteur
+      role: role || 'customer', // Par défaut : acheteur
       phone,
       address
     });
@@ -209,10 +209,10 @@ exports.updateProfile = async (req, res) => {
     }
 
     // Mise à jour des champs
-    if (nom) user.firstname = firstname;
-    if (prenom) user.lastname = lastname;
-    if (telephone) user.phone = phone;
-    if (adresse) user.address = address;
+    if (firstname) user.firstname = firstname;
+    if (lastname) user.lastname = lastname;
+    if (phone) user.phone = phone;
+    if (address) user.address = address;
 
     await user.save();
 

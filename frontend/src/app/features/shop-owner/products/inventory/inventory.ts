@@ -1,12 +1,12 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Product, ProductService } from '../../../../core/services/product.service';
 import { ProductForm } from '../product-form/product-form';
-import { ProductList } from '../product-list/product-list';
+import {  ProductListComponent } from '../product-list/product-list';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-inventory',
-  imports: [ProductForm, ProductList],
+  imports: [ProductForm,  ProductListComponent],
   templateUrl: './inventory.html',
   styleUrl: './inventory.scss',
 })
