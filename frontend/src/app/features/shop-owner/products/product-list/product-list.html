@@ -1,1 +1,108 @@
-<p>product-list works!</p>
+<!-- src/app/features/shop-owner/products/product-list/product-list.component.html -->
+<div class="products-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>📦 Mes Produits</h1>
+      <p>Gérez votre catalogue de produits</p>
+    </div>
+    <a routerLink="/shop-owner/products/new" class="btn-primary">
+      ➕ Nouveau Produit
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <input
+      type="search"
+      [(ngModel)]="searchTerm"
+      placeholder="🔍 Rechercher un produit..."
+      class="search-input">
+    
+    <select [(ngModel)]="selectedCategory" class="filter-select">
+      <option value="all">Toutes catégories</option>
+      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && products.length === 0" class="empty-state">
+    <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+    </svg>
+    <h2>Aucun produit</h2>
+    <p>Commencez par ajouter votre premier produit</p>
+    <a routerLink="/shop-owner/products/new" class="btn-primary">Créer un produit</a>
+  </div>
+
+  <!-- Products Grid -->
+  <div *ngIf="!loading && filteredProducts.length > 0" class="products-grid">
+    <div *ngFor="let product of filteredProducts" class="product-card">
+      <!-- Image -->
+      <div class="product-image">
+        <img 
+          [src]="product.images[0] || 'assets/no-image.png'" 
+          [alt]="product.name"
+          (error)="$any($event.target).src='assets/no-image.png'">
+        <span *ngIf="product.onSale" class="badge-promo">PROMO</span>
+        <span *ngIf="product.stock === 0" class="badge-stock">RUPTURE</span>
+      </div>
+
+      <!-- Content -->
+      <div class="product-content">
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-category">{{ product.category }}</p>
+        
+        <div class="product-price">
+          <span class="price-current">{{ formatCurrency(product.price) }}</span>
+          <span *ngIf="product.onSale && product.promoPrice" class="price-promo">
+            {{ formatCurrency(product.promoPrice) }}
+          </span>
+        </div>
+
+        <div class="product-stock">
+          <span [class.low-stock]="product.stock < 10 && product.stock > 0"
+                [class.no-stock]="product.stock === 0">
+            📦 Stock: {{ product.stock }}
+          </span>
+        </div>
+
+        <div class="product-stats">
+          <span>⭐ {{ product.avgRating.toFixed(1) }}</span>
+          <span>🛒 {{ product.salesCount }} ventes</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="product-actions">
+        <a [routerLink]="['/shop-owner/products/edit', product._id]" 
+           class="btn-action btn-edit" title="Modifier">
+          ✏️
+        </a>
+        <button (click)="updateStock(product._id, 'add')" 
+                class="btn-action btn-stock" title="Ajouter stock">
+          ➕
+        </button>
+        <button (click)="updateStock(product._id, 'subtract')" 
+                class="btn-action btn-stock" title="Retirer stock">
+          ➖
+        </button>
+        <button (click)="deleteProduct(product._id, product.name)" 
+                class="btn-action btn-delete" title="Supprimer">
+          🗑️
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!loading && products.length > 0 && filteredProducts.length === 0" class="no-results">
+    <p>Aucun produit ne correspond à votre recherche</p>
+  </div>
+</div>
