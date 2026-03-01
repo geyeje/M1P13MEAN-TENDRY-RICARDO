@@ -28,8 +28,12 @@ exports.createBoutique = async (req, res) => {
     const parsedSocial =
       typeof socialNetwork === 'string' ? JSON.parse(socialNetwork) : socialNetwork;
 
-    const logo = req.files && req.files['logo'] ? req.files['logo'][0].path : null;
-    const banner = req.files && req.files['banner'] ? req.files['banner'][0].path : null;
+    const logo =
+      req.files && req.files['logo'] ? `/uploads/boutiques/${req.files['logo'][0].filename}` : null;
+    const banner =
+      req.files && req.files['banner']
+        ? `/uploads/boutiques/${req.files['banner'][0].filename}`
+        : null;
 
     const boutique = await Boutique.create({
       name,
@@ -200,6 +204,11 @@ exports.getMyBoutique = async (req, res) => {
 // Mettre à jour une boutique
 exports.updateBoutique = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
     let boutique = await Boutique.findById(req.params.id);
 
     if (!boutique) {
@@ -223,8 +232,9 @@ exports.updateBoutique = async (req, res) => {
 
     // Gérer les fichiers
     if (req.files) {
-      if (req.files['logo']) req.body.logo = req.files['logo'][0].path;
-      if (req.files['banner']) req.body.banner = req.files['banner'][0].path;
+      if (req.files['logo']) req.body.logo = `/uploads/boutiques/${req.files['logo'][0].filename}`;
+      if (req.files['banner'])
+        req.body.banner = `/uploads/boutiques/${req.files['banner'][0].filename}`;
     }
 
     // Mapping des champs frontend vers backend
@@ -233,6 +243,12 @@ exports.updateBoutique = async (req, res) => {
     if (req.body.socialNetwork && typeof req.body.socialNetwork === 'string') {
       try {
         req.body.socialNetwork = JSON.parse(req.body.socialNetwork);
+      } catch (e) {}
+    }
+
+    if (req.body.schedule && typeof req.body.schedule === 'string') {
+      try {
+        req.body.schedule = JSON.parse(req.body.schedule);
       } catch (e) {}
     }
 
@@ -301,11 +317,20 @@ exports.validateBoutique = async (req, res) => {
   try {
     const { statut, motifRejet } = req.body;
 
-    // Validation du statut
-    if (!['active', 'suspended', 'pending'].includes(statut)) {
+    // Map possible values to the model's enum
+    const statusMap = {
+      active: 'active',
+      suspended: 'suspendue',
+      suspendue: 'suspendue',
+      pending: 'en_attente',
+      en_attente: 'en_attente',
+    };
+    const mappedStatus = statusMap[statut];
+
+    if (!mappedStatus) {
       return res.status(400).json({
         success: false,
-        message: 'Statut invalide',
+        message: 'Statut invalide. Valeurs acceptées : active, suspended, pending',
       });
     }
 
@@ -322,10 +347,10 @@ exports.validateBoutique = async (req, res) => {
     }
 
     // Mettre à jour le statut
-    boutique.status = statut;
+    boutique.status = mappedStatus;
 
-    // Si rejet, enregistrer le motif (optionnel: ajouter ce champ au modèle)
-    if (statut === 'suspended' && motifRejet) {
+    // Si suspension, enregistrer le motif (optionnel)
+    if (mappedStatus === 'suspendue' && motifRejet) {
       boutique.motifRejet = motifRejet;
     }
 
@@ -333,7 +358,7 @@ exports.validateBoutique = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Boutique ${statut === 'active' ? 'validée' : 'suspendue'} avec succès`,
+      message: `Boutique ${mappedStatus === 'active' ? 'validée' : 'suspendue'} avec succès`,
       boutique,
     });
   } catch (error) {

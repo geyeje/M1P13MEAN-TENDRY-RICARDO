@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ShopService, Shop } from '../../../core/services/shop';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-edit-shop',
@@ -54,13 +55,30 @@ export class EditShop implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       category: ['', Validators.required],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      phone: ['', [Validators.required, Validators.pattern(/^[+0-9][0-9 ]{6,14}$/)]],
       email: ['', [Validators.required, Validators.email]],
       adresse: ['', Validators.required],
       facebook: [''],
       instagram: [''],
       twitter: [''],
       website: [''],
+      schedule: this.formBuilder.group({
+        lundi: this.initDayGroup(),
+        mardi: this.initDayGroup(),
+        mercredi: this.initDayGroup(),
+        jeudi: this.initDayGroup(),
+        vendredi: this.initDayGroup(),
+        samedi: this.initDayGroup(),
+        dimanche: this.initDayGroup(true),
+      }),
+    });
+  }
+
+  private initDayGroup(isClosedDefault = false) {
+    return this.formBuilder.group({
+      ouverture: ['09:00'],
+      fermeture: ['18:00'],
+      ferme: [isClosedDefault],
     });
   }
 
@@ -82,8 +100,15 @@ export class EditShop implements OnInit {
             twitter: response.boutique.socialNetwork?.twitter || '',
             website: response.boutique.socialNetwork?.website || '',
           });
-          this.logoPreview = response.boutique.logo || null;
-          this.bannerPreview = response.boutique.banner || null;
+          if (response.boutique.schedule) {
+            this.editForm.get('schedule')?.patchValue(response.boutique.schedule);
+          }
+          this.logoPreview = response.boutique.logo
+            ? this.getImageUrl(response.boutique.logo)
+            : null;
+          this.bannerPreview = response.boutique.banner
+            ? this.getImageUrl(response.boutique.banner)
+            : null;
         }
         this.loading = false;
       },
@@ -115,6 +140,7 @@ export class EditShop implements OnInit {
   }
 
   onSubmit() {
+    this.editForm.markAllAsTouched();
     if (this.editForm.invalid || !this.shop) return;
 
     this.submitting = true;
@@ -141,6 +167,9 @@ export class EditShop implements OnInit {
     if (this.logoFile) formData.append('logo', this.logoFile);
     if (this.bannerFile) formData.append('banner', this.bannerFile);
 
+    // Add schedule
+    formData.append('schedule', JSON.stringify(formValue.schedule));
+
     this.shopService.updateShop(this.shop._id, formData).subscribe({
       next: () => {
         this.submitting = false;
@@ -156,5 +185,12 @@ export class EditShop implements OnInit {
 
   get f() {
     return this.editForm.controls;
+  }
+
+  getImageUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${path}`;
   }
 }

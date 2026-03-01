@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../../../core/services/product.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-shop-product-list',
@@ -101,5 +102,14 @@ export class ShopProductListComponent implements OnInit {
       style: 'currency',
       currency: 'EUR',
     }).format(amount);
+  }
+
+  /** Construire l’URL complète d’une image depuis son chemin relatif */
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) return 'assets/no-image.png';
+    if (imagePath.startsWith('http')) return imagePath;
+    // Retirer le préfixe /api pour obtenir la base du serveur
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${imagePath}`;
   }
 }

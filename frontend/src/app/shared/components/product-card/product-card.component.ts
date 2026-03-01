@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../core/services/product.service';
 import { MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe} from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-card',
@@ -20,14 +21,19 @@ export class ProductCardComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  onAddToShoppingCart(p: Product){
+  onAddToShoppingCart(p: Product) {
     if (!this.authService.isLoggedIn) {
-      // not logged-in, redirect to login
       this.router.navigate(['/login'], {
-        queryParams: { returnUrl: '/shopping-cart' }
+        queryParams: { returnUrl: '/shopping-cart' },
       });
       return;
     }
     this.addToShoppingCart.emit(p);
+  }
+
+  getImageUrl(path: string): string {
+    if (!path) return 'assets/no-image.png';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl.replace('/api', '')}${path}`;
   }
 }

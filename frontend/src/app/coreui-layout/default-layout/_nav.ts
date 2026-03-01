@@ -12,31 +12,17 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Boutiques',
-    url: '/admin/boutiques',
+    url: '/admin/shops',
     iconComponent: { name: 'cil-building' },
-  },
-  {
-    name: 'Produits',
-    url: '/admin/produits',
-    iconComponent: { name: 'cil-tags' },
-  },
-  {
-    name: 'Commandes',
-    url: '/admin/commandes',
-    iconComponent: { name: 'cil-cart' },
   },
   {
     title: true,
     name: 'Utilisateurs',
   },
   {
-    name: 'Comptes Clients',
-    url: '/admin/utilisateurs',
+    name: 'Comptes Utilisateurs',
+    url: '/admin/users',
     iconComponent: { name: 'cil-people' },
   },
-  {
-    name: 'Paramètres',
-    url: '/admin/parametres',
-    iconComponent: { name: 'cil-settings' },
-  },
 ];
+

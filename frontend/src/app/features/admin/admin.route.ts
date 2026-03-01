@@ -12,24 +12,22 @@ export const adminRoutes: Routes = [
       {
         path: '',
         redirectTo: 'dashboard',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: 'dashboard',
-        loadComponent: () => import('./dashboard/dashboard.components')
-          .then(m => m.DashboardComponent)
+        loadComponent: () =>
+          import('./dashboard/dashboard.components').then((m) => m.DashboardComponent),
       },
-      // Futures routes
-      // {
-      //   path: 'users',
-      //   loadComponent: () => import('./users/users.component')
-      //     .then(m => m.UsersComponent)
-      // },
-      // {
-      //   path: 'shops',
-      //   loadComponent: () => import('./shops/shops.component')
-      //     .then(m => m.ShopsComponent)
-      // }
-    ]
-  }
+      {
+        path: 'users',
+        loadComponent: () => import('./users/user-list.component').then((m) => m.UserListComponent),
+      },
+      {
+        path: 'shops',
+        loadComponent: () => import('./shops/shops.component')
+          .then(m => m.ShopsComponent)
+      }
+    ],
+  },
 ];

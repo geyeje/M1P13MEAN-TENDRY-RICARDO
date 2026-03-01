@@ -1,0 +1,252 @@
+<div class="settings-container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des paramètres...</p>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="settings-header">
+      <h1>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px"
+        >
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1V15a2 2 0 01-2-2 2 2 0 012-2v-.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
+          ></path>
+        </svg>
+        Paramètres de la Boutique
+      </h1>
+      <p class="subtitle">Gérez vos coordonnées de contact et vos réseaux sociaux</p>
+    </div>
+
+    <!-- Success / Error Messages -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        style="width: 16px; height: 16px; vertical-align: middle; margin-right: 8px"
+      >
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        style="width: 16px; height: 16px; vertical-align: middle; margin-right: 8px"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+      {{ errorMessage }}
+    </div>
+
+    <!-- No Shop -->
+    <div *ngIf="!shop" class="alert alert-info">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        style="width: 16px; height: 16px; vertical-align: middle; margin-right: 8px"
+      >
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      Vous n'avez pas encore de boutique.
+      <a routerLink="/shop-owner/create-shop">
+        Créer maintenant
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 12px; height: 12px; vertical-align: middle"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Settings Form -->
+    <div *ngIf="shop">
+      <form [formGroup]="contactForm" (ngSubmit)="saveContact()">
+        <!-- Contact Info -->
+        <div class="settings-card">
+          <h2 class="card-title">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 015.08 2h3a2 2 0 012 1.72 12.81 12.81 0 00.7 2.81 2 2 0 01-.45 2.11L8.33 10.64a16 16 0 006 6l2.01-2.01a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
+              ></path>
+            </svg>
+            Coordonnées de Contact
+          </h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Téléphone *</label>
+              <input id="phone" type="text" formControlName="phone" placeholder="0612345678" />
+              <div *ngIf="f['phone'].invalid && f['phone'].touched" class="error-text">
+                Numéro invalide (10 chiffres)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email de contact *</label>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="contact@maboutique.com"
+              />
+              <div *ngIf="f['email'].invalid && f['email'].touched" class="error-text">
+                Email invalide
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Networks -->
+        <div class="settings-card">
+          <h2 class="card-title">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path
+                d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"
+              ></path>
+            </svg>
+            Réseaux Sociaux
+          </h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="facebook">Facebook</label>
+              <input
+                id="facebook"
+                type="url"
+                formControlName="facebook"
+                placeholder="https://facebook.com/..."
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="instagram">Instagram</label>
+              <input
+                id="instagram"
+                type="url"
+                formControlName="instagram"
+                placeholder="https://instagram.com/..."
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="twitter">Twitter / X</label>
+              <input
+                id="twitter"
+                type="url"
+                formControlName="twitter"
+                placeholder="https://x.com/..."
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="website">Site Web</label>
+              <input
+                id="website"
+                type="url"
+                formControlName="website"
+                placeholder="https://maboutique.com"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="form-actions">
+          <button type="submit" class="btn-save" [disabled]="contactForm.invalid || saving">
+            <span *ngIf="!saving">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 8px"
+              >
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Enregistrer les modifications
+            </span>
+            <span *ngIf="saving">Enregistrement...</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Danger Zone -->
+      <div class="settings-card danger-zone">
+        <h2 class="card-title">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px"
+          >
+            <path
+              d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+            ></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Zone Dangereuse
+        </h2>
+        <p>
+          La suppression de votre boutique est définitive et supprimera tous vos produits associés.
+        </p>
+        <button class="btn-delete" (click)="deleteShop()">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            style="width: 16px; height: 16px; vertical-align: middle; margin-right: 8px"
+          >
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path
+              d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+            ></path>
+          </svg>
+          Supprimer ma boutique
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

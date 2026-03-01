@@ -1,75 +1,425 @@
 <div class="edit-shop-container">
   <div class="page-header">
-    <h1>Modifier ma Boutique</h1>
-    <button routerLink="/shop-owner/my-shop" class="btn-secondary">Annuler</button>
+    <div class="header-text">
+      <h1>
+        <svg
+          class="icon-sm"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px"
+        >
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1V15a2 2 0 01-2-2 2 2 0 012-2v-.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
+          ></path>
+        </svg>
+        Paramètres de la boutique
+      </h1>
+      <p>Modifiez l'apparence et les informations de votre boutique</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/shop-owner/my-shop" class="btn-secondary">Annuler</a>
+    </div>
   </div>
 
-  <div *ngIf="successMessage" class="alert alert-success">✅ {{ successMessage }}</div>
-  <div *ngIf="error" class="alert alert-danger">❌ {{ error }}</div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    <span class="icon">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        style="width: 16px; height: 16px"
+      >
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </span>
+    <span class="message">{{ successMessage }}</span>
+  </div>
 
-  <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
-    <!-- Logo et Bannière -->
-    <div class="images-section">
-      <div class="upload-box">
-        <label>Logo</label>
-        <input type="file" (change)="onLogoChange($event)" accept="image/*">
-        <img *ngIf="logoPreview" [src]="logoPreview" class="preview">
+  <div *ngIf="error" class="alert alert-danger">
+    <span class="icon">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        style="width: 16px; height: 16px"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </span>
+    <span class="message">{{ error }}</span>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement de vos informations...</p>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
+    <!-- Image Upload Area -->
+    <div class="section visual-section">
+      <h3 class="section-title">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        Identité visuelle
+      </h3>
+      <div class="images-grid">
+        <!-- Logo -->
+        <div class="upload-box">
+          <label class="upload-label">Logo de la boutique</label>
+          <div class="upload-area" [class.has-image]="logoPreview">
+            <input
+              type="file"
+              (change)="onLogoChange($event)"
+              accept="image/*"
+              class="file-input"
+              #logoInput
+            />
+            <div class="upload-placeholder" (click)="logoInput.click()">
+              <div class="icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  style="width: 32px; height: 32px; opacity: 0.5"
+                >
+                  <path
+                    d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"
+                  ></path>
+                </svg>
+              </div>
+              <span>Choisir un logo</span>
+              <small>(Carré suggéré, max 2MB)</small>
+            </div>
+            <div class="image-preview" *ngIf="logoPreview" (click)="logoInput.click()">
+              <img [src]="logoPreview" alt="Logo preview" />
+              <div class="overlay">Changer</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner -->
+        <div class="upload-box">
+          <label class="upload-label">Bannière promotionnelle</label>
+          <div class="upload-area banner-area" [class.has-image]="bannerPreview">
+            <input
+              type="file"
+              (change)="onBannerChange($event)"
+              accept="image/*"
+              class="file-input"
+              #bannerInput
+            />
+            <div class="upload-placeholder" (click)="bannerInput.click()">
+              <div class="icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  style="width: 32px; height: 32px; opacity: 0.5"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+              <span>Choisir une bannière</span>
+              <small>(Largeur suggérée, max 5MB)</small>
+            </div>
+            <div class="image-preview" *ngIf="bannerPreview" (click)="bannerInput.click()">
+              <img [src]="bannerPreview" alt="Banner preview" />
+              <div class="overlay">Changer</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="upload-box">
-        <label>Bannière</label>
-        <input type="file" (change)="onBannerChange($event)" accept="image/*">
-        <img *ngIf="bannerPreview" [src]="bannerPreview" class="preview">
+    </div>
+
+    <!-- Basic Info -->
+    <div class="section info-section">
+      <h3 class="section-title">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px"
+        >
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Informations générales
+      </h3>
+
+      <div class="form-group full-width">
+        <label>Nom de la boutique *</label>
+        <input
+          type="text"
+          formControlName="name"
+          placeholder="Ex: Ma Boutique Artisanale"
+          [class.is-invalid]="f['name'].touched && f['name'].invalid"
+        />
+        <div *ngIf="f['name'].touched && f['name'].invalid" class="invalid-feedback">
+          Le nom doit contenir au moins 3 caractères.
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label>Description *</label>
+        <textarea
+          formControlName="description"
+          rows="4"
+          placeholder="Décrivez votre boutique, vos produits, votre passion..."
+          [class.is-invalid]="f['description'].touched && f['description'].invalid"
+        ></textarea>
+        <div *ngIf="f['description'].touched && f['description'].invalid" class="invalid-feedback">
+          La description doit contenir au moins 10 caractères.
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Catégorie *</label>
+          <select formControlName="category">
+            <option value="" disabled>Sélectionner une catégorie</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Téléphone *</label>
+          <input
+            type="tel"
+            formControlName="phone"
+            placeholder="03XXXXXXXX"
+            [class.is-invalid]="f['phone'].touched && f['phone'].invalid"
+          />
+          <div *ngIf="f['phone'].touched && f['phone'].invalid" class="invalid-feedback">
+            Numéro invalide (10 chiffres).
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email de contact *</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="contact@maboutique.com"
+            [class.is-invalid]="f['email'].touched && f['email'].invalid"
+          />
+          <div *ngIf="f['email'].touched && f['email'].invalid" class="invalid-feedback">
+            Email invalide.
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Adresse physique *</label>
+          <input type="text" formControlName="adresse" placeholder="123 Rue de la Paix, Ville" />
+        </div>
       </div>
     </div>
 
-    <!-- Informations de base -->
-    <div class="form-group">
-      <label>Nom de la boutique *</label>
-      <input type="text" formControlName="name" class="form-control">
-    </div>
+    <!-- Schedule -->
+    <div class="section schedule-section">
+      <h3 class="section-title">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        Horaires d'ouverture
+      </h3>
+      <p class="section-desc">Définissez vos horaires pour chaque jour de la semaine</p>
 
-    <div class="form-group">
-      <label>Description *</label>
-      <textarea formControlName="description" class="form-control" rows="4"></textarea>
-    </div>
+      <div formGroupName="schedule" class="schedule-editor">
+        <div
+          *ngFor="
+            let day of ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+          "
+          [formGroupName]="day"
+          class="day-row"
+        >
+          <span class="day-name">{{ day | titlecase }}</span>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Catégorie *</label>
-        <select formControlName="category" class="form-control">
-          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-        </select>
+          <div class="day-controls">
+            <label class="toggle-ferme">
+              <input type="checkbox" formControlName="ferme" />
+              <span>Fermé</span>
+            </label>
+
+            <div
+              class="time-inputs"
+              [class.disabled]="editForm.get('schedule.' + day + '.ferme')?.value"
+            >
+              <input type="time" formControlName="ouverture" />
+              <span>à</span>
+              <input type="time" formControlName="fermeture" />
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Téléphone *</label>
-        <input type="tel" formControlName="phone" class="form-control">
+    </div>
+
+    <!-- Social Media -->
+    <div class="section social-section">
+      <h3 class="section-title">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path
+            d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"
+          ></path>
+        </svg>
+        Réseaux sociaux
+      </h3>
+      <p class="section-desc">Liez vos réseaux pour augmenter votre visibilité</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Facebook</label>
+          <div class="input-with-icon">
+            <span class="icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                style="width: 16px; height: 16px"
+              >
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+              </svg>
+            </span>
+            <input
+              type="url"
+              formControlName="facebook"
+              placeholder="https://facebook.com/votrepage"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Instagram</label>
+          <div class="input-with-icon">
+            <span class="icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                style="width: 16px; height: 16px"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </span>
+            <input
+              type="url"
+              formControlName="instagram"
+              placeholder="https://instagram.com/votrecompte"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Twitter (X)</label>
+          <div class="input-with-icon">
+            <span class="icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                style="width: 16px; height: 16px"
+              >
+                <path
+                  d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"
+                ></path>
+              </svg>
+            </span>
+            <input
+              type="url"
+              formControlName="twitter"
+              placeholder="https://twitter.com/votrecompte"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Site Web</label>
+          <div class="input-with-icon">
+            <span class="icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                style="width: 16px; height: 16px"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path
+                  d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"
+                ></path>
+              </svg>
+            </span>
+            <input type="url" formControlName="website" placeholder="https://votre-site.com" />
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label>Email *</label>
-      <input type="email" formControlName="email" class="form-control">
+    <!-- Submit Area -->
+    <div class="form-actions">
+      <button type="submit" class="btn-submit" [disabled]="editForm.invalid || submitting">
+        <span *ngIf="!submitting">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px"
+          >
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Enregistrer les modifications
+        </span>
+        <div *ngIf="submitting" class="loading-content">
+          <div class="mini-spinner"></div>
+          <span>Enregistrement...</span>
+        </div>
+      </button>
     </div>
-
-    <div class="form-group">
-      <label>Adresse *</label>
-      <textarea formControlName="adresse" class="form-control" rows="2"></textarea>
-    </div>
-
-    <!-- Réseaux sociaux -->
-    <h3>Réseaux sociaux</h3>
-    <div class="form-group">
-      <label>Facebook</label>
-      <input type="url" formControlName="facebook" class="form-control" placeholder="https://facebook.com/...">
-    </div>
-    <div class="form-group">
-      <label>Instagram</label>
-      <input type="url" formControlName="instagram" class="form-control" placeholder="https://instagram.com/...">
-    </div>
-
-    <button type="submit" class="btn-primary" [disabled]="editForm.invalid || submitting">
-      <span *ngIf="!submitting">💾 Enregistrer</span>
-      <span *ngIf="submitting">⏳ Enregistrement...</span>
-    </button>
   </form>
 </div>

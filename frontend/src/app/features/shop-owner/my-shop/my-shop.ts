@@ -2,14 +2,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ShopService, Shop } from '../../../core/services/Shop.service';
+import { ShopService, Shop } from '../../../core/services/shop';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-my-shop',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './my-shop.html',
-  styleUrls: ['./my-shop.scss']
+  styleUrls: ['./my-shop.scss'],
 })
 export class MyShopComponent implements OnInit {
   shop: Shop | null = null;
@@ -37,24 +38,24 @@ export class MyShopComponent implements OnInit {
         console.error('Erreur chargement boutique:', error);
         this.error = error.error?.message || 'Erreur lors du chargement de la boutique';
         this.loading = false;
-      }
+      },
     });
   }
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      'en_attente': 'En attente de validation',
-      'active': 'Active',
-      'suspendue': 'Suspendue'
+      en_attente: 'En attente de validation',
+      active: 'Active',
+      suspendue: 'Suspendue',
     };
     return labels[status] || status;
   }
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {
-      'en_attente': 'status-warning',
-      'active': 'status-success',
-      'suspendue': 'status-danger'
+      en_attente: 'status-warning',
+      active: 'status-success',
+      suspendue: 'status-danger',
     };
     return classes[status] || '';
   }
@@ -62,7 +63,7 @@ export class MyShopComponent implements OnInit {
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'EUR',
     }).format(amount);
   }
 
@@ -70,7 +71,27 @@ export class MyShopComponent implements OnInit {
     return new Date(date).toLocaleDateString('fr-FR', {
       day: '2-digit',
       month: 'long',
-      year: 'numeric'
+      year: 'numeric',
     });
+  }
+
+  // Backward compat helpers
+  get productCount(): number {
+    return (this.shop as any)?.productCount ?? (this.shop as any)?.productqt ?? 0;
+  }
+  get commandCount(): number {
+    return (this.shop as any)?.commandCount ?? (this.shop as any)?.commandeqt ?? 0;
+  }
+  get rating(): number {
+    return (this.shop as any)?.note ?? (this.shop as any)?.avgRating ?? 0;
+  }
+  get address(): string {
+    return (this.shop as any)?.address ?? (this.shop as any)?.adresse ?? '';
+  }
+
+  getImageUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl.replace('/api', '')}${path}`;
   }
 }
