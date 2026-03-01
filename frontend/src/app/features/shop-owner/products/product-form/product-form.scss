@@ -1,30 +1,288 @@
-:host {
-  display: block;
-  /* form container background takes matcha dark variable */
-  background: var(--color-matcha-dark);
+// product-form.scss — CSS vanilla complet, sans TailwindCSS
+
+.product-form {
+  max-width: 900px;
+  margin: 0 auto;
   padding: 2rem;
-  border-radius: 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* input elements style consistent with login form requirements */
-:host input,
-:host select,
-:host textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+// Header
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+  }
+}
+
+.btn-back {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+// Error
+.form-error {
+  padding: 1rem 1.5rem;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  color: #991b1b;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+// Form Grid
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+// Form Groups
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    .hint {
+      font-weight: 400;
+      text-transform: none;
+      color: #9ca3af;
+      font-size: 0.75rem;
+      letter-spacing: 0;
+    }
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: #1f2937;
+    background: #f9fafb;
+    outline: none;
+    transition: all 0.2s;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: #667eea;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    }
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .file-input {
+    padding: 0.5rem;
+    background: #f0f4ff;
+    border-style: dashed;
+    cursor: pointer;
+  }
+
+  small {
+    color: #6b7280;
+    font-size: 0.78rem;
+  }
+}
+
+// Image preview gallery
+.image-section-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.image-preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  overflow: visible;
+  border: 2px solid #e5e7eb;
+  background: #f3f4f6;
+
+  .image-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
+
+  .btn-remove-image {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #fff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition:
+      background 0.2s,
+      transform 0.15s;
+    z-index: 10;
+
+    &:hover {
+      background: #dc2626;
+      transform: scale(1.15);
+    }
+  }
+}
+
+.hint-warning {
+  color: #d97706;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+// Pricing Section
+.pricing-section {
+  background: #f8faff;
+  border: 1.5px solid #e0e7ff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.promo-toggle {
+  margin-bottom: 1.25rem;
+
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+    font-size: 1rem;
+    text-transform: none;
+    letter-spacing: 0;
+
+    input[type='checkbox'] {
+      width: 18px;
+      height: 18px;
+      accent-color: #667eea;
+      cursor: pointer;
+    }
+  }
+}
+
+.prices-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.promo-label {
+  color: #dc2626 !important;
+}
+
+// Submit Button
+.btn-submit {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  transition: border-color 0.2s ease;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  &:disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
 }
 
-:host input:focus,
-:host select:focus,
-:host textarea:focus {
-  outline: none;
-  border-color: var(--color-matcha-spring);
-}
+// Responsive
+@media (max-width: 768px) {
+  .product-form {
+    padding: 1rem;
+  }
 
-/* ensure placeholder text is slightly lighter */
-:host input::placeholder,
-:host textarea::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prices-row {
+    grid-template-columns: 1fr;
+  }
 }

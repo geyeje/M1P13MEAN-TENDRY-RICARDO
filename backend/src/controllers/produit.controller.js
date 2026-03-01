@@ -47,14 +47,58 @@ exports.createProduit = async (req, res) => {
     // Gérer les images uploadées
     let images = [];
     if (req.files && req.files.length > 0) {
-      images = req.files.map((file) => file.path);
+      images = req.files.map((file) => `/uploads/products/${file.filename}`);
     }
 
-    // Parser les champs JSON envoyés comme string (depuis form-data)
-    const parsedColors = typeof colors === 'string' ? JSON.parse(colors) : colors || [];
-    const parsedSizes = typeof sizes === 'string' ? JSON.parse(sizes) : sizes || [];
-    const parsedSpecs = typeof specs === 'string' ? JSON.parse(specs) : specs || {};
-    const parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags || [];
+    // Parser les tableaux - accepte: Array natif, JSON string, string virgule-séparée
+    const parseArray = (val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val.filter(Boolean);
+      if (typeof val === 'string') {
+        // Try JSON first
+        if (val.trim().startsWith('[')) {
+          try {
+            const parsed = JSON.parse(val);
+            return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+          } catch (e) {
+            console.error('Erreur parsing array:', e.message);
+            return [];
+          }
+        }
+        // Comma-separated fallback
+        return val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      return [];
+    };
+
+    // const parsedColors = parseArray(req.body['colors[]'] || colors);
+    // const parsedSizes = parseArray(req.body['sizes[]'] || sizes);
+    // const parsedTags = parseArray(req.body['tags[]'] || tags);
+
+    const parsedColors = parseArray(colors);
+    const parsedSizes = parseArray(sizes);
+    const parsedTags = parseArray(tags);
+
+    console.log('🎨 Colors:', parsedColors);
+    console.log('📏 Sizes:', parsedSizes);
+    console.log('🏷️ Tags:', parsedTags);
+
+    // Specs: JSON object ou string
+    let parsedSpecs = {};
+    if (specs) {
+      if (typeof specs === 'string') {
+        try {
+          parsedSpecs = JSON.parse(specs);
+        } catch {
+          parsedSpecs = { note: specs };
+        }
+      } else {
+        parsedSpecs = specs;
+      }
+    }
 
     const produit = await Produit.create({
       name,
@@ -242,18 +286,74 @@ exports.updateProduit = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Non autorisé' });
     }
 
-    // Ajouter les nouvelles images
-    if (req.files && req.files.length > 0) {
-      const newImages = req.files.map((file) => file.path);
-      req.body.images = [...(produit.images || []), ...newImages];
+    // Gérer les images :
+    // - existingImages[] : URLs des images déjà en BDD que l'utilisateur veut conserver
+    // - req.files      : nouveaux fichiers uploadés
+    let finalImages = [];
+
+    // Images existantes à conserver (envoyées par le frontend)
+    if (req.body['existingImages[]']) {
+      const existing = req.body['existingImages[]'];
+      finalImages = Array.isArray(existing) ? existing : [existing];
+    } else if (req.body.existingImages) {
+      const existing = req.body.existingImages;
+      finalImages = Array.isArray(existing) ? existing : [existing];
+    } else {
+      // Si le frontend n'envoie rien pour existingImages, conserver les anciennes (comportement legacy)
+      finalImages = [...(produit.images || [])];
     }
 
-    // Parser les champs JSON si envoyés comme string
-    ['colors', 'sizes', 'specs', 'tags'].forEach((field) => {
-      if (req.body[field] && typeof req.body[field] === 'string') {
-        req.body[field] = JSON.parse(req.body[field]);
+    // Ajouter les nouvelles images uploadées
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map((file) => `/uploads/products/${file.filename}`);
+      console.log('📷 Nouvelles images:', newImages);
+      finalImages = [...finalImages, ...newImages];
+    }
+
+    // Limiter à 5 images max
+    finalImages = finalImages.slice(0, 5);
+    req.body.images = finalImages;
+
+    // Parser les tableaux - accepte: Array natif, JSON string, string virgule-séparée
+    const parseArray = (val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val.filter(Boolean);
+      if (typeof val === 'string') {
+        // Try JSON first
+        if (val.trim().startsWith('[')) {
+          try {
+            return JSON.parse(val);
+          } catch {}
+        }
+        // Comma-separated fallback
+        return val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
       }
-    });
+      return [];
+    };
+
+    if (req.body.colors || req.body['colors[]'])
+      req.body.colors = parseArray(req.body['colors[]'] || req.body.colors);
+    if (req.body.sizes || req.body['sizes[]'])
+      req.body.sizes = parseArray(req.body['sizes[]'] || req.body.sizes);
+    if (req.body.tags || req.body['tags[]'])
+      req.body.tags = parseArray(req.body['tags[]'] || req.body.tags);
+
+    // Convert empty strings to null/proper types
+    if (req.body.promoPrice === '') req.body.promoPrice = null;
+    if (req.body.price === '') delete req.body.price; // keep existing if invalid
+    if (req.body.stock === '') delete req.body.stock; // keep existing if invalid
+
+    // Specs: JSON object ou string
+    if (req.body.specs && typeof req.body.specs === 'string') {
+      try {
+        req.body.specs = JSON.parse(req.body.specs);
+      } catch {
+        // Garder tel quel ou mettre dans une note si c'est pas du JSON
+      }
+    }
 
     produit = await Produit.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -292,7 +392,7 @@ exports.deleteProduit = async (req, res) => {
 
     await produit.deleteOne();
 
-    boutique.productqt = Math.max(0, boutique.productqt - 1);
+    boutique.productCount = Math.max(0, (boutique.productCount || 0) - 1);
     await boutique.save();
 
     res.status(200).json({ success: true, message: 'Produit supprimé avec succès' });

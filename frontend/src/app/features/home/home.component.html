@@ -7,15 +7,17 @@
   <div class="absolute inset-0 bg-black/50"></div>
 
   <!-- Contenu de la bannière -->
-  <div class="relative h-full flex flex-col items-center justify-center gap-6 px-4 text-center text-white">
+  <div
+    class="relative h-full flex flex-col items-center justify-center gap-6 px-4 text-center text-white"
+  >
     <h1 class="text-5xl md:text-6xl font-black italic tracking-tight">
       <span class="text-matcha-spring">MATCHA</span> CENTER
       <span class="text-matcha-spring">.</span>
     </h1>
 
     <p class="text-lg md:text-xl text-gray-200 max-w-2xl font-medium">
-      Découvrez une sélection exclusive de produits artisanaux et premium dans
-      votre centre commercial 100 % en ligne.
+      Découvrez une sélection exclusive de produits artisanaux et premium dans votre centre
+      commercial 100 % en ligne.
     </p>
 
     <div class="flex flex-col sm:flex-row gap-4 mt-6">
@@ -23,7 +25,17 @@
         routerLink="/store"
         class="!px-8 !no-underline !py-4 bg-matcha-spring flex justify-center items-center !text-black !font-black !rounded-2xl !hover:bg-matcha-spring/90 !transition-all !transform !hover:scale-105 !active:scale-95"
       >
-        Explore les boutiques →
+        Explore les boutiques
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 18px; height: 18px; margin-left: 8px; vertical-align: middle"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
       </a>
       <a
         routerLink="/register"
@@ -53,15 +65,40 @@
           <h2 class="text-3xl font-black text-matcha-spring border-l-4 border-matcha-spring pl-4">
             {{ category.name }}
           </h2>
-          <a [routerLink]="['/store']" [queryParams]="{ category: category.name }" class="!text-matcha-spring hover:!underline !no-underline font-bold">
-            Voir tout →
+          <a
+            [routerLink]="['/store']"
+            [queryParams]="{ category: category.name }"
+            class="!text-matcha-spring hover:!underline !no-underline font-bold"
+          >
+            Voir tout
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              style="
+                width: 14px;
+                height: 14px;
+                display: inline-block;
+                vertical-align: middle;
+                margin-left: 2px;
+              "
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
           </a>
         </div>
 
         <!-- Grille de produits -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 !bg-matcha-dark rounded-2xl border !border-white/10">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 !bg-matcha-dark rounded-2xl border !border-white/10"
+        >
           @for (product of category.products; track product._id) {
-            <app-product-card [product]="product" (addToShoppingCart)="onAddProductToCart($event)" ></app-product-card>
+            <app-product-card
+              [product]="product"
+              (addToShoppingCart)="onAddProductToCart($event)"
+            ></app-product-card>
           }
         </div>
       </section>

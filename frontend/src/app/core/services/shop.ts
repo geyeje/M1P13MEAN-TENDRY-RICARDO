@@ -13,7 +13,8 @@ export interface Shop {
   category: string;
   phone: string;
   email: string;
-  adresse: string;
+  address: string;
+  adresse?: string;
   schedule?: any;
   status: 'en_attente' | 'active' | 'suspendue';
   productCount: number;
@@ -75,5 +76,10 @@ export class ShopService {
   // Statistiques (admin)
   getStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/stats/overview`);
+  }
+
+  // Valider / Suspendre une boutique (admin)
+  validateShop(shopId: string, status: string): Observable<ShopResponse> {
+    return this.http.put<ShopResponse>(`${this.apiUrl}/${shopId}/validate`, { statut: status });
   }
 }

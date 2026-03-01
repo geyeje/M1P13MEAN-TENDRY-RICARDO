@@ -12,9 +12,8 @@ exports.getDashboardStats = async (req, res) => {
   try {
     // 1. User Statistics
     const totalUsers = await User.countDocuments();
-    const activeUsers = await User.countDocuments({
-      /* active status logic if applicable or just total */
-    });
+    const activeUsers = await User.countDocuments({ isActive: true });
+    const inactiveUsers = await User.countDocuments({ isActive: false });
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const newUsersThisMonth = await User.countDocuments({ createdAt: { $gte: thirtyDaysAgo } });
@@ -35,22 +34,34 @@ exports.getDashboardStats = async (req, res) => {
     ]);
 
     const recentShops = await Boutique.find()
-      .populate('userId', 'nom prenom email')
+      .populate('userId', 'firstname lastname email')
       .sort({ createdAt: -1 })
       .limit(5);
 
-    // TODO: shops topByRevenue (complex aggregation, skipping for MVP or mocking for now)
-    const topShops = await Boutique.find({ status: 'active' }).limit(5);
+    // Get top shops by revenue (CA)
+    const topShops = await Boutique.find({ status: 'active' })
+      .populate('userId', 'firstname lastname email')
+      .sort({ CA: -1 })
+      .limit(5);
 
     // 3. Product Statistics
     const totalProducts = await Produit.countDocuments();
     const inStock = await Produit.countDocuments({ stock: { $gt: 0 } });
     const outOfStock = await Produit.countDocuments({ stock: { $eq: 0 } });
-    const onSale = await Produit.countDocuments({ promotion: { $exists: true } }); // Assuming promotion logic
+    const onSale = await Produit.countDocuments({ onSale: true });
 
     const productsByCategory = await Produit.aggregate([
       { $group: { _id: '$category', count: { $sum: 1 } } },
     ]);
+
+    // Average Price
+    const avgPriceAgg = await Produit.aggregate([
+      { $group: { _id: null, avg: { $avg: '$price' } } },
+    ]);
+    const avgPrice = avgPriceAgg.length > 0 ? Math.round(avgPriceAgg[0].avg) : 0;
+
+    // Top Selling Products
+    const topSellingProducts = await Produit.find().sort({ salesCount: -1 }).limit(5);
 
     // 4. Order & Revenue Statistics
     const totalOrders = await Commande.countDocuments();
@@ -61,7 +72,10 @@ exports.getDashboardStats = async (req, res) => {
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ]);
 
-    const recentOrders = await Commande.find().sort({ createdAt: -1 }).limit(5);
+    const recentOrders = await Commande.find()
+      .populate('buyerId', 'firstname lastname email')
+      .sort({ createdAt: -1 })
+      .limit(5);
 
     // Revenue aggregations
     const revenueAgg = await Commande.aggregate([
@@ -109,7 +123,7 @@ exports.getDashboardStats = async (req, res) => {
       dashboard: {
         users: {
           total: totalUsers,
-          active: totalUsers, // adjust if a soft delete or 'active' property exists
+          active: activeUsers,
           newThisMonth: newUsersThisMonth,
           byRole: usersByRole,
           recent: recentUsers,
@@ -119,7 +133,7 @@ exports.getDashboardStats = async (req, res) => {
           active: activeShops,
           pending: pendingShops,
           byStatus: shopsByStatus,
-          topByRevenue: topShops, // Placeholder
+          topByRevenue: topShops,
           recent: recentShops,
         },
         products: {
@@ -127,9 +141,9 @@ exports.getDashboardStats = async (req, res) => {
           inStock: inStock,
           outOfStock: outOfStock,
           onSale: onSale,
-          avgPrice: 0, // Placeholder
+          avgPrice: avgPrice,
           byCategory: productsByCategory,
-          topSelling: [], // Placeholder
+          topSelling: topSellingProducts,
         },
         orders: {
           total: totalOrders,
@@ -151,7 +165,7 @@ exports.getDashboardStats = async (req, res) => {
           pendingShops,
           pendingOrders,
           outOfStock,
-          inactiveUsers: 0,
+          inactiveUsers: inactiveUsers,
         },
       },
     });
@@ -161,5 +175,115 @@ exports.getDashboardStats = async (req, res) => {
       success: false,
       message: 'Erreur lors de la récupération des statistiques du tableau de bord.',
     });
+  }
+};
+
+/**
+ * @desc    Get all users
+ * @route   GET /api/admin/users
+ * @access  Private/Admin
+ */
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    res.json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur récupération utilisateurs' });
+  }
+};
+
+/**
+ * @desc    Toggle user active status
+ * @route   PATCH /api/admin/users/:id/toggle-active
+ * @access  Private/Admin
+ */
+exports.toggleUserActive = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
+    }
+
+    user.isActive = !user.isActive;
+    await user.save();
+
+    res.json({
+      success: true,
+      user: {
+        _id: user._id,
+        isActive: user.isActive,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur modification statut' });
+  }
+};
+
+/**
+ * @desc    Delete user
+ * @route   DELETE /api/admin/users/:id
+ * @access  Private/Admin
+ */
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
+    }
+
+    // Si c'est un gérant, supprimer aussi sa boutique ? (Optionnel selon business logic)
+    await User.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: 'Utilisateur supprimé avec succès',
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur suppression utilisateur' });
+  }
+};
+
+/**
+ * @desc    Get all shops (admin - no status filter)
+ * @route   GET /api/admin/shops
+ * @access  Private/Admin
+ */
+exports.getAllShops = async (req, res) => {
+  try {
+    const { status, search, page = 1, limit = 100 } = req.query;
+    const filter = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const boutiques = await Boutique.find(filter)
+      .populate('userId', 'firstname lastname email')
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(skip);
+
+    const total = await Boutique.countDocuments(filter);
+
+    res.json({
+      success: true,
+      count: boutiques.length,
+      total,
+      boutiques,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur récupération boutiques' });
   }
 };

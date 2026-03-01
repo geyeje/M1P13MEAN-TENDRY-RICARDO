@@ -1,3 +1,182 @@
-:host {
-  display: block;
+/* order-list.scss — Design Premium pour Shop Owner */
+
+.orders-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: calc(100vh - 100px);
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+/* Filtres */
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  padding: 0.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+}
+
+.filter-btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #334155;
+  }
+
+  &.active {
+    background: #6366f1;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+}
+
+/* Table Style */
+.orders-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.75rem;
+  margin-top: -0.75rem;
+
+  thead th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  tbody tr {
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s;
+
+    td {
+      padding: 1.25rem 1.5rem;
+      color: #334155;
+      font-size: 0.95rem;
+      border-top: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+
+      &:first-child {
+        border-left: 1px solid #f1f5f9;
+        border-top-left-radius: 14px;
+        border-bottom-left-radius: 14px;
+        color: #6366f1;
+      }
+
+      &:last-child {
+        border-right: 1px solid #f1f5f9;
+        border-top-right-radius: 14px;
+        border-bottom-right-radius: 14px;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      background: #fafbff;
+    }
+  }
+}
+
+/* Status Badges */
+.badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+
+  &-warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  &-primary {
+    background: #e0e7ff;
+    color: #3730a3;
+  }
+  &-info {
+    background: #e0f2fe;
+    color: #075985;
+  }
+  &-success {
+    background: #dcfce7;
+    color: #166534;
+  }
+  &-danger {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+/* Actions */
+.btn-view {
+  padding: 0.5rem 1rem;
+  background: #f1f5f9;
+  color: #475569;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-right: 0.75rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+}
+
+.status-select {
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #475569;
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .orders-table {
+    display: block;
+    overflow-x: auto;
+  }
 }

@@ -79,4 +79,8 @@ export class AdminService {
   deleteUser(userId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/users/${userId}`);
   }
+
+  getShops(params?: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/shops`, { params });
+  }
 }

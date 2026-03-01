@@ -27,6 +27,10 @@ export const shopOwnerRoutes: Routes = [
         loadComponent: () => import('./edit-shop/edit-shop').then((m) => m.EditShop),
       },
       {
+        path: 'my-shop',
+        loadComponent: () => import('./my-shop/my-shop').then((m) => m.MyShopComponent),
+      },
+      {
         path: 'products',
         loadComponent: () =>
           import('./products/product-list/product-list').then((m) => m.ShopProductListComponent),
@@ -49,6 +53,10 @@ export const shopOwnerRoutes: Routes = [
         path: 'orders/:id',
         loadComponent: () =>
           import('./orders/order-detail/order-detail').then((m) => m.OrderDetail),
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./settings/settings').then((m) => m.SettingsComponent),
       },
     ],
   },

@@ -22,11 +22,11 @@ export class Sidebar {
   @Output() toggleSidebar = new EventEmitter<void>();
 
   menuItems: MenuItem[] = [
-    { icon: '📊', label: 'Dashboard', route: '/shop-owner/dashboard' },
-    { icon: '🏪', label: 'Ma Boutique', route: '/shop-owner/my-shop' },
-    { icon: '📦', label: 'Produits', route: '/shop-owner/products' },
-    { icon: '🛒', label: 'Commandes', route: '/shop-owner/orders', badge: 0 },
-    { icon: '⚙️', label: 'Paramètres', route: '/shop-owner/settings' },
+    { icon: 'dashboard', label: 'Dashboard', route: '/shop-owner/dashboard' },
+    { icon: 'shop', label: 'Ma Boutique', route: '/shop-owner/my-shop' },
+    { icon: 'package', label: 'Produits', route: '/shop-owner/products' },
+    { icon: 'shopping-cart', label: 'Commandes', route: '/shop-owner/orders', badge: 0 },
+    { icon: 'settings', label: 'Paramètres', route: '/shop-owner/settings' },
   ];
   user$: Observable<User | null>;
 

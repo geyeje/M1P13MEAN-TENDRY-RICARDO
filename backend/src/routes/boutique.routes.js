@@ -45,8 +45,8 @@ const createBoutiqueValidation = [
     .trim()
     .notEmpty()
     .withMessage('Le téléphone est requis')
-    .matches(/^[0-9]{10}$/)
-    .withMessage('Numéro de téléphone invalide (10 chiffres)'),
+    .matches(/^[+0-9][0-9 ]{6,14}$/)
+    .withMessage('Numéro de téléphone invalide'),
 
   body('email')
     .trim()
@@ -73,8 +73,7 @@ const updateBoutiqueValidation = [
     .withMessage('La description doit contenir entre 10 et 1000 caractères'),
 
   body('phone') // ← Changé
-    .optional()
-    .matches(/^[0-9]{10}$/)
+    .matches(/^[+0-9][0-9 ]{6,14}$/)
     .withMessage('Numéro de téléphone invalide'),
 
   body('email').optional().isEmail().withMessage('Email invalide'),
