@@ -1,12 +1,12 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Product, ProductService } from '../../../../core/services/product.service';
 import { ProductForm } from '../product-form/product-form';
-import {  ProductListComponent } from '../product-list/product-list';
+import { ShopProductListComponent } from '../product-list/product-list';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-inventory',
-  imports: [ProductForm,  ProductListComponent],
+  imports: [ProductForm, ShopProductListComponent],
   templateUrl: './inventory.html',
   styleUrl: './inventory.scss',
 })
@@ -18,21 +18,20 @@ export class Inventory implements OnInit {
 
   ngOnInit(): void {
     this.productService.getMyProducts().subscribe({
-      next: (res) =>{
-        if(res.success && res.produits)
-        this.products.set(res.produits);
+      next: (res) => {
+        if (res.success && res.produits) this.products.set(res.produits);
       },
-      error: (err) =>{
+      error: (err) => {
         this.error.set(err);
-      }
-    })
+      },
+    });
   }
 
-  toggleMode(){
+  toggleMode() {
     this.isAdding.set(!this.isAdding());
   }
 
-  onProductSaved(){
+  onProductSaved() {
     // A product was created/updated, refresh list and close form
     this.toggleMode();
     this.productService.getMyProducts().subscribe({
@@ -41,7 +40,7 @@ export class Inventory implements OnInit {
       },
       error: (err) => {
         this.error.set(err);
-      }
+      },
     });
   }
 }

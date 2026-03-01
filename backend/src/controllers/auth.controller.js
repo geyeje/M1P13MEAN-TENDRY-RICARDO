@@ -5,11 +5,9 @@ const { validationResult } = require('express-validator');
 
 // Générer un token JWT
 const generateToken = (userId) => {
-  return jwt.sign(
-    { id: userId },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE || '7d' }
-  );
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || '7d',
+  });
 };
 
 // @desc    Inscription d'un nouvel utilisateur
@@ -20,9 +18,9 @@ exports.register = async (req, res) => {
     // Validation des erreurs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        errors: errors.array() 
+        errors: errors.array(),
       });
     }
 
@@ -33,7 +31,7 @@ exports.register = async (req, res) => {
     if (userExists) {
       return res.status(400).json({
         success: false,
-        message: 'Un utilisateur avec cet email existe déjà'
+        message: 'Un utilisateur avec cet email existe déjà',
       });
     }
 
@@ -45,7 +43,7 @@ exports.register = async (req, res) => {
       password, // Le password sera hashé automatiquement par le middleware Mongoose
       role: role || 'customer', // Par défaut : acheteur
       phone,
-      address
+      address,
     });
 
     // Générer le token
@@ -62,17 +60,18 @@ exports.register = async (req, res) => {
         lastname: user.lastname,
         email: user.email,
         role: user.role,
+        nom: user.nom,
+        prenom: user.prenom,
         phone: user.phone,
-        address: user.address
-      }
+        address: user.address,
+      },
     });
-
   } catch (error) {
     console.error('Erreur inscription:', error);
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de l\'inscription',
-      error: error.message
+      message: "Erreur lors de l'inscription",
+      error: error.message,
     });
   }
 };
@@ -84,9 +83,9 @@ exports.login = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        errors: errors.array() 
+        errors: errors.array(),
       });
     }
 
@@ -94,21 +93,21 @@ exports.login = async (req, res) => {
 
     // Vérifier si l'utilisateur existe (avec le password pour la comparaison)
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-    
+
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Email ou mot de passe incorrect'
+        message: 'Email ou mot de passe incorrect',
       });
     }
 
     // Vérifier le mot de passe
     const isPasswordCorrect = await user.comparePassword(password);
-    
+
     if (!isPasswordCorrect) {
       return res.status(401).json({
         success: false,
-        message: 'Email ou mot de passe incorrect'
+        message: 'Email ou mot de passe incorrect',
       });
     }
 
@@ -116,13 +115,12 @@ exports.login = async (req, res) => {
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: 'Votre compte a été désactivé. Contactez l\'administrateur.'
+        message: "Votre compte a été désactivé. Contactez l'administrateur.",
       });
     }
 
-    // Mettre à jour la dernière connexion
-    user.lastLogin = new Date();
-    await user.save();
+    // Mettre à jour la dernière connexion sans déclencher la validation complète
+    await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
 
     // Générer le token
     const token = generateToken(user._id);
@@ -137,18 +135,19 @@ exports.login = async (req, res) => {
         lastname: user.lastname,
         email: user.email,
         role: user.role,
+        nom: user.nom,
+        prenom: user.prenom,
         phone: user.phone,
         address: user.address,
-        avatar: user.avatar
-      }
+        avatar: user.avatar,
+      },
     });
-
   } catch (error) {
     console.error('Erreur connexion:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la connexion',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -163,7 +162,7 @@ exports.getProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'Utilisateur non trouvé'
+        message: 'Utilisateur non trouvé',
       });
     }
 
@@ -178,16 +177,15 @@ exports.getProfile = async (req, res) => {
         phone: user.phone,
         address: user.address,
         avatar: user.avatar,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
-
   } catch (error) {
     console.error('Erreur profil:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la récupération du profil',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -204,7 +202,7 @@ exports.updateProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'Utilisateur non trouvé'
+        message: 'Utilisateur non trouvé',
       });
     }
 
@@ -226,16 +224,15 @@ exports.updateProfile = async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
-        address: user.address
-      }
+        address: user.address,
+      },
     });
-
   } catch (error) {
     console.error('Erreur mise à jour profil:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la mise à jour du profil',
-      error: error.message
+      error: error.message,
     });
   }
 };

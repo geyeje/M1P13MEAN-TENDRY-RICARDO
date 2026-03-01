@@ -12,16 +12,17 @@
 
     <div *ngFor="let order of limitedOrders" class="order-item">
       <div class="order-info">
-        <div class="order-number">{{ order.orderNumber }}</div>
+        <div class="order-number">{{ order.orderNumber || order.orderCount || 'CMD-...' }}</div>
         <div class="order-date">{{ formatDate(order.createdAt) }}</div>
       </div>
 
       <div class="order-buyer" *ngIf="order.buyerId">
         <div class="buyer-avatar">
-          {{ order.buyerId.nom?.charAt(0) || 'U' }}
+          {{ (order.buyerId.lastname || order.buyerId.nom || 'U').charAt(0) }}
         </div>
         <div class="buyer-name">
-          {{ order.buyerId.nom || 'Client' }} {{ order.buyerId.prenom || '' }}
+          {{ order.buyerId.lastname || order.buyerId.nom || 'Client' }}
+          {{ order.buyerId.firstname || order.buyerId.prenom || '' }}
         </div>
       </div>
 

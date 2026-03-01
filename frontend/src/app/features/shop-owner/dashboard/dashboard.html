@@ -8,6 +8,18 @@
 
   <!-- Dashboard Content -->
   <div *ngIf="!loading">
+    <!-- No Shop Alert (instead of full page replacement) -->
+    <div *ngIf="!shop" class="alert alert-info">
+      <div class="alert-icon">🏪</div>
+      <div>
+        <strong>Vous n'avez pas encore de boutique</strong>
+        <p>
+          Créez votre boutique pour commencer à vendre.
+          <a routerLink="/shop-owner/create-shop">Créer ma boutique →</a>
+        </p>
+      </div>
+    </div>
+
     <!-- Header -->
     <div class="dashboard-header">
       <div>
@@ -17,24 +29,30 @@
 
       <div class="header-actions" *ngIf="shop">
         <div class="shop-status">
-          <span [ngClass]="getStatusClass(shop.statut)">
-            {{ getStatusLabel(shop.statut) }}
+          <span [ngClass]="getStatusClass(shop.status)">
+            {{ getStatusLabel(shop.status) }}
           </span>
         </div>
-        <a routerLink="/shop-owner/my-shop" class="btn-primary">
-          🏪 Voir ma boutique
-        </a>
+        <a routerLink="/shop-owner/my-shop" class="btn-primary"> 🏪 Voir ma boutique </a>
       </div>
     </div>
 
     <!-- Alert if shop not validated -->
-    <div *ngIf="shop?.statut === 'en_attente'" class="alert alert-warning">
+    <div *ngIf="shop && shop.status === 'en_attente'" class="alert alert-warning">
       <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        ></path>
       </svg>
       <div>
         <strong>Votre boutique est en attente de validation</strong>
-        <p>Un administrateur doit approuver votre boutique avant qu'elle ne soit visible publiquement.</p>
+        <p>
+          Un administrateur doit approuver votre boutique avant qu'elle ne soit visible
+          publiquement.
+        </p>
       </div>
     </div>
 
@@ -45,7 +63,8 @@
         [value]="stats.products"
         icon="📦"
         color="blue"
-        [subtitle]="'Produits en catalogue'">
+        [subtitle]="'Produits en catalogue'"
+      >
       </app-stat-widget>
 
       <app-stat-widget
@@ -53,7 +72,8 @@
         [value]="stats.orders"
         icon="🛒"
         color="green"
-        [subtitle]="'Commandes reçues'">
+        [subtitle]="'Commandes reçues'"
+      >
       </app-stat-widget>
 
       <app-stat-widget
@@ -61,15 +81,17 @@
         [value]="formatCurrency(stats.revenue)"
         icon="💰"
         color="orange"
-        [subtitle]="'Total des ventes'">
+        [subtitle]="'Total des ventes'"
+      >
       </app-stat-widget>
 
       <app-stat-widget
         title="Note Moyenne"
-        [value]="stats.avgRating.toFixed(1)"
+        [value]="(stats.avgRating || 0).toFixed(1)"
         icon="⭐"
         color="purple"
-        [subtitle]="'Sur 5 étoiles'">
+        [subtitle]="'Sur 5 étoiles'"
+      >
       </app-stat-widget>
     </div>
 
@@ -113,8 +135,7 @@
 
     <!-- Recent Orders -->
     <div class="recent-section">
-      <app-recent-orders-widget [orders]="recentOrders" [limit]="5">
-      </app-recent-orders-widget>
+      <app-recent-orders-widget [orders]="recentOrders" [limit]="5"> </app-recent-orders-widget>
     </div>
   </div>
 </div>

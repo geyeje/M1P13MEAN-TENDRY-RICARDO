@@ -34,7 +34,9 @@ const routes: Routes = [
           {
             path: 'products',
             loadComponent: () =>
-              import('./products/product-list/product-list').then((m) => m.ProductListComponent),
+              import('./products/product-list/product-list').then(
+                (m) => m.ShopProductListComponent,
+              ),
           },
         ],
       },

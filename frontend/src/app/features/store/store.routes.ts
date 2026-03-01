@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { StoreComponent } from './store.component';
 import { ShopLayout } from '../shop-owner/layout/shop-layout/shop-layout';
 import { DashboardComponent } from '../shop-owner/dashboard/dashboard';
-import { ProductListComponent } from '../shop-owner/products/product-list/product-list';
+import { ShopProductListComponent } from '../shop-owner/products/product-list/product-list';
 
 export const routes: Routes = [
   {
@@ -14,7 +14,7 @@ export const routes: Routes = [
         component: StoreComponent,
       },
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'products', component: ProductListComponent },
+      { path: 'products', component: ShopProductListComponent },
     ],
   },
 ];
