@@ -16,15 +16,17 @@ exports.createProduit = async (req, res) => {
     // Vérifier que le gérant a une boutique active
     const boutique = await Boutique.findOne({ userId: req.user.id });
     if (!boutique) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
-        message: 'Vous devez d\'abord créer une boutique'
+        noShop: true,
+        message: "Vous devez d'abord créer une boutique",
       });
     }
-    if (boutique.statut !== 'active') {
+    if (boutique.status !== 'active') {
+      // Matching schema field name
       return res.status(403).json({
         success: false,
-        message: 'Votre boutique doit être validée pour ajouter des produits'
+        message: 'Votre boutique doit être validée pour ajouter des produits',
       });
     }
 
@@ -39,20 +41,20 @@ exports.createProduit = async (req, res) => {
       colors,
       sizes,
       specs,
-      tags
+      tags,
     } = req.body;
 
     // Gérer les images uploadées
     let images = [];
     if (req.files && req.files.length > 0) {
-      images = req.files.map(file => file.path);
+      images = req.files.map((file) => file.path);
     }
 
     // Parser les champs JSON envoyés comme string (depuis form-data)
-    const parsedColors = typeof colors === 'string' ? JSON.parse(colors) : (colors || []);
-    const parsedSizes  = typeof sizes  === 'string' ? JSON.parse(sizes)  : (sizes  || []);
-    const parsedSpecs  = typeof specs  === 'string' ? JSON.parse(specs)  : (specs  || {});
-    const parsedTags   = typeof tags   === 'string' ? JSON.parse(tags)   : (tags   || []);
+    const parsedColors = typeof colors === 'string' ? JSON.parse(colors) : colors || [];
+    const parsedSizes = typeof sizes === 'string' ? JSON.parse(sizes) : sizes || [];
+    const parsedSpecs = typeof specs === 'string' ? JSON.parse(specs) : specs || {};
+    const parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags || [];
 
     const produit = await Produit.create({
       name,
@@ -62,16 +64,16 @@ exports.createProduit = async (req, res) => {
       category,
       stock,
       brand,
-      colors:  parsedColors,
-      sizes:   parsedSizes,
-      specs:   parsedSpecs,
-      tags:    parsedTags,
+      colors: parsedColors,
+      sizes: parsedSizes,
+      specs: parsedSpecs,
+      tags: parsedTags,
       images,
-      shopId: boutique._id
+      shopId: boutique._id,
     });
 
     // Incrémenter le compteur de produits de la boutique
-    boutique.productqt += 1;
+    boutique.productCount += 1;
     await boutique.save();
 
     await produit.populate('shopId', 'name logo');
@@ -79,15 +81,14 @@ exports.createProduit = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Produit créé avec succès',
-      produit
+      produit,
     });
-
   } catch (error) {
     console.error('Erreur création produit:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la création du produit',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -110,16 +111,16 @@ exports.getAllProduits = async (req, res) => {
       size,
       sort = '-createdAt',
       page = 1,
-      limit = 12
+      limit = 12,
     } = req.query;
 
     const filter = {};
 
-    if (category)          filter.category = category;
-    if (shop)              filter.shopId = shop;
-    if (brand)             filter.brand = brand;
-    if (color)             filter.colors = { $in: [color] };
-    if (size)              filter.sizes  = { $in: [size]  };
+    if (category) filter.category = category;
+    if (shop) filter.shopId = shop;
+    if (brand) filter.brand = brand;
+    if (color) filter.colors = { $in: [color] };
+    if (size) filter.sizes = { $in: [size] };
     if (onSale === 'true') filter.onSale = true;
     if (inStock === 'true') filter.stock = { $gt: 0 };
 
@@ -131,10 +132,10 @@ exports.getAllProduits = async (req, res) => {
 
     if (search) {
       filter.$or = [
-        { name:        { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
-        { brand:       { $regex: search, $options: 'i' } },
-        { tags:        { $in: [new RegExp(search, 'i')] } }
+        { brand: { $regex: search, $options: 'i' } },
+        { tags: { $in: [new RegExp(search, 'i')] } },
       ];
     }
 
@@ -154,15 +155,14 @@ exports.getAllProduits = async (req, res) => {
       total,
       totalPages: Math.ceil(total / limit),
       currentPage: parseInt(page),
-      produits
+      produits,
     });
-
   } catch (error) {
     console.error('Erreur récupération produits:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la récupération des produits',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -185,13 +185,12 @@ exports.getProduitById = async (req, res) => {
     await produit.save();
 
     res.status(200).json({ success: true, produit });
-
   } catch (error) {
     console.error('Erreur récupération produit:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la récupération du produit',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -203,7 +202,11 @@ exports.getMyProduits = async (req, res) => {
   try {
     const boutique = await Boutique.findOne({ userId: req.user.id });
     if (!boutique) {
-      return res.status(404).json({ success: false, message: 'Boutique non trouvée' });
+      return res.status(200).json({
+        success: false,
+        noShop: true,
+        message: 'Boutique non trouvée',
+      });
     }
 
     const produits = await Produit.find({ shopId: boutique._id }).sort('-createdAt');
@@ -211,15 +214,14 @@ exports.getMyProduits = async (req, res) => {
     res.status(200).json({
       success: true,
       count: produits.length,
-      produits
+      produits,
     });
-
   } catch (error) {
     console.error('Erreur récupération mes produits:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la récupération de vos produits',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -242,35 +244,33 @@ exports.updateProduit = async (req, res) => {
 
     // Ajouter les nouvelles images
     if (req.files && req.files.length > 0) {
-      const newImages = req.files.map(file => file.path);
+      const newImages = req.files.map((file) => file.path);
       req.body.images = [...(produit.images || []), ...newImages];
     }
 
     // Parser les champs JSON si envoyés comme string
-    ['colors', 'sizes', 'specs', 'tags'].forEach(field => {
+    ['colors', 'sizes', 'specs', 'tags'].forEach((field) => {
       if (req.body[field] && typeof req.body[field] === 'string') {
         req.body[field] = JSON.parse(req.body[field]);
       }
     });
 
-    produit = await Produit.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    ).populate('shopId', 'name logo');
+    produit = await Produit.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    }).populate('shopId', 'name logo');
 
     res.status(200).json({
       success: true,
       message: 'Produit mis à jour avec succès',
-      produit
+      produit,
     });
-
   } catch (error) {
     console.error('Erreur mise à jour produit:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la mise à jour du produit',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -296,13 +296,12 @@ exports.deleteProduit = async (req, res) => {
     await boutique.save();
 
     res.status(200).json({ success: true, message: 'Produit supprimé avec succès' });
-
   } catch (error) {
     console.error('Erreur suppression produit:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la suppression du produit',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -320,13 +319,11 @@ exports.addReview = async (req, res) => {
     }
 
     // Vérifier si déjà un avis
-    const alreadyReviewed = produit.reviews.find(
-      r => r.userId.toString() === req.user.id
-    );
+    const alreadyReviewed = produit.reviews.find((r) => r.userId.toString() === req.user.id);
     if (alreadyReviewed) {
       return res.status(400).json({
         success: false,
-        message: 'Vous avez déjà laissé un avis sur ce produit'
+        message: 'Vous avez déjà laissé un avis sur ce produit',
       });
     }
 
@@ -334,7 +331,7 @@ exports.addReview = async (req, res) => {
 
     // Recalculer la moyenne
     const total = produit.reviews.reduce((acc, r) => acc + r.rating, 0);
-    produit.avgRating  = total / produit.reviews.length;
+    produit.avgRating = total / produit.reviews.length;
     produit.reviewCount = produit.reviews.length;
 
     await produit.save();
@@ -343,15 +340,14 @@ exports.addReview = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Avis ajouté avec succès',
-      produit
+      produit,
     });
-
   } catch (error) {
     console.error('Erreur ajout avis:', error);
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de l\'ajout de l\'avis',
-      error: error.message
+      message: "Erreur lors de l'ajout de l'avis",
+      error: error.message,
     });
   }
 };
@@ -386,15 +382,14 @@ exports.updateStock = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Stock mis à jour',
-      stock: produit.stock
+      stock: produit.stock,
     });
-
   } catch (error) {
     console.error('Erreur stock:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la mise à jour du stock',
-      error: error.message
+      error: error.message,
     });
   }
 };

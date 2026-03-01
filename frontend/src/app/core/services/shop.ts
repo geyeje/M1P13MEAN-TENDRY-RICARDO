@@ -15,11 +15,11 @@ export interface Shop {
   email: string;
   adresse: string;
   schedule?: any;
-  statut: 'en_attente' | 'active' | 'suspendue';
-  productqt: number;
-  commandeqt: number;
+  status: 'en_attente' | 'active' | 'suspendue';
+  productCount: number;
+  commandCount: number;
   CA: number;
-  avgRating: number;
+  note: number;
   reviewCount: number;
   socialNetwork?: any;
   userId?: any;

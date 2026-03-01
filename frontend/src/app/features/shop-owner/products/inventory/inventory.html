@@ -1,25 +1,25 @@
 <div class="p-6 space-y-6">
-  
   <div class="flex justify-between items-center">
     <h1 class="text-3xl font-black text-white">
       {{ isAdding() ? 'Nouveau Produit' : 'Mon Inventaire' }}
     </h1>
-    
-    <button (click)="toggleMode()" 
-            class="px-6 py-3 rounded-xl font-bold transition-all"
-            [class]="isAdding() ? 'bg-white/10 text-white' : 'bg-matcha-spring text-black'">
+
+    <button
+      (click)="toggleMode()"
+      class="px-6 py-3 rounded-xl font-bold transition-all"
+      [class]="isAdding() ? 'bg-white/10 text-white' : 'bg-matcha-spring text-black'"
+    >
       {{ isAdding() ? 'Annuler' : 'Ajouter un trésor' }}
     </button>
   </div>
 
-  <hr class="border-white/5">
+  <hr class="border-white/5" />
 
   @if (isAdding()) {
     <div class="max-w-4xl mx-auto">
       <app-product-form (saved)="onProductSaved()" />
     </div>
   } @else {
-    <app-product-list [produits]="products()" />
+    <app-shop-product-list [produits]="products()" />
   }
-
 </div>

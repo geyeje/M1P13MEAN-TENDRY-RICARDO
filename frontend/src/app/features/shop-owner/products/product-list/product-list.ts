@@ -6,13 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../../../core/services/product.service';
 
 @Component({
-  selector: 'app-product-list',
+  selector: 'app-shop-product-list',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss'],
 })
-export class ProductListComponent implements OnInit {
+export class ShopProductListComponent implements OnInit {
   @Input() produits: Product[] = [];
   products: Product[] = [];
   loading = false;

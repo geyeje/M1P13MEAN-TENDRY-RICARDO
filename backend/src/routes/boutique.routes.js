@@ -8,18 +8,23 @@ const upload = require('../middlewares/upload.middleware');
 
 // Validation pour création
 const createBoutiqueValidation = [
-  body('name')                    // ← Changé de 'nom' à 'name'
+  body('name') // ← Changé de 'nom' à 'name'
     .trim()
-    .notEmpty().withMessage('Le nom est requis')
-    .isLength({ min: 3, max: 100 }).withMessage('Le nom doit contenir entre 3 et 100 caractères'),
-  
+    .notEmpty()
+    .withMessage('Le nom est requis')
+    .isLength({ min: 3, max: 100 })
+    .withMessage('Le nom doit contenir entre 3 et 100 caractères'),
+
   body('description')
     .trim()
-    .notEmpty().withMessage('La description est requise')
-    .isLength({ min: 10, max: 1000 }).withMessage('La description doit contenir entre 10 et 1000 caractères'),
-  
-  body('categorie')
-    .notEmpty().withMessage('La catégorie est requise')
+    .notEmpty()
+    .withMessage('La description est requise')
+    .isLength({ min: 10, max: 1000 })
+    .withMessage('La description doit contenir entre 10 et 1000 caractères'),
+
+  body('category')
+    .notEmpty()
+    .withMessage('La catégorie est requise')
     .isIn([
       'Mode & Vêtements',
       'Électronique & High-tech',
@@ -31,43 +36,48 @@ const createBoutiqueValidation = [
       'Jouets & Enfants',
       'Santé & Bien-être',
       'Bijouterie & Accessoires',
-      'Services'
-    ]).withMessage('Catégorie invalide'),
-  
-  body('phone')                   // ← Changé de 'telephone' à 'phone'
+      'Services',
+      'Autres',
+    ])
+    .withMessage('Catégorie invalide'),
+
+  body('phone') // ← Changé de 'telephone' à 'phone'
     .trim()
-    .notEmpty().withMessage('Le téléphone est requis')
-    .matches(/^[0-9]{10}$/).withMessage('Numéro de téléphone invalide (10 chiffres)'),
-  
+    .notEmpty()
+    .withMessage('Le téléphone est requis')
+    .matches(/^[0-9]{10}$/)
+    .withMessage('Numéro de téléphone invalide (10 chiffres)'),
+
   body('email')
     .trim()
-    .notEmpty().withMessage('L\'email est requis')
-    .isEmail().withMessage('Email invalide'),
-  
-  body('adresse')
-    .trim()
-    .notEmpty().withMessage('L\'adresse est requise')
+    .notEmpty()
+    .withMessage("L'email est requis")
+    .isEmail()
+    .withMessage('Email invalide'),
+
+  body('adresse').trim().notEmpty().withMessage("L'adresse est requise"),
 ];
 
 // Validation pour mise à jour
 const updateBoutiqueValidation = [
-  body('name')                    // ← Changé
+  body('name') // ← Changé
     .optional()
     .trim()
-    .isLength({ min: 3, max: 100 }).withMessage('Le nom doit contenir entre 3 et 100 caractères'),
-  
+    .isLength({ min: 3, max: 100 })
+    .withMessage('Le nom doit contenir entre 3 et 100 caractères'),
+
   body('description')
     .optional()
     .trim()
-    .isLength({ min: 10, max: 1000 }).withMessage('La description doit contenir entre 10 et 1000 caractères'),
-  
-  body('phone')                   // ← Changé
+    .isLength({ min: 10, max: 1000 })
+    .withMessage('La description doit contenir entre 10 et 1000 caractères'),
+
+  body('phone') // ← Changé
     .optional()
-    .matches(/^[0-9]{10}$/).withMessage('Numéro de téléphone invalide'),
-  
-  body('email')
-    .optional()
-    .isEmail().withMessage('Email invalide')
+    .matches(/^[0-9]{10}$/)
+    .withMessage('Numéro de téléphone invalide'),
+
+  body('email').optional().isEmail().withMessage('Email invalide'),
 ];
 
 // Routes publiques
@@ -75,18 +85,16 @@ router.get('/', boutiqueController.getAllBoutiques);
 router.get('/:id', boutiqueController.getBoutiqueById);
 
 // Routes protégées - Gérant
-router.get(
-  '/me/myboutique',
-  protect,
-  authorize('boutique'),
-  boutiqueController.getMyBoutique
-);
+router.get('/me/myboutique', protect, authorize('boutique'), boutiqueController.getMyBoutique);
 
 router.post(
   '/',
   protect,
   authorize('boutique'),
-  upload.single('logo'),
+  upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'banner', maxCount: 1 },
+  ]),
   createBoutiqueValidation,
   boutiqueController.createBoutique
 );
@@ -95,31 +103,19 @@ router.put(
   '/:id',
   protect,
   authorize('boutique', 'admin'),
-  upload.single('logo'),
+  upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'banner', maxCount: 1 },
+  ]),
   updateBoutiqueValidation,
   boutiqueController.updateBoutique
 );
 
-router.delete(
-  '/:id',
-  protect,
-  authorize('boutique', 'admin'),
-  boutiqueController.deleteBoutique
-);
+router.delete('/:id', protect, authorize('boutique', 'admin'), boutiqueController.deleteBoutique);
 
 // Routes admin
-router.get(
-  '/stats/overview',
-  protect,
-  authorize('admin'),
-  boutiqueController.getBoutiquesStats
-);
+router.get('/stats/overview', protect, authorize('admin'), boutiqueController.getBoutiquesStats);
 
-router.put(
-  '/:id/validate',
-  protect,
-  authorize('admin'),
-  boutiqueController.validateBoutique
-);
+router.put('/:id/validate', protect, authorize('admin'), boutiqueController.validateBoutique);
 
 module.exports = router;

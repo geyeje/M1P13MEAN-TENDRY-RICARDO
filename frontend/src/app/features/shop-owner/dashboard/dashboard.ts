@@ -2,23 +2,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ShopService, Shop } from '../../../core/services/Shop.service';
+import { ShopService, Shop } from '../../../core/services/shop';
 import { ProductService } from '../../../core/services/product.service';
 import { OrderService, Order } from '../../../core/services/order.service';
 import { StatWidget } from '../components/stat-widget/stat-widget';
-import { RecentOrdersWidgetComponent} from '../components/recent-orders-widget/recent-orders-widget';
+import { RecentOrdersWidgetComponent } from '../components/recent-orders-widget/recent-orders-widget';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    StatWidget,
-    RecentOrdersWidgetComponent
-  ],
+  imports: [CommonModule, RouterModule, StatWidget, RecentOrdersWidgetComponent],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+  styleUrls: ['./dashboard.scss'],
 })
 export class DashboardComponent implements OnInit {
   loading = true;
@@ -30,13 +25,13 @@ export class DashboardComponent implements OnInit {
     products: 0,
     orders: 0,
     revenue: 0,
-    avgRating: 0
+    avgRating: 0,
   };
 
   constructor(
     private shopService: ShopService,
     private productService: ProductService,
-    private orderService: OrderService
+    private orderService: OrderService,
   ) {}
 
   ngOnInit() {
@@ -50,18 +45,20 @@ export class DashboardComponent implements OnInit {
     this.shopService.getMyShop().subscribe({
       next: (response) => {
         if (response.success && response.boutique) {
+          const b = response.boutique as any;
           this.shop = response.boutique;
-          this.stats.products = response.boutique.productqt;
-          this.stats.orders = response.boutique.commandeqt;
-          this.stats.revenue = response.boutique.CA;
-          this.stats.avgRating = response.boutique.avgRating;
+          // Support both old and new field names
+          this.stats.products = b.productCount ?? b.productqt ?? 0;
+          this.stats.orders = b.commandCount ?? b.commandeqt ?? 0;
+          this.stats.revenue = b.CA ?? 0;
+          this.stats.avgRating = b.note ?? b.avgRating ?? 0;
         }
         this.loading = false;
       },
       error: (error) => {
         console.error('Erreur chargement boutique:', error);
         this.loading = false;
-      }
+      },
     });
 
     // Charger les dernières commandes
@@ -73,24 +70,24 @@ export class DashboardComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erreur chargement commandes:', error);
-      }
+      },
     });
   }
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      'en_attente': '⏳ En attente de validation',
-      'active': ' Active',
-      'suspendue': ' Suspendue'
+      en_attente: '⏳ En attente de validation',
+      active: ' Active',
+      suspendue: ' Suspendue',
     };
     return labels[status] || status;
   }
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {
-      'en_attente': 'status-warning',
-      'active': 'status-success',
-      'suspendue': 'status-danger'
+      en_attente: 'status-warning',
+      active: 'status-success',
+      suspendue: 'status-danger',
     };
     return classes[status] || '';
   }
@@ -98,7 +95,7 @@ export class DashboardComponent implements OnInit {
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'EUR',
     }).format(amount);
   }
 }

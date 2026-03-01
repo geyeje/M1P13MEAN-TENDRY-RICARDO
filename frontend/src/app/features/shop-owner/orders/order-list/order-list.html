@@ -1,1 +1,53 @@
-<p>order-list works!</p>
+<div class="orders-container">
+  <div class="page-header">
+    <h1>🛒 Mes Commandes</h1>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button *ngFor="let s of statuses" 
+            (click)="filterByStatus(s.value)"
+            [class.active]="selectedStatus === s.value"
+            class="filter-btn">
+      {{ s.label }}
+    </button>
+  </div>
+
+  <!-- Table -->
+  <table class="orders-table" *ngIf="!loading && orders.length > 0">
+    <thead>
+      <tr>
+        <th>N° Commande</th>
+        <th>Date</th>
+        <th>Client</th>
+        <th>Montant</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let order of orders">
+        <td><strong>{{ order.orderNumber }}</strong></td>
+        <td>{{ formatDate(order.createdAt) }}</td>
+        <td>{{ order.buyerId?.nom }} {{ order.buyerId?.prenom }}</td>
+        <td><strong>{{ formatCurrency(order.totalAmount) }}</strong></td>
+        <td>
+          <span class="badge" [ngClass]="'badge-' + orderService.getStatusColor(order.status)">
+            {{ orderService.getStatusLabel(order.status) }}
+          </span>
+        </td>
+        <td>
+          <a [routerLink]="['/shop-owner/orders', order._id]" class="btn-view">👁️ Voir</a>
+          <select (change)="quickUpdateStatus(order._id, $any($event.target).value)" 
+                  [value]="order.status" class="status-select">
+            <option value="pending">En attente</option>
+            <option value="confirmed">Confirmée</option>
+            <option value="processing">En préparation</option>
+            <option value="shipped">Expédiée</option>
+            <option value="delivered">Livrée</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

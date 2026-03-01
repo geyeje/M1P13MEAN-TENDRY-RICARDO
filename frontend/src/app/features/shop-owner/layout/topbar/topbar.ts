@@ -37,7 +37,7 @@ export class Topbar implements OnInit {
       next: (response) => {
         if (response.success && response.boutique) {
           this.shopName = response.boutique.name;
-          this.shopStatus = response.boutique.statut;
+          this.shopStatus = response.boutique.status;
         }
       },
       error: (error) => {

@@ -1,3 +1,57 @@
 :host {
   display: block;
 }
+// // Violet/Rose (actuel)
+// background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+// // Vert
+// background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+
+// // Bleu
+// background: linear-gradient(135deg, #667eea 0%, #3b82f6 100%);
+
+// // Orange
+// background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+// component.scss
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+}
