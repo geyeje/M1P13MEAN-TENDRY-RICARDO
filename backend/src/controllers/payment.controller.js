@@ -85,6 +85,12 @@ exports.confirmPayment = async (req, res) => {
     const { paymentIntentId, shippingAddress, cartItems } = req.body;
     const userId = req.user?.id;
 
+    console.log('💳 confirmPayment appelé');
+    console.log('  paymentIntentId:', paymentIntentId);
+    console.log('  userId:', userId);
+    console.log('  shippingAddress:', shippingAddress);
+    console.log('  cartItems:', cartItems);
+
     if (!paymentIntentId || !shippingAddress || !cartItems?.length) {
       return res.status(400).json({ 
         error: 'Données manquantes',
@@ -93,7 +99,9 @@ exports.confirmPayment = async (req, res) => {
     }
 
     // Récupérer le PaymentIntent depuis Stripe
+    console.log('📍 Récupération PaymentIntent...');
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    console.log('✅ PaymentIntent récupéré:', paymentIntent.id, 'Status:', paymentIntent.status);
 
     // Vérifier que le paiement est réussi
     if (paymentIntent.status !== 'succeeded') {
@@ -105,6 +113,10 @@ exports.confirmPayment = async (req, res) => {
 
     // ✅ ÉTAPE CRITIQUE: Vérifier le montant (sécurité)
     const expectedAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    console.log('📍 Vérification montant...');
+    console.log('  Montant Stripe:', paymentIntent.amount / 100, '€');
+    console.log('  Montant attendu:', expectedAmount, '€');
+    
     if (Math.abs(paymentIntent.amount / 100 - expectedAmount) > 0.01) {
       return res.status(400).json({ 
         error: 'Montant du paiement ne correspond pas',
@@ -113,19 +125,50 @@ exports.confirmPayment = async (req, res) => {
     }
 
     // Créer la commande en base de données
+    console.log('📍 Création de la commande MongoDB...');
+    
+    // Récupérer l'utilisateur pour obtenir son téléphone
+    const user = await User.findById(userId);
+    console.log('  User trouvé:', user?.email);
+
+    // Générer un numéro de commande unique
+    const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    console.log('  Order number généré:', orderNumber);
+
+    // Formater les items avec unitPrice et subtotal
+    const formattedItems = cartItems.map(item => ({
+      productId: item.productId,
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      subtotal: item.price * item.quantity,
+    }));
+
+    // Convertir shippingAddress en string
+    const addressString = `${shippingAddress.street}, ${shippingAddress.postalCode} ${shippingAddress.city}, ${shippingAddress.country}`;
+
     const newCommande = new Commande({
-      userId: userId,
-      items: cartItems,
-      total: paymentIntent.amount / 100,
-      shippingAddress: shippingAddress,
-      paymentMethod: 'stripe',
-      paymentIntentId: paymentIntentId,
-      stripeChargeId: paymentIntent.charges.data[0]?.id,
-      status: 'confirmed', // ou 'pending' selon ta logique
-      orderDate: new Date(),
+      orderNumber: orderNumber,
+      buyerId: userId,
+      items: formattedItems,
+      totalAmount: paymentIntent.amount / 100,
+      status: 'confirmed',
+      paymentStatus: 'paid',
+      shippingAddress: addressString,
+      phone: user?.telephone || '+33600000000', // fallback si pas de téléphone
+      note: `Paiement Stripe: ${paymentIntentId}`,
+      deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // +7 jours
     });
 
+    console.log('  Commande prête à sauvegarder:', {
+      orderNumber: newCommande.orderNumber,
+      buyerId: newCommande.buyerId,
+      totalAmount: newCommande.totalAmount,
+      itemCount: newCommande.items.length,
+    });
+    
     await newCommande.save();
+    console.log('✅ Commande créée:', newCommande._id);
 
     // Notification Stripe Webhooks (en production, c'est via webhooks)
     console.log(`✅ Commande créée: ${newCommande._id} - Paiement: ${paymentIntentId}`);
@@ -138,7 +181,8 @@ exports.confirmPayment = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erreur confirmation paiement:', error);
+    console.error('❌ Erreur confirmPayment:', error);
+    console.error('  Stack:', error.stack);
     res.status(500).json({ 
       error: error.message,
       code: 'PAYMENT_CONFIRMATION_FAILED'

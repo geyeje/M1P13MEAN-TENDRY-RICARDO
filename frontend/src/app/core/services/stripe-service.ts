@@ -34,8 +34,17 @@ interface PaymentConfirmRequest {
 export class StripeService {
   private http = inject(HttpClient);
   
-  // ✅ Clé PUBLIQUE (publishable key)
-  private stripePromise = loadStripe('pk_test_51T6GHF9bqT14xCYZAaMCtnR9rAvFLrBCUykBiSK1g5HewjZSRmBuM2xNSVeZen1ZH2YXGff3cQqEd6Ex96aMACg00xnYZJNMi');
+  // ✅ Clé PUBLIQUE (publishable key) stockée dans l'environnement
+  private stripePromise = (() => {
+    const key = (environment as any).stripePublicKey || '';
+    if (!key) {
+      console.error('Stripe public key manquante dans environment.ts');
+    }
+    if (key.startsWith('sk_')) {
+      console.error('⚠️ Une clé secrète Stripe (<sk_>) ne doit jamais être utilisée côté client ! vérifiez vos variables.');
+    }
+    return loadStripe(key);
+  })();
   
   isLoading = signal(false);
   error = signal<string | null>(null);
@@ -76,26 +85,49 @@ export class StripeService {
    */
   async initializeElements(clientSecret: string): Promise<StripeElements | null> {
     try {
+      console.log('🔧 initializeElements called avec clientSecret:', clientSecret.slice(0, 20) + '...');
+      
       const stripe = await this.stripePromise;
+      console.log('✅ Stripe instance:', stripe);
+      
       if (!stripe) throw new Error('Stripe failed to load');
 
       // Options pour les éléments
       const options: any = {
         clientSecret, // ✅ Lié au PaymentIntent
         appearance: {
-          theme: 'night',
+          theme: 'stripe',
           variables: {
             colorPrimary: '#00ba00', // Matcha green
-            colorBackground: '#1a1a1a',
+            colorBackground: '#ffffff',
+            colorText: '#333333',
+            colorDanger: '#fa755a',
             fontFamily: 'system-ui, sans-serif',
+            fontSizeBase: '16px',
+            spacingUnit: '4px',
+            borderRadius: '8px',
+          },
+          rules: {
+            '.Input': {
+              border: '1px solid #e5e7eb',
+              boxShadow: 'none',
+              padding: '12px',
+            },
+            '.Input:focus': {
+              borderColor: '#00ba00',
+              boxShadow: '0 0 0 2px rgba(0, 186, 0, 0.1)',
+            },
           },
         },
       };
 
+      console.log('📍 Création des elements avec options:', options);
       const elements = stripe.elements(options as any);
+      console.log('✅ Elements créés:', elements);
+      
       return elements;
     } catch (err) {
-      console.error('Erreur initialisation éléments:', err);
+      console.error('❌ Erreur initializeElements:', err);
       return null;
     }
   }

@@ -40,9 +40,35 @@ input, select {
   background-color: #1a3a1a;
 }
 
-/* Stripe Payment Element */
+/* ✅ Stripe Payment Element Container */
 #payment-element {
   animation: slideIn 0.3s ease;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  min-height: 80px;
+  
+  /* Assurer que le contenu est visible */
+  display: block;
+  overflow: visible;
+  z-index: 1;
+
+  /* Styles pour l'iframe Stripe */
+  iframe {
+    border: none;
+    border-radius: 4px;
+  }
+
+  /* Fallback si Stripe n'est pas chargé */
+  &:empty::after {
+    content: 'Chargement du formulaire de paiement...';
+    color: #666;
+    font-size: 14px;
+    display: block;
+    padding: 20px;
+    text-align: center;
+  }
 }
 
 /* Custom Scrollbar */

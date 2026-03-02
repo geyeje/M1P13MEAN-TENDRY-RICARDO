@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -58,6 +58,16 @@ export class CheckoutComponent implements OnInit {
       postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
       country: ['France', Validators.required],
     });
+
+    // ✅ Monter le PaymentElement quand on passe à l'étape payment
+    effect(() => {
+      if (this.step() === 'payment' && this.stripeElements()) {
+        // Attendre que Angular ait rendu le DOM
+        requestAnimationFrame(() => {
+          this.mountPaymentElement();
+        });
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -88,48 +98,48 @@ export class CheckoutComponent implements OnInit {
     try {
       this.isLoading.set(true);
       this.errorMessage.set(null);
+      console.log('👉 Étape 1: Création du PaymentIntent');
 
-      let currentUser: any = null;
-      this.authService.currentUser$.subscribe(user => {
-        currentUser = user;
-      });
-      if (!currentUser?.email) {
+      const currentUser: any = null;
+      let user: any = null;
+      this.authService.currentUser$.subscribe(u => { user = u; });
+      
+      if (!user?.email) {
         throw new Error('Email utilisateur non trouvé');
       }
+      console.log('✅ User:', user.email);
 
       // 1️⃣ Créer le PaymentIntent sur le serveur
+      console.log('📍 Appel createPaymentIntent...');
       const response = await this.stripeService.createPaymentIntent(
         this.cartTotal(),
         this.cartService.items(),
-        currentUser.email
+        user.email
       );
+      console.log('✅ PaymentIntent créé:', response);
 
       this.clientSecret.set(response.clientSecret);
       this.paymentIntentId.set(response.intentId);
 
       // 2️⃣ Initialiser les Stripe Elements
+      console.log('📍 Initialisation des Stripe Elements...');
       const elements = await this.stripeService.initializeElements(response.clientSecret);
       if (!elements) {
         throw new Error('Impossible d\'initialiser Stripe');
       }
+      console.log('✅ Stripe Elements initialisés');
 
       this.stripeElements.set(elements);
 
-      // 3️⃣ Monter le Payment Element dans le DOM
-      setTimeout(() => {
-        const container = document.getElementById('payment-element');
-        if (container && elements) {
-          const paymentElement = elements.create('payment');
-          paymentElement.mount('#payment-element');
-        }
-      }, 0);
-
       // Passer à l'étape du paiement
+      // (l'effect dans le constructor va monter automatiquement le PaymentElement)
+      console.log('📍 Changement vers étape payment');
       this.step.set('payment');
+      console.log('✅ Étape 1 complète, passé à étape 2');
 
     } catch (error: any) {
       this.errorMessage.set(error?.message || 'Erreur lors de la préparation du paiement');
-      console.error('Erreur préparation paiement:', error);
+      console.error('❌ Erreur étape 1:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -150,15 +160,22 @@ export class CheckoutComponent implements OnInit {
     try {
       this.isLoading.set(true);
       this.errorMessage.set(null);
+      console.log('💳 Étape 2: Confirmation du paiement Stripe');
 
       // ✅ Confirmer le paiement avec Stripe
+      console.log('📍 Appel confirmPayment...');
       const paymentResult = await this.stripeService.confirmPayment(elements);
+      console.log('✅ Résultat confirmPayment:', paymentResult);
 
       if (!paymentResult.success) {
-        throw new Error(paymentResult.error?.message || 'Paiement échoué');
+        const errorMsg = typeof paymentResult.error === 'string' 
+          ? paymentResult.error 
+          : paymentResult.error?.message || 'Paiement échoué';
+        throw new Error(errorMsg);
       }
 
       // ✅ Paiement réussi, créer la commande côté serveur
+      console.log('📍 Appel confirmOrder...');
       const confirmResult = await this.stripeService.confirmOrder({
         paymentIntentId: intentId,
         shippingAddress: this.shippingForm.value,
@@ -169,9 +186,10 @@ export class CheckoutComponent implements OnInit {
           quantity: item.quantity,
         })),
       });
+      console.log('✅ Résultat confirmOrder:', confirmResult);
 
       if (!confirmResult.success) {
-        throw new Error(confirmResult.error);
+        throw new Error(confirmResult.error || 'Erreur confirmation commande');
       }
 
       // ✅ Succès!
@@ -189,8 +207,9 @@ export class CheckoutComponent implements OnInit {
       }, 2000);
 
     } catch (error: any) {
-      this.errorMessage.set(error?.message || 'Erreur lors du paiement');
-      console.error('Erreur paiement:', error);
+      const errorMsg = error?.message || 'Erreur lors du paiement';
+      this.errorMessage.set(errorMsg);
+      console.error('❌ Erreur étape 2 paiement:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -212,6 +231,58 @@ export class CheckoutComponent implements OnInit {
   cancel(): void {
     if (confirm('Êtes-vous sûr? Les données saisies seront perdues.')) {
       this.router.navigate(['/shopping-cart']);
+    }
+  }
+
+  /**
+   * Monter le Payment Element dans le DOM
+   */
+  private mountPaymentElement(): void {
+    try {
+      const elements = this.stripeElements();
+      const container = document.getElementById('payment-element');
+
+      console.log('🔧 mountPaymentElement called');
+      console.log('Elements:', elements);
+      console.log('Container:', container);
+
+      if (!container) {
+        console.error('❌ Conteneur payment-element non trouvé');
+        this.errorMessage.set('Conteneur de paiement non trouvé');
+        return;
+      }
+
+      if (!elements) {
+        console.error('❌ StripeElements non initialisé');
+        this.errorMessage.set('Stripe non initialisé');
+        return;
+      }
+
+      // Nettoyer les enfants existants
+      container.innerHTML = '';
+      console.log('✅ Container nettoyé');
+
+      // ✅ Créer et monter le Payment Element
+      console.log('📍 Création du paymentElement...');
+      const paymentElement = elements.create('payment');
+      console.log('📍 paymentElement créé:', paymentElement);
+
+      // écouter les erreurs de chargement
+      paymentElement.on('loaderror', (evt: any) => {
+        console.error('⚠️ paymentElement loaderror event:', evt);
+        this.errorMessage.set('Erreur chargement formulaire :' + (evt.error?.message || evt.error));
+      });
+      paymentElement.on('ready', () => {
+        console.log('✅ paymentElement ready event');
+      });
+
+      console.log('📍 Mounting sur #payment-element...');
+      paymentElement.mount('#payment-element');
+      console.log('✅ PaymentElement monté avec succès');
+
+    } catch (error) {
+      console.error('❌ Erreur mounting PaymentElement:', error);
+      this.errorMessage.set(`Erreur Stripe: ${error}`);
     }
   }
 }
