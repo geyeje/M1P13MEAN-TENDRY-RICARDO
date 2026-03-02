@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ProductListComponent } from '../../shared/components/product_list/product_list.component';
+import { ProductListComponent } from '../customer/product_list/product_list.component';
 import { ProductService, Product } from '../../core/services/product.service';
 import { signal } from '@angular/core';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
