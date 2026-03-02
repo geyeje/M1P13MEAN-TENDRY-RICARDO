@@ -98,7 +98,7 @@
       </div>
       <div class="shop-logo-container">
         <div class="shop-logo" *ngIf="shop.logo">
-          <img [src]="getImageUrl(shop.logo)" [alt]="shop.name" />
+          <img [src]="getImageUrl(shop.logo)" [alt]="shop.name" appImageError />
         </div>
         <div class="shop-logo logo-placeholder" *ngIf="!shop.logo">
           {{ shop.name.charAt(0) }}

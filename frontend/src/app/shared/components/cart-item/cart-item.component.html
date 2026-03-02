@@ -1,5 +1,5 @@
 <div class="flex items-center gap-4 p-4 !bg-matcha-dark rounded-lg border border-white/10 shadow-xl">
-  <img [src]="item().product.images[0]" alt="{{item().product.name}}" class="w-20 h-20 object-cover rounded" />
+  <img [src]="getImageUrl(item().product.images[0])" alt="{{item().product.name}}" class="w-20 h-20 object-cover rounded" appImageError />
   <div class="flex-1">
     <h3 class="text-white font-bold">{{ item().product.name }}</h3>
     <p class="text-gray-400 text-sm">{{ item().product.category }}</p>

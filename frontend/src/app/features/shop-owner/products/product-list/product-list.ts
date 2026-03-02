@@ -5,11 +5,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../../../core/services/product.service';
 import { environment } from '../../../../../environments/environment';
+import { ImageErrorDirective } from '../../../../shared/directives/image-error.directive';
 
 @Component({
   selector: 'app-shop-product-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ImageErrorDirective],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss'],
 })

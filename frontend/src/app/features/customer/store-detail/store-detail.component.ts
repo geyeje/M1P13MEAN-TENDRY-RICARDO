@@ -2,11 +2,13 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ShopService, Shop } from '../../../core/services/Shop.service';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../environments/environment';
+import { ImageErrorDirective } from '../../../shared/directives/image-error.directive';
 
 @Component({
   selector: 'app-store-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ImageErrorDirective],
   templateUrl: './store-detail.component.html',
   styleUrl: './store-detail.component.scss',
 })
@@ -39,5 +41,11 @@ export class StoreDetail implements OnInit {
       this.error.set('Identifiant manquant');
       this.loading.set(false);
     }
+  }
+
+  getImageUrl(path: string): string {
+    if (!path) return 'assets/no-image.png';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl.replace('/api', '')}${path}`;
   }
 }

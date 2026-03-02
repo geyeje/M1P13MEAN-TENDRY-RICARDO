@@ -5,7 +5,7 @@
       [src]="logoUrl"
       alt="{{ boutique.name }} logo"
       class="h-full w-full object-cover"
-      (error)="$any($event.target).src = 'assets/no-image.png'"
+      appImageError
     />
   </div>
 
@@ -31,7 +31,7 @@
 
     <a
       [routerLink]="['/customer','boutique', boutique._id]"
-      class="mt-2 inline-block text-center bg-matcha-spring text-white py-2 px-4 rounded hover:bg-matcha-spring-dark"
+      class="mt-2 !no-underline inline-block text-center bg-matcha-spring text-white py-2 px-4 rounded hover:bg-matcha-spring-dark"
       >Visiter</a
     >
   </div>

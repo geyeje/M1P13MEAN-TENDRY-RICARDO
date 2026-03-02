@@ -7,7 +7,7 @@
       [src]="getImageUrl(product().images[0])"
       [alt]="product().name"
       class="h-48 w-full object-cover"
-      (error)="$any($event.target).src = 'assets/no-image.png'"
+      appImageError
     />
   </div>
 

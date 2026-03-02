@@ -10,9 +10,10 @@
       <div class="bg-white rounded-lg p-6 shadow-md">
         <div class="flex flex-col md:flex-row items-center gap-4">
           <img
-            [src]="boutique()?.logo || 'assets/no-image.png'"
+            [src]="getImageUrl(boutique()?.logo || '')"
             alt="{{ boutique()?.name }}"
             class="h-32 w-32 object-cover rounded"
+            appImageError
           />
           <div>
             <h1 class="text-2xl font-bold">{{ boutique()?.name }}</h1>
