@@ -48,24 +48,16 @@
       <ng-container *ngIf="currentUser()?.role !== 'admin' && currentUser()?.role !== 'acheteur' && currentUser()?.role !== 'boutique'">
         <div class="w-10 h-10 bg-matcha-spring/20 rounded-full flex items-center justify-center font-bold text-matcha-spring">U</div>
       </ng-container>
-      <div class="overflow-hidden text-ellipsis">
+      <div class="overflow-hidden !text-ellipsis !h-16">
         <p class="text-white font-bold text-sm truncate">{{name()}}</p>
-        <p *ngIf="currentUser()" class="text-xs text-gray-500 truncate">Connecté</p>
+        <p *ngIf="currentUser()" class="text-xs text-green-500 truncate">Connecté</p>
       </div>
     </div>
   </div>
 
   <!-- Footer -->
-  <div class="sidebar-footer">
-    <div class="user-info" *ngIf="currentUser() as user">
-      <div class="user-avatar">{{ user.nom.charAt(0) }}{{ user.prenom.charAt(0) }}</div>
-      <div class="user-details" *ngIf="isOpen()">
-        <div class="user-name">{{ user.nom }} {{ user.prenom }}</div>
-        <div class="user-role">Utilisateur</div>
-      </div>
-    </div>
-  </div>
-  <button class="btn-logout" (click)="logout()" [title]="'Se déconnecter'">
+  
+  <button class="btn-logout mt-4" (click)="logout()" [title]="'Se déconnecter'">
     <span class="logout-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>
     <span class="logout-text" *ngIf="isOpen()">Déconnexion</span>
   </button>
