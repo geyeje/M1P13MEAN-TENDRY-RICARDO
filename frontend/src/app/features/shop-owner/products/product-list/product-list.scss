@@ -18,7 +18,7 @@
   }
 
   p {
-    color: #6b7280;
+    color: var(--cui-secondary-color);
     margin: 0.5rem 0 0 0;
   }
 }
@@ -47,15 +47,23 @@
   margin-bottom: 2rem;
 }
 
-.search-input, .filter-select {
+.search-input,
+.filter-select {
   padding: 0.75rem 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--cui-border-color);
   border-radius: 8px;
   font-size: 1rem;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
 
   &:focus {
     outline: none;
     border-color: #667eea;
+  }
+
+  [data-coreui-theme='dark'] & {
+    background-color: var(--cui-body-bg, #1a1a1a);
+    color: var(--cui-body-color);
   }
 }
 
@@ -82,7 +90,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // Empty State
@@ -99,12 +109,12 @@
 
   h2 {
     font-size: 1.5rem;
-    color: #374151;
+    color: var(--cui-body-color);
     margin: 0 0 0.5rem 0;
   }
 
   p {
-    color: #6b7280;
+    color: var(--cui-secondary-color);
     margin-bottom: 1.5rem;
   }
 }
@@ -117,15 +127,24 @@
 }
 
 .product-card {
-  background: white;
+  background: var(--cui-card-bg, var(--cui-body-bg, white));
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s;
+  border: 1px solid var(--cui-border-color);
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    background: var(--cui-tertiary-bg);
+  }
+
+  [data-coreui-theme='dark'] & {
+    background: var(--cui-body-bg, #1a1a1a);
+    &:hover {
+      background: var(--cui-tertiary-bg, rgba(255, 255, 255, 0.05));
+    }
   }
 }
 
@@ -134,7 +153,7 @@
   width: 100%;
   height: 200px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: var(--cui-tertiary-bg);
 
   img {
     width: 100%;
@@ -142,7 +161,8 @@
     object-fit: cover;
   }
 
-  .badge-promo, .badge-stock {
+  .badge-promo,
+  .badge-stock {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -171,7 +191,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0 0 0.25rem 0;
-  color: #1f2937;
+  color: var(--cui-body-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -179,7 +199,7 @@
 
 .product-category {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--cui-secondary-color);
   margin: 0 0 0.75rem 0;
 }
 
@@ -192,7 +212,7 @@
   .price-current {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--cui-body-color);
   }
 
   .price-promo {
@@ -220,14 +240,19 @@
   display: flex;
   gap: 1rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--cui-secondary-color);
 }
 
 .product-actions {
   display: flex;
   gap: 0.5rem;
   padding: 1rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--cui-border-color);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:host-context([data-coreui-theme='dark']) .product-actions {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .btn-action {
@@ -244,18 +269,30 @@
   justify-content: center;
 
   &.btn-edit {
-    background: #dbeafe;
-    &:hover { background: #3b82f6; }
+    background: var(--cui-info-bg-subtle, #dbeafe);
+    color: var(--cui-info-text-emphasis, #3b82f6);
+    &:hover {
+      background: #3b82f6;
+      color: white;
+    }
   }
 
   &.btn-stock {
-    background: #d1fae5;
-    &:hover { background: #10b981; }
+    background: var(--cui-success-bg-subtle, #d1fae5);
+    color: var(--cui-success-text-emphasis, #10b981);
+    &:hover {
+      background: #10b981;
+      color: white;
+    }
   }
 
   &.btn-delete {
-    background: #fee2e2;
-    &:hover { background: #ef4444; color: white; }
+    background: var(--cui-danger-bg-subtle, #fee2e2);
+    color: var(--cui-danger-text-emphasis, #ef4444);
+    &:hover {
+      background: #ef4444;
+      color: white;
+    }
   }
 }
 

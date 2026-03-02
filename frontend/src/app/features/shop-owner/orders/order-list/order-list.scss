@@ -4,7 +4,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background: #f8fafc;
+  background: var(--cui-body-bg);
   min-height: calc(100vh - 100px);
 }
 
@@ -13,7 +13,7 @@
   h1 {
     font-size: 2.25rem;
     font-weight: 800;
-    color: #1e293b;
+    color: var(--cui-body-color);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -27,10 +27,14 @@
   margin-bottom: 2rem;
   flex-wrap: wrap;
   padding: 0.5rem;
-  background: #ffffff;
+  background: var(--cui-card-bg, var(--cui-body-bg, #ffffff));
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--cui-border-color);
+
+  [data-coreui-theme='dark'] & {
+    background: var(--cui-body-bg, #1a1a1a);
+  }
 }
 
 .filter-btn {
@@ -38,15 +42,22 @@
   border-radius: 12px;
   border: 1.5px solid transparent;
   background: transparent;
-  color: #64748b;
+  color: var(--cui-secondary-color, #64748b);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.9rem;
 
   &:hover {
-    background: #f1f5f9;
-    color: #334155;
+    background: var(--cui-tertiary-bg, rgba(0, 0, 0, 0.05));
+    color: var(--cui-body-color);
+  }
+
+  [data-coreui-theme='dark'] & {
+    color: var(--cui-secondary-color, #94a3b8);
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
 
   &.active {
@@ -66,7 +77,7 @@
   thead th {
     padding: 1rem 1.5rem;
     text-align: left;
-    color: #64748b;
+    color: var(--cui-secondary-color);
     font-weight: 700;
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -74,26 +85,26 @@
   }
 
   tbody tr {
-    background: #ffffff;
+    background: var(--cui-card-bg, var(--cui-body-bg, #ffffff));
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
     transition: all 0.2s;
 
     td {
       padding: 1.25rem 1.5rem;
-      color: #334155;
+      color: var(--cui-body-color);
       font-size: 0.95rem;
-      border-top: 1px solid #f1f5f9;
-      border-bottom: 1px solid #f1f5f9;
+      border-top: 1px solid var(--cui-border-color);
+      border-bottom: 1px solid var(--cui-border-color);
 
       &:first-child {
-        border-left: 1px solid #f1f5f9;
+        border-left: 1px solid var(--cui-border-color);
         border-top-left-radius: 14px;
         border-bottom-left-radius: 14px;
         color: #6366f1;
       }
 
       &:last-child {
-        border-right: 1px solid #f1f5f9;
+        border-right: 1px solid var(--cui-border-color);
         border-top-right-radius: 14px;
         border-bottom-right-radius: 14px;
       }
@@ -102,7 +113,14 @@
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-      background: #fafbff;
+      background: var(--cui-tertiary-bg);
+    }
+
+    [data-coreui-theme='dark'] & {
+      background: var(--cui-body-bg, #1a1a1a);
+      &:hover {
+        background: var(--cui-tertiary-bg, rgba(255, 255, 255, 0.05));
+      }
     }
   }
 }
@@ -117,32 +135,32 @@
   letter-spacing: 0.02em;
 
   &-warning {
-    background: #fef3c7;
-    color: #92400e;
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
   }
   &-primary {
-    background: #e0e7ff;
-    color: #3730a3;
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
   }
   &-info {
-    background: #e0f2fe;
-    color: #075985;
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
   }
   &-success {
-    background: #dcfce7;
-    color: #166534;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
   }
   &-danger {
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
   }
 }
 
 /* Actions */
 .btn-view {
   padding: 0.5rem 1rem;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--cui-tertiary-bg);
+  color: var(--cui-body-color);
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
@@ -151,19 +169,19 @@
   transition: all 0.2s;
 
   &:hover {
-    background: #e2e8f0;
-    color: #1e293b;
+    background: var(--cui-border-color);
+    color: var(--cui-body-color);
   }
 }
 
 .status-select {
   padding: 0.45rem 0.75rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--cui-border-color);
   border-radius: 8px;
-  background: #fff;
+  background: var(--cui-card-bg);
   font-family: inherit;
   font-size: 0.85rem;
-  color: #475569;
+  color: var(--cui-body-color);
   cursor: pointer;
   outline: none;
 

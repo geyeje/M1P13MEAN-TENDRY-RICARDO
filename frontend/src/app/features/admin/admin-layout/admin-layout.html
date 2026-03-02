@@ -149,9 +149,14 @@
         </span>
       </button>
 
+      <!-- Theme Toggle -->
+      <button class="toggle-btn ms-2" (click)="toggleTheme()" [title]="'Changer de thème'">
+        <i [ngClass]="themeService.theme === 'dark' ? 'cil-sun' : 'cil-moon'" class="fs-4"></i>
+      </button>
+
       <div class="header-right">
         <div class="user-profile" *ngIf="user$ | async as user">
-          <div class="user-avatar">{{ user.nom?.charAt(0) }}{{ user.prenom?.charAt(0) }}</div>
+          <div class="user-avatar">{{ user.nom.charAt(0) }}{{ user.prenom.charAt(0) }}</div>
           <div class="user-info">
             <span class="user-name">{{ user.nom }} {{ user.prenom }}</span>
             <span class="user-role">Super Admin</span>

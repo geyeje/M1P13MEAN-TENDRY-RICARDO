@@ -1,45 +1,48 @@
-<div class="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all">
-  <div class="flex gap-4">
-    <div class="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-800 shrink-0">
-      <img [src]="product().images[0]" class="object-cover w-full h-full opacity-80">
+<div class="product-card-container border rounded-3 p-3 transition-all">
+  <div class="d-flex gap-3">
+    <div class="relative w-20 h-20 rounded-3 overflow-hidden bg-theme-subtle flex-shrink-0">
+      <img [src]="product().images[0]" class="object-cover w-100 h-100 opacity-80" />
       @if (product().onSale) {
-        <div class="absolute inset-0 bg-matcha-spring/80 flex items-center justify-center">
-          <span class="text-[10px] font-bold text-black bg-matcha-spring px-1 rounded">PROMO</span>
+        <div class="absolute inset-0 bg-promo-overlay d-flex align-items-center justify-center">
+          <span class="badge bg-warning text-dark">PROMO</span>
         </div>
       }
     </div>
 
-    <div class="flex-1 min-w-0">
-      <h4 class="text-white font-bold truncate">{{ product().name }}</h4>
-      <div class="flex items-center gap-3 mt-1">
-        <span class="text-xl font-black text-white">{{ product().price | currency:'EUR' }}</span>
-        <span [class]="['px-2 py-0.5 rounded text-[10px] font-bold uppercase', stockStatus().bg, stockStatus().color]">
+    <div class="flex-grow-1 min-w-0">
+      <h4 class="product-title font-bold text-truncate">{{ product().name }}</h4>
+      <div class="d-flex align-items-center gap-2 mt-1">
+        <span class="price-text font-black">{{ product().price | currency: 'EUR' }}</span>
+        <span
+          [class]="[
+            'badge',
+            stockStatus() ? 'stock-badge-' + stockStatus().label.toLowerCase() : '',
+          ]"
+        >
           {{ stockStatus().label }} : {{ product().stock }}
         </span>
       </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-white/5 text-center">
-    <div>
-      <p class="text-[10px] text-gray-500 uppercase">Ventes</p>
-      <p class="text-sm font-bold text-white">{{ product().salesCount }}</p>
+  <div class="row g-2 mt-3 pt-3 border-top text-center">
+    <div class="col-4">
+      <p class="small-label text-muted text-uppercase mb-0">Ventes</p>
+      <p class="stat-value font-bold mb-0">{{ product().salesCount }}</p>
     </div>
-    <div>
-      <p class="text-[10px] text-gray-500 uppercase">Vues</p>
-      <p class="text-sm font-bold text-white">{{ product().viewCount }}</p>
+    <div class="col-4">
+      <p class="small-label text-muted text-uppercase mb-0">Vues</p>
+      <p class="stat-value font-bold mb-0">{{ product().viewCount }}</p>
     </div>
-    <div>
-      <p class="text-[10px] text-gray-500 uppercase">Note</p>
-      <p class="text-sm font-bold text-white">{{ product().avgRating }}/5</p>
+    <div class="col-4">
+      <p class="small-label text-muted text-uppercase mb-0">Note</p>
+      <p class="stat-value font-bold mb-0">{{ product().avgRating }}/5</p>
     </div>
   </div>
 
-  <div class="flex gap-2 mt-4">
-    <button class="flex-1 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold transition-all">
-      MODIFIER
-    </button>
-    <button class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-all">
+  <div class="d-flex gap-2 mt-3">
+    <button class="btn btn-outline-secondary btn-sm flex-grow-1 font-bold">MODIFIER</button>
+    <button class="btn btn-outline-danger btn-sm">
       <mat-icon class="!text-sm">delete</mat-icon>
     </button>
   </div>

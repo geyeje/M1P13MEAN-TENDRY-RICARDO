@@ -1,7 +1,7 @@
 // src/app/features/admin/dashboard/dashboard.component.scss
 
 .container-fluid {
-  background-color: #f5f7fa;
+  background-color: var(--cui-body-bg);
   min-height: 100vh;
 }
 
@@ -10,17 +10,18 @@
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.3s;
-  
+
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 }
 
 .card-header {
-  background-color: #fff;
-  border-bottom: 1px solid #e9ecef;
+  background-color: var(--cui-card-cap-bg, #fff);
+  border-bottom: 1px solid var(--cui-border-color);
   padding: 1rem 1.25rem;
   font-weight: 600;
+  color: var(--cui-card-cap-color);
 }
 
 .alert {
@@ -29,16 +30,17 @@
 }
 
 .table {
-  td, th {
+  td,
+  th {
     vertical-align: middle;
   }
-  
+
   tbody tr {
     cursor: pointer;
     transition: background-color 0.2s;
-    
+
     &:hover {
-      background-color: #f8f9fa;
+      background-color: var(--cui-tertiary-bg);
     }
   }
 }
@@ -64,11 +66,11 @@
   .container-fluid {
     padding: 1rem;
   }
-  
+
   h1 {
     font-size: 1.5rem;
   }
-  
+
   .table {
     font-size: 0.875rem;
   }

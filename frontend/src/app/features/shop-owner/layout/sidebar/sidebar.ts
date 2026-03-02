@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService, User } from '../../../../core/services/auth.service';
+import { ThemeService } from '../../../../core/services/theme.service';
 import { Observable } from 'rxjs';
 
 interface MenuItem {
@@ -13,6 +14,7 @@ interface MenuItem {
 }
 @Component({
   selector: 'app-sidebar',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
@@ -22,10 +24,10 @@ export class Sidebar {
   @Output() toggleSidebar = new EventEmitter<void>();
 
   menuItems: MenuItem[] = [
-    { icon: 'dashboard', label: 'Dashboard', route: '/shop-owner/dashboard' },
-    { icon: 'shop', label: 'Ma Boutique', route: '/shop-owner/my-shop' },
-    { icon: 'package', label: 'Produits', route: '/shop-owner/products' },
-    { icon: 'shopping-cart', label: 'Commandes', route: '/shop-owner/orders', badge: 0 },
+    { icon: 'speedometer', label: 'Dashboard', route: '/shop-owner/dashboard' },
+    { icon: 'home', label: 'Ma Boutique', route: '/shop-owner/my-shop' },
+    { icon: 'storage', label: 'Produits', route: '/shop-owner/products' },
+    { icon: 'cart', label: 'Commandes', route: '/shop-owner/orders', badge: 0 },
     { icon: 'settings', label: 'Paramètres', route: '/shop-owner/settings' },
   ];
   user$: Observable<User | null>;
@@ -33,8 +35,13 @@ export class Sidebar {
   constructor(
     private authService: AuthService,
     private router: Router,
+    public themeService: ThemeService,
   ) {
     this.user$ = this.authService.currentUser$;
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 
   onToggle() {

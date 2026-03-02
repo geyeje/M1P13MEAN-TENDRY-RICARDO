@@ -9,7 +9,7 @@ import { Order, OrderService } from '../../../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './recent-orders-widget.html',
-  styleUrls: ['./recent-orders-widget.scss']
+  styleUrls: ['./recent-orders-widget.scss'],
 })
 export class RecentOrdersWidgetComponent {
   @Input() orders: Order[] = [];
@@ -26,14 +26,31 @@ export class RecentOrdersWidgetComponent {
       day: '2-digit',
       month: 'short',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'EUR',
     }).format(amount);
+  }
+
+  getStatusContextColor(status: string): string {
+    switch (status) {
+      case 'pending':
+        return 'warning';
+      case 'confirmed':
+        return 'info';
+      case 'processing':
+        return 'primary';
+      case 'delivered':
+        return 'success';
+      case 'cancelled':
+        return 'danger';
+      default:
+        return 'secondary';
+    }
   }
 }

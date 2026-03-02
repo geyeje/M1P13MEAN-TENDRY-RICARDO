@@ -11,9 +11,9 @@ import { FormsModule } from '@angular/forms';
   template: `
     <div class="container-fluid py-4" *ngIf="order">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Commande #{{ order.orderNumber || order.orderCount }}</h1>
+        <h1 class="h3 mb-0">Commande #{{ order.orderNumber || order.orderCount }}</h1>
         <div class="d-flex gap-2">
-          <select class="form-select form-select-sm" [(ngModel)]="newStatus" style="width: auto;">
+          <select class="form-select form-select-sm bg-dark-theme-dynamic" [(ngModel)]="newStatus" style="width: auto;">
             <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
           </select>
           <button class="btn btn-primary btn-sm" (click)="updateStatus()">Mettre à jour</button>
@@ -23,9 +23,9 @@ import { FormsModule } from '@angular/forms';
       <div class="row">
         <!-- Informations Client -->
         <div class="col-lg-4">
-          <div class="card shadow mb-4 h-100">
+          <div class="card mb-4 h-100 border-theme">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">Informations Client</h6>
+              <h6 class="m-0 font-weight-bold">Informations Client</h6>
             </div>
             <div class="card-body">
               <p>
@@ -41,14 +41,14 @@ import { FormsModule } from '@angular/forms';
 
         <!-- Détails Produits -->
         <div class="col-lg-8">
-          <div class="card shadow mb-4">
+          <div class="card mb-4 border-theme">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">Articles du Panier</h6>
+              <h6 class="m-0 font-weight-bold">Articles du Panier</h6>
             </div>
             <div class="card-body p-0">
               <div class="table-responsive">
                 <table class="table mb-0">
-                  <thead class="bg-light">
+                  <thead class="bg-theme-subtle">
                     <tr>
                       <th>Produit</th>
                       <th>Prix Unitaire</th>
@@ -69,10 +69,10 @@ import { FormsModule } from '@angular/forms';
                       <td class="text-end fw-bold">{{ formatCurrency(item.subtotal) }}</td>
                     </tr>
                   </tbody>
-                  <tfoot class="bg-light">
+                  <tfoot class="bg-theme-subtle">
                     <tr>
                       <td colspan="3" class="text-end fw-bold">TOTAL :</td>
-                      <td class="text-end text-primary fw-bold fs-5">
+                      <td class="text-end fw-bold fs-5">
                         {{ formatCurrency(order.totalAmount) }}
                       </td>
                     </tr>
@@ -85,7 +85,12 @@ import { FormsModule } from '@angular/forms';
       </div>
     </div>
   `,
-  styles: [],
+  styles: [
+    '.border-theme { border-color: var(--cui-border-color); }',
+    '.bg-theme-subtle { background-color: var(--cui-tertiary-bg); color: var(--cui-body-color); }',
+    'h1, h6 { color: var(--cui-body-color); }',
+    '.bg-dark-theme-dynamic { background-color: var(--cui-card-bg); color: var(--cui-body-color); border-color: var(--cui-border-color); }'
+  ],
 })
 export class OrderDetail implements OnInit {
   order?: Order;

@@ -4,9 +4,10 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  background: #ffffff;
+  background: var(--cui-card-bg);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--cui-border-color);
 }
 
 // Header
@@ -21,15 +22,15 @@
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--cui-body-color);
     margin: 0;
   }
 }
 
 .btn-back {
   padding: 0.5rem 1rem;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--cui-tertiary-bg);
+  color: var(--cui-body-color);
   border-radius: 8px;
   text-decoration: none;
   font-weight: 500;
@@ -73,7 +74,7 @@
   label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--cui-body-color);
     text-transform: uppercase;
     letter-spacing: 0.04em;
 
@@ -91,11 +92,11 @@
   textarea {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1.5px solid #e5e7eb;
+    border: 1.5px solid var(--cui-border-color);
     border-radius: 10px;
     font-size: 0.95rem;
-    color: #1f2937;
-    background: #f9fafb;
+    color: var(--cui-body-color);
+    background: var(--cui-card-bg);
     outline: none;
     transition: all 0.2s;
     box-sizing: border-box;
@@ -204,8 +205,8 @@
 
 // Pricing Section
 .pricing-section {
-  background: #f8faff;
-  border: 1.5px solid #e0e7ff;
+  background: var(--cui-tertiary-bg);
+  border: 1.5px solid var(--cui-border-color);
   border-radius: 14px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;

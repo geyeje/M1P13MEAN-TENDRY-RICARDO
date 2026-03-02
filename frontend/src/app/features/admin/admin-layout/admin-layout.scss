@@ -1,7 +1,7 @@
 .admin-wrapper {
   display: flex;
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: var(--cui-body-bg);
 }
 
 // Sidebar
@@ -139,7 +139,7 @@
 
 .top-header {
   height: 64px;
-  background: white;
+  background: var(--cui-header-bg, white);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -148,18 +148,19 @@
   position: sticky;
   top: 0;
   z-index: 500;
+  border-bottom: 1px solid var(--cui-border-color);
 
   .toggle-btn {
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: #64748b;
+    color: var(--cui-body-color);
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 4px;
 
     &:hover {
-      background: #f1f5f9;
+      background: var(--cui-tertiary-bg);
     }
   }
 }
@@ -194,12 +195,12 @@
     .user-name {
       font-weight: 600;
       font-size: 0.875rem;
-      color: #1e293b;
+      color: var(--cui-body-color);
     }
 
     .user-role {
       font-size: 0.75rem;
-      color: #64748b;
+      color: var(--cui-secondary-color);
     }
   }
 }
