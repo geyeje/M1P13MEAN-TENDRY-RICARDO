@@ -76,4 +76,22 @@ export class ShopService {
   getStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/stats/overview`);
   }
+
+  // Catégories disponibles
+  getCategories(): string[] {
+    return [
+      'Mode & Vêtements',
+      'Électronique & High-tech',
+      'Alimentation & Boissons',
+      'Beauté & Cosmétiques',
+      'Sport & Loisirs',
+      'Maison & Décoration',
+      'Livres & Culture',
+      'Jouets & Enfants',
+      'Santé & Bien-être',
+      'Bijouterie & Accessoires',
+      'Services',
+      'Autres',
+    ];
+  }
 }

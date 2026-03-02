@@ -1,12 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
-import { ShoppingCartService, CartItem } from '../../core/services/shopping-cart.service';
-import { CartItemComponent } from '../../shared/components/cart-item/cart-item.component';
+import { ShoppingCartService, CartItem } from '../../../core/services/shopping-cart.service';
+import { CartItemComponent } from '../../../shared/components/cart-item/cart-item.component';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-shopping-cart',
   standalone: true,
-  imports: [CommonModule, CartItemComponent],
+  imports: [CommonModule, CartItemComponent, RouterLink],
   templateUrl: './shopping-cart.component.html',
   styleUrl: './shopping-cart.component.scss',
 })

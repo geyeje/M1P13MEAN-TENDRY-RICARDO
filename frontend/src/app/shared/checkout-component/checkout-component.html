@@ -1,0 +1,228 @@
+<div class="min-h-screen bg-zinc-950 text-white">
+  <!-- Header -->
+  <div class="bg-matcha-dark p-6 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Valider votre commande</h1>
+      <div class="text-sm text-gray-400">
+        Étape {{ step() === 'shipping' ? '1' : step() === 'payment' ? '2' : '3' }} / 3
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="bg-zinc-900 p-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex justify-between">
+        <div class="flex items-center" [class.text-matcha-spring]="true">
+          <div class="w-8 h-8 rounded-full bg-matcha-spring text-black flex items-center justify-center font-bold">1</div>
+          <span class="ml-2">Adresse</span>
+        </div>
+        <div class="flex items-center" [class.text-matcha-spring]="step() !== 'shipping'">
+          <div class="w-8 h-8 rounded-full" [class.bg-matcha-spring]="step() !== 'shipping'" 
+               [class.bg-gray-700]="step() === 'shipping'" 
+               [class.text-black]="step() !== 'shipping'"
+               [class.text-white]="step() === 'shipping'"
+               [class]="'flex items-center justify-center font-bold'">2</div>
+          <span class="ml-2">Paiement</span>
+        </div>
+        <div class="flex items-center" [class.text-matcha-spring]="step() === 'confirmation'">
+          <div class="w-8 h-8 rounded-full" [class.bg-matcha-spring]="step() === 'confirmation'" 
+               [class.bg-gray-700]="step() !== 'confirmation'" 
+               [class.text-black]="step() === 'confirmation'"
+               [class.text-white]="step() !== 'confirmation'"
+               [class]="'flex items-center justify-center font-bold'">3</div>
+          <span class="ml-2">Confirmation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Form Section (Shipping or Payment) -->
+    <div class="lg:col-span-2">
+
+      <!-- 🚚 Étape 1: Adresse de Livraison -->
+      <div *ngIf="step() === 'shipping'" class="bg-zinc-900 p-8 rounded-2xl">
+        <h2 class="text-xl font-bold mb-6">Adresse de Livraison</h2>
+
+        <form [formGroup]="shippingForm" (ngSubmit)="proceedToPayment()" class="space-y-4">
+          <!-- Rue -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Rue</label>
+            <input 
+              type="text" 
+              formControlName="street"
+              placeholder="123 rue de la Paix"
+              class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-matcha-spring focus:outline-none"
+            />
+            <span *ngIf="shippingForm.get('street')?.invalid && shippingForm.get('street')?.touched"
+                  class="text-red-500 text-sm">Rue requise (min 5 caractères)</span>
+          </div>
+
+          <!-- Ville -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Ville</label>
+              <input 
+                type="text" 
+                formControlName="city"
+                placeholder="Paris"
+                class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-matcha-spring focus:outline-none"
+              />
+              <span *ngIf="shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched"
+                    class="text-red-500 text-sm">Ville requise</span>
+            </div>
+
+            <!-- Code Postal -->
+            <div>
+              <label class="block text-sm font-medium mb-2">Code Postal</label>
+              <input 
+                type="text" 
+                formControlName="postalCode"
+                placeholder="75001"
+                class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-matcha-spring focus:outline-none"
+              />
+              <span *ngIf="shippingForm.get('postalCode')?.invalid && shippingForm.get('postalCode')?.touched"
+                    class="text-red-500 text-sm">Code postal invalide (5 chiffres)</span>
+            </div>
+          </div>
+
+          <!-- Pays -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Pays</label>
+            <select 
+              formControlName="country"
+              class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:border-matcha-spring focus:outline-none"
+            >
+              <option value="France">France</option>
+              <option value="Germany">Allemagne</option>
+              <option value="Belgium">Belgique</option>
+              <option value="Switzerland">Suisse</option>
+              <option value="Spain">Espagne</option>
+              <option value="Italy">Italie</option>
+            </select>
+          </div>
+
+          <!-- Messages d'erreur -->
+          <div *ngIf="errorMessage()" class="bg-red-500/20 border border-red-500 rounded-lg p-4">
+            <p class="text-red-300 text-sm">{{ errorMessage() }}</p>
+          </div>
+
+          <!-- Boutons -->
+          <div class="flex gap-4 pt-6">
+            <button 
+              type="button"
+              (click)="cancel()"
+              class="flex-1 bg-zinc-800 hover:bg-zinc-700 py-3 rounded-lg font-semibold transition"
+            >
+              Annuler
+            </button>
+            <button 
+              type="submit"
+              [disabled]="isLoading() || !shippingForm.valid"
+              class="flex-1 bg-matcha-spring hover:bg-matcha-dark text-black py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ isLoading() ? 'Chargement...' : 'Continuer au paiement' }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 💳 Étape 2: Paiement -->
+      <div *ngIf="step() === 'payment'" class="bg-zinc-900 p-8 rounded-2xl">
+        <h2 class="text-xl font-bold mb-6">Informations de Paiement</h2>
+
+        <div class="mb-4 p-4 bg-blue-500/20 border border-blue-500 rounded-lg">
+          <p class="text-blue-300 text-sm">
+            🧪 <strong>Mode Test:</strong> Utilisez les cartes de test Stripe
+          </p>
+        </div>
+
+        <!-- Payment Element - Monté par le composant -->
+        <div id="payment-element" class="mb-6"></div>
+
+        <!-- Messages d'erreur -->
+        <div *ngIf="errorMessage()" class="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-4">
+          <p class="text-red-300 text-sm">{{ errorMessage() }}</p>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex gap-4">
+          <button 
+            type="button"
+            (click)="goBack()"
+            [disabled]="isLoading()"
+            class="flex-1 bg-zinc-800 hover:bg-zinc-700 py-3 rounded-lg font-semibold transition disabled:opacity-50"
+          >
+            ← Retour
+          </button>
+          <button 
+            type="button"
+            (click)="pay()"
+            [disabled]="isLoading()"
+            class="flex-1 bg-matcha-spring hover:bg-matcha-dark text-black py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ isLoading() ? 'Traitement...' : `Payer ${cartTotal() | number:'1.2-2'}}€` }}
+          </button>
+        </div>
+      </div>
+
+      <!-- ✅ Étape 3: Confirmation -->
+      <div *ngIf="step() === 'confirmation'" class="bg-zinc-900 p-8 rounded-2xl text-center">
+        <div class="mb-6">
+          <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">{{ successMessage() }}</h2>
+        <p class="text-gray-400 mb-6">Votre commande a été enregistrée avec succès. Redirection en cours...</p>
+        <div class="animate-pulse text-matcha-spring">⏳</div>
+      </div>
+    </div>
+
+    <!-- Résumé de Commande (Sidebar) -->
+    <div class="bg-zinc-900 p-8 rounded-2xl h-fit sticky top-24">
+      <h3 class="text-lg font-bold mb-6 text-matcha-spring">Résumé de Commande</h3>
+
+      <!-- Articles -->
+      <div class="space-y-3 mb-6 pb-6 border-b border-zinc-700">
+        <div *ngFor="let item of cartService.items()" class="flex justify-between text-sm">
+          <div>
+            <p class="font-medium">{{ item.product.name }}</p>
+            <p class="text-gray-400">x{{ item.quantity }}</p>
+          </div>
+          <p class="font-semibold">{{ (item.product.price * item.quantity) | number:'1.2-2' }}€</p>
+        </div>
+      </div>
+
+      <!-- Montants -->
+      <div class="space-y-2 mb-6">
+        <div class="flex justify-between text-sm">
+          <span>Sous-total</span>
+          <span>{{ cartTotal() | number:'1.2-2' }}€</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span>Frais de port</span>
+          <span class="text-matcha-spring">Gratuit</span>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="border-t border-zinc-700 pt-4 text-xl font-bold flex justify-between">
+        <span>Total</span>
+        <span class="text-matcha-spring">{{ cartTotal() | number:'1.2-2' }}€</span>
+      </div>
+
+      <!-- Info supplémentaire -->
+      <div class="mt-6 p-4 bg-zinc-800 rounded-lg text-xs text-gray-400">
+        <p class="mb-2">📦 {{ cartItemCount() }} article(s)</p>
+        <p>✓ Vos données sont sécurisées par Stripe</p>
+      </div>
+    </div>
+
+  </div>
+</div>

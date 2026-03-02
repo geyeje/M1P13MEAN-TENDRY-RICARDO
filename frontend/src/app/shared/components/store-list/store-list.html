@@ -1,0 +1,72 @@
+<div class="p-8 mx-2 mt-4 min-h-screen bg-matcha-dark rounded-xl shadow-md border-white/10 border-2">
+  <h2 class="text-3xl font-bold mb-8 text-white border-l-4 border-matcha-spring pl-4">
+    Liste des boutiques
+  </h2>
+
+  <!-- recherche + filtres -->
+  <div class="mb-8">
+    <input
+      type="search"
+      [(ngModel)]="searchTerm"
+      placeholder="Rechercher une boutique..."
+      class="search-input w-full mb-4 p-2 rounded"
+    />
+
+    <div class="filters-wrapper relative">
+      <button class="filter-nav left" (click)="scrollFilters(-240)" aria-label="Précédent">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <div
+        #filters
+        class="filters-container !mx-16 flex gap-4 overflow-x-auto no-scrollbar border-b border-white rounded-xl px-2"
+      >
+        <button
+          (click)="setFilter('Tous')"
+          [class.bg-matcha-spring]="selectedCategory() === 'Tous'"
+          [class.text-white]="selectedCategory() === 'Tous'"
+          class="filter-btn"
+        >
+          Tous
+        </button>
+        @for (cat of categories(); track cat) {
+          <button
+            (click)="setFilter(cat)"
+            [class.bg-matcha-spring]="selectedCategory() === cat"
+            [class.text-white]="selectedCategory() === cat"
+            class="filter-btn"
+          >
+            {{ cat }}
+          </button>
+        }
+      </div>
+
+      <button class="filter-nav right" (click)="scrollFilters(240)" aria-label="Suivant">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- loading -->
+  <div *ngIf="isLoading()" class="flex items-center justify-center h-64">
+    <span class="text-matcha-spring animate-pulse">Chargement des boutiques...</span>
+  </div>
+
+  <!-- erreur -->
+  <div *ngIf="errorMessage() && !isLoading()" class="text-red-400 mb-4">
+    {{ errorMessage() }}
+  </div>
+
+  <!-- empty -->
+  <div *ngIf="!isLoading() && filteredBoutiques().length === 0" class="empty-state">
+    <h2 class="text-white text-xl">Aucune boutique trouvée</h2>
+    <p class="text-gray-300">Essayez une autre recherche ou un autre filtre.</p>
+  </div>
+
+  <!-- liste -->
+  <div *ngIf="!isLoading() && filteredBoutiques().length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    @for(boutique of filteredBoutiques(); track boutique._id){
+      <app-store-card [boutique]="boutique"></app-store-card>
+    }
+  </div>
+</div>
