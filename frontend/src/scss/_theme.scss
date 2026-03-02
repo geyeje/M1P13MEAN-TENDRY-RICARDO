@@ -1,5 +1,5 @@
-@use "@coreui/coreui/scss/mixins/transition" as *;
-@use "@coreui/coreui/scss/mixins/color-mode" as *;
+@use '@coreui/coreui/scss/mixins/transition' as *;
+@use '@coreui/coreui/scss/mixins/color-mode' as *;
 
 body {
   background-color: var(--cui-tertiary-bg);
@@ -9,7 +9,7 @@ body {
   width: 100%;
   padding-inline: var(--cui-sidebar-occupy-start, 0) var(--cui-sidebar-occupy-end, 0);
   will-change: auto;
-  @include transition(padding .15s);
+  @include transition(padding 0.15s);
 }
 
 .header > .container-fluid,
@@ -60,5 +60,22 @@ body {
 
   .footer {
     --cui-footer-bg: var(--cui-body-bg);
+  }
+
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    background-color: var(--cui-tertiary-bg) !important;
+    color: var(--cui-body-color) !important;
+    border-color: var(--cui-border-color) !important;
+
+    &:focus {
+      background-color: var(--cui-body-bg) !important;
+    }
+
+    &::placeholder {
+      color: var(--cui-secondary-color) !important;
+      opacity: 0.6;
+    }
   }
 }
