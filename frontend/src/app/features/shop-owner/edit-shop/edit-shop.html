@@ -78,18 +78,21 @@
         Identité visuelle
       </h3>
       <div class="images-grid">
-        <!-- Logo -->
         <div class="upload-box">
           <label class="upload-label">Logo de la boutique</label>
           <div class="upload-area" [class.has-image]="logoPreview">
+            <!-- Hidden input -->
             <input
               type="file"
+              style="display: none"
               (change)="onLogoChange($event)"
               accept="image/*"
               class="file-input"
               #logoInput
             />
-            <div class="upload-placeholder" (click)="logoInput.click()">
+
+            <!-- State 1: No Image -->
+            <div class="upload-placeholder" *ngIf="!logoPreview" (click)="logoInput.click()">
               <div class="icon">
                 <svg
                   viewBox="0 0 24 24"
@@ -106,9 +109,16 @@
               <span>Choisir un logo</span>
               <small>(Carré suggéré, max 2MB)</small>
             </div>
-            <div class="image-preview" *ngIf="logoPreview" (click)="logoInput.click()">
+
+            <!-- State 2: Has Image -->
+            <div class="image-preview" *ngIf="logoPreview">
               <img [src]="logoPreview" alt="Logo preview" />
-              <div class="overlay">Changer</div>
+              <div class="actions">
+                <button type="button" class="btn-change" (click)="logoInput.click()">
+                  Changer
+                </button>
+                <button type="button" class="btn-remove" (click)="removeLogo()">Supprimer</button>
+              </div>
             </div>
           </div>
         </div>
@@ -117,14 +127,18 @@
         <div class="upload-box">
           <label class="upload-label">Bannière promotionnelle</label>
           <div class="upload-area banner-area" [class.has-image]="bannerPreview">
+            <!-- Hidden input -->
             <input
               type="file"
+              style="display: none"
               (change)="onBannerChange($event)"
               accept="image/*"
               class="file-input"
               #bannerInput
             />
-            <div class="upload-placeholder" (click)="bannerInput.click()">
+
+            <!-- State 1: No Image -->
+            <div class="upload-placeholder" *ngIf="!bannerPreview" (click)="bannerInput.click()">
               <div class="icon">
                 <svg
                   viewBox="0 0 24 24"
@@ -141,9 +155,16 @@
               <span>Choisir une bannière</span>
               <small>(Largeur suggérée, max 5MB)</small>
             </div>
-            <div class="image-preview" *ngIf="bannerPreview" (click)="bannerInput.click()">
+
+            <!-- State 2: Has Image -->
+            <div class="image-preview" *ngIf="bannerPreview">
               <img [src]="bannerPreview" alt="Banner preview" />
-              <div class="overlay">Changer</div>
+              <div class="actions">
+                <button type="button" class="btn-change" (click)="bannerInput.click()">
+                  Changer
+                </button>
+                <button type="button" class="btn-remove" (click)="removeBanner()">Supprimer</button>
+              </div>
             </div>
           </div>
         </div>
