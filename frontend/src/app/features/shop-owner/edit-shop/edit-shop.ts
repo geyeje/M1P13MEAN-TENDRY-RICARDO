@@ -88,13 +88,16 @@ export class EditShop implements OnInit {
       next: (response) => {
         if (response.success && response.boutique) {
           this.shop = response.boutique;
+          // Backend returns 'address', the form uses 'adresse'
+          const adresseValue =
+            (response.boutique as any).address || response.boutique.adresse || '';
           this.editForm.patchValue({
             name: response.boutique.name,
             description: response.boutique.description,
             category: response.boutique.category,
             phone: response.boutique.phone,
             email: response.boutique.email,
-            adresse: response.boutique.adresse,
+            adresse: adresseValue,
             facebook: response.boutique.socialNetwork?.facebook || '',
             instagram: response.boutique.socialNetwork?.instagram || '',
             twitter: response.boutique.socialNetwork?.twitter || '',
@@ -120,23 +123,37 @@ export class EditShop implements OnInit {
   }
 
   onLogoChange(event: any) {
-    const file = event.target.files[0];
+    const file: File | undefined = event.target.files?.[0];
     if (file) {
       this.logoFile = file;
       const reader = new FileReader();
-      reader.onload = (e: any) => (this.logoPreview = e.target.result);
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.logoPreview = e.target?.result as string;
+      };
       reader.readAsDataURL(file);
     }
   }
 
   onBannerChange(event: any) {
-    const file = event.target.files[0];
+    const file: File | undefined = event.target.files?.[0];
     if (file) {
       this.bannerFile = file;
       const reader = new FileReader();
-      reader.onload = (e: any) => (this.bannerPreview = e.target.result);
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.bannerPreview = e.target?.result as string;
+      };
       reader.readAsDataURL(file);
     }
+  }
+
+  removeLogo() {
+    this.logoFile = null;
+    this.logoPreview = null;
+  }
+
+  removeBanner() {
+    this.bannerFile = null;
+    this.bannerPreview = null;
   }
 
   onSubmit() {
@@ -178,7 +195,11 @@ export class EditShop implements OnInit {
       },
       error: (error) => {
         this.submitting = false;
-        this.error = error.error?.message || 'Erreur lors de la mise à jour';
+        if (error.error?.errors && Array.isArray(error.error.errors)) {
+          this.error = error.error.errors.map((e: any) => e.msg).join(', ');
+        } else {
+          this.error = error.error?.message || 'Erreur lors de la mise à jour';
+        }
       },
     });
   }
