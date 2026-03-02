@@ -170,6 +170,21 @@ exports.confirmPayment = async (req, res) => {
     await newCommande.save();
     console.log('✅ Commande créée:', newCommande._id);
 
+    // Décrémenter le stock des produits achetés
+    for (const item of formattedItems) {
+      try {
+        const prod = await Produit.findById(item.productId);
+        if (prod) {
+          prod.stock = Math.max(0, prod.stock - item.quantity);
+          prod.salesCount = (prod.salesCount || 0) + item.quantity;
+          await prod.save();
+          console.log(`  Stock mis à jour pour produit ${prod._id}: ${prod.stock}`);
+        }
+      } catch (err) {
+        console.warn('Impossible de mettre à jour le stock pour', item.productId, err.message);
+      }
+    }
+
     // Notification Stripe Webhooks (en production, c'est via webhooks)
     console.log(`✅ Commande créée: ${newCommande._id} - Paiement: ${paymentIntentId}`);
 

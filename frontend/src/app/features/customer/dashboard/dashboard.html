@@ -68,14 +68,29 @@
         @if (orders().length === 0) {
           <p class="text-gray-400">Aucune commande récente.</p>
         } @else {
-          <ul class="space-y-2">
+          <!-- En-tête des colonnes -->
+          <div class="bg-matcha-dark/50 p-4 rounded-t border-b border-white/10 grid grid-cols-6 gap-4 font-bold text-white text-sm">
+            <span>Numéro</span>
+            <span>Date de commande</span>
+            <span>Livraison prévue</span>
+            <span>Paiement</span>
+            <span>Statut</span>
+            <span class="text-right">Montant</span>
+          </div>
+          
+          <!-- Liste des commandes -->
+          <div class="border border-t-0 border-white/10 rounded-b overflow-hidden">
             @for(order of orders(); track order._id) {
-              <li class="bg-white/5 p-4 rounded flex justify-between items-center">
+              <div class="bg-matcha-dark p-4 grid grid-cols-6 gap-4 hover:bg-matcha-dark/80 transition border-b border-white/5 last:border-b-0 items-center">
                 <span class="font-medium text-white">#{{ order.orderNumber }}</span>
-                <span class="text-matcha-spring">{{ order.totalAmount | currency:'EUR' }}</span>
-              </li>
+                <span class="text-sm text-gray-400">{{ order.createdAt| date:'short' }}</span>
+                <span class="text-sm text-gray-400">{{ order.deliveryDate| date:'short' }}</span>
+                <span class="text-sm text-gray-400">{{ order.paymentStatus }}</span>
+                <span class="text-sm text-matcha-spring">{{ order.status }}</span>
+                <span class="text-matcha-spring text-right">{{ order.totalAmount | currency:'EUR' }}</span>
+              </div>
             }
-          </ul>
+          </div>
           @if (ordersCount() > orders().length) {
             <div class="mt-4">
               <a routerLink="/orders" class="px-4 py-2 bg-matcha-spring text-white rounded">
