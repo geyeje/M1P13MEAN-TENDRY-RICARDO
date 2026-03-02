@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+/* additional card rules (tailwind utilities are preferred but we keep some fallbacks) */
+.store-card {
+  /* structural fallback */
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.store-card img {
+  object-fit: cover;
+}
+
+.store-card h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

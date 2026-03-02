@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+.search-input {
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+.filters-wrapper {
+  position: relative;
+}
+
+.filter-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  color: #fff;
+  padding: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.filter-nav.left {
+  left: 0;
+}
+
+.filter-nav.right {
+  right: 0;
+}
+
+.filters-container {
+  scroll-behavior: smooth;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  color: #111;
+  white-space: nowrap;
+}
