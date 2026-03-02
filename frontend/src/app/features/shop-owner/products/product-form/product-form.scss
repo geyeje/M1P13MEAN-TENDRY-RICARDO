@@ -96,14 +96,12 @@
     border-radius: 10px;
     font-size: 0.95rem;
     color: var(--cui-body-color);
-    background: var(--cui-card-bg);
     outline: none;
     transition: all 0.2s;
     box-sizing: border-box;
 
     &:focus {
       border-color: #667eea;
-      background: #ffffff;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
     }
 

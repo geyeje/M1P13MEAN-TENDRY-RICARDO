@@ -314,7 +314,7 @@
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.2s;
-    background: var(--cui-card-bg);
+    background: var(--cui-tertiary-bg);
     color: var(--cui-body-color);
     outline: none;
     box-sizing: border-box;
@@ -323,7 +323,7 @@
     &:focus {
       border-color: #6366f1;
       box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-      background: var(--cui-card-bg);
+      background: var(--cui-card-bg, var(--cui-body-bg));
     }
 
     &::placeholder {
@@ -426,12 +426,12 @@
 
   input[type='time'] {
     padding: 0.5rem 0.75rem;
-    border: 1.5px solid #cbd5e1;
+    border: 1.5px solid var(--cui-border-color);
     border-radius: 10px;
     font-family: inherit;
     font-size: 0.9rem;
     color: var(--cui-body-color);
-    background: var(--cui-card-bg, #fff);
+    background: var(--cui-card-bg);
 
     &:focus {
       border-color: #6366f1;
