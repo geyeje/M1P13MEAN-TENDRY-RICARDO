@@ -1,0 +1,64 @@
+:host {
+  display: block;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Inputs */
+input, select {
+  transition: all 0.3s ease;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(0, 186, 0, 0.1);
+  }
+}
+
+/* Status Colors */
+.text-matcha-spring {
+  color: #00ba00;
+}
+
+.bg-matcha-spring {
+  background-color: #00ba00;
+
+  &:hover {
+    background-color: #00a000;
+  }
+}
+
+.bg-matcha-dark {
+  background-color: #1a3a1a;
+}
+
+/* Stripe Payment Element */
+#payment-element {
+  animation: slideIn 0.3s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+
+  &:hover {
+    background: #444;
+  }
+}

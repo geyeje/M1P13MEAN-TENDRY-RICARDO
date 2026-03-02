@@ -20,6 +20,12 @@ export class Dashboard implements OnInit {
   ordersCount = signal<number>(0);
   productsRated = signal<number>(0); // placeholder; will come from rating service
 
+  // computed helper for latest order (assumes orders sorted newest first)
+  lastOrder = computed(() => {
+    const all = this.orders();
+    return all.length > 0 ? all[0] : null;
+  });
+
   ngOnInit(): void {
     const stringUser = localStorage.getItem('currentUser');
     if (stringUser) {

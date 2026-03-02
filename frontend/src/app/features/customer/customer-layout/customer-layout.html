@@ -1,8 +1,17 @@
-<div class="flex flex-col text-white">
-    <main>
+<div class="relative min-h-screen bg-[#f1f1f1] text-white">
+    <!-- Fixed Navbar -->
+    <div class="fixed top-0 left-0 right-0 z-50">
         <app-navbar></app-navbar>
-    </main>
-    <div>
-        <router-outlet></router-outlet>
+    </div>
+
+    <!-- Layout with sidebar and content -->
+    <div class="flex pt-20 pl-[260px]">
+        <!-- Sidebar (CoreUI manages positioning) -->
+        <app-sidebar [isOpen]="isSidebar" [navItems]="menuItems()"></app-sidebar>
+
+        <!-- Main content area -->
+        <div class="flex-1 overflow-auto">
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </div>

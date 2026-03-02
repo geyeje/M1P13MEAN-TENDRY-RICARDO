@@ -58,6 +58,7 @@ const boutiqueRoutes = require('./routes/boutique.routes');
 const adminRoutes = require('./routes/admin.routes');
 const produitRoutes = require('./routes/produit.routes');
 const commandeRoutes = require('./routes/commande.routes');
+const paymentRoutes = require('./routes/payment.routes');
 
 // Utiliser les routes
 app.use('/api/auth', authRoutes);
@@ -65,6 +66,7 @@ app.use('/api/boutiques', boutiqueRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/produits', produitRoutes);
 app.use('/api/commandes', commandeRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Gestion des erreurs 404
 app.use((req, res) => {

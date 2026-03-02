@@ -17,13 +17,19 @@
     <div class="space-y-8">
       <!-- statistiques -->
       <section class="flex flex-wrap gap-6">
-        <div class="bg-matcha-dark !border !border-white/10 p-4 rounded shadow flex-1">
+        <div class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1">
           <h4 class="text-lg font-bold text-white">Commandes passées</h4>
           <p class="text-3xl text-matcha-spring font-black">{{ ordersCount() }}</p>
         </div>
-        <div class="bg-matcha-dark !border !border-white/10 p-4 rounded shadow flex-1">
+        <div class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1">
           <h4 class="text-lg font-bold text-white">Produits notés</h4>
           <p class="text-3xl text-matcha-spring font-black">{{ productsRated() }}</p>
+        </div>
+        <div class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1">
+          <h4 class="text-lg font-bold text-white">dernière commande</h4>
+          <p class="text-2xl text-matcha-spring font-black">
+            {{ lastOrder()?.status || 'aucune' }}
+          </p>
         </div>
       </section>
 

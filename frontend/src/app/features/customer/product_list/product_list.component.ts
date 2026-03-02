@@ -3,7 +3,7 @@ import { ProductService } from '../../../core/services/product.service';import {
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from "@angular/material/button";
-import { ProductCardComponent } from '../product-card/product-card.component';
+import { ProductCardComponent } from '../../../shared/components/product-card/product-card.component';
 
 @Component({
   selector: 'app-product-list',

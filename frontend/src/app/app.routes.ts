@@ -20,11 +20,6 @@ export const routes: Routes = [
         .then((m) => m.HomeComponent),
       },
       {
-        path: 'shopping-cart',
-        canActivate: [AuthGuard],
-        loadComponent: () => import('./features/shopping-cart/shopping-cart.component').then(m=>m.ShoppingCartComponent),
-      },
-      {
         path: 'store',
         canActivate: [AuthGuard],
         data: { roles: ['boutique'] },
@@ -32,11 +27,23 @@ export const routes: Routes = [
         .then((m) => m.routes),
       },
       {
+        path: 'shopping-cart',
+        redirectTo: 'customer/shopping-cart',
+        pathMatch: 'full'
+      },
+      {
         path: 'customer',
         canActivate: [AuthGuard],
         data: { roles: ['acheteur']},
         loadChildren: () => import('./features/customer/customer.routes')
         .then((m)=> m.routes)
+      },
+      {
+        path: 'checkout',
+        canActivate: [AuthGuard],
+        data: {roles: ['acheteur']},
+        loadComponent: () => import('./shared/checkout-component/checkout-component')
+        .then((m) => m.CheckoutComponent),
       },
       {
         path: 'unauthorized',

@@ -1,5 +1,5 @@
 import { Component, inject, signal, Signal } from '@angular/core';
-import { ProductListComponent } from '../../../shared/components/product_list/product_list.component';
+import { ProductListComponent } from '../../customer/product_list/product_list.component';
 import { Product, ProductService } from '../../../core/services/product.service';
 
 @Component({
