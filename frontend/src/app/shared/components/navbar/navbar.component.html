@@ -31,10 +31,12 @@
 
     @if (authService.currentUser$ | async; as user) {
       <!-- Notifications -->
+      <!--
       <button class="action-button notification-btn" title="Notifications">
         <mat-icon>notifications</mat-icon>
         <span class="notification-dot"></span>
       </button>
+      -->
 
       <!-- Shopping Cart -->
       <button class="action-button cart-btn" routerLink="/shopping-cart" title="Panier">
