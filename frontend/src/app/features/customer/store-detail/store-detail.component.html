@@ -118,6 +118,53 @@
         </div>
       </div>
 
+      <!-- Rating Section -->
+      <div class="bg-gradient-to-r from-matcha-spring/10 to-matcha-medium/10 border border-matcha-spring/30 rounded-xl p-6 mb-12">
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <svg class="w-6 h-6 text-matcha-spring" fill="currentColor" viewBox="0 0 24 24">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          Évaluer cette boutique
+        </h2>
+        
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <!-- Stars -->
+          <div class="flex items-center gap-2">
+            <div class="flex gap-2">
+              <button
+                *ngFor="let star of getStarArray()"
+                (click)="setRating(star)"
+                [class.opacity-100]="userRating() >= star"
+                [class.opacity-30]="userRating() < star"
+                class="transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed"
+                [disabled]="ratingSubmitted()"
+              >
+                <svg class="w-10 h-10 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              </button>
+            </div>
+            <span *ngIf="userRating() > 0" class="text-matcha-spring font-bold text-lg">{{ userRating() }}/5</span>
+            <span *ngIf="userRating() === 0" class="text-gray-400 text-sm">Sélectionner une note</span>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            (click)="submitRating()"
+            [disabled]="userRating() === 0 || ratingSubmitted()"
+            class="px-6 py-2 bg-matcha-spring text-white font-semibold !rounded-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            <span *ngIf="!ratingSubmitted()">Soumettre la note</span>
+            <span *ngIf="ratingSubmitted()" class="flex items-center gap-2">
+              <svg class="w-5 h-5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+              Note enregistrée!
+            </span>
+          </button>
+        </div>
+      </div>
+
       <!-- Products Section -->
       <div>
         <h2 class="text-3xl font-bold text-white mb-8">Produits de la boutique</h2>

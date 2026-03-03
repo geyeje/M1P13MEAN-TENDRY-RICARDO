@@ -32,6 +32,10 @@ export class ProductCardComponent {
     this.addToShoppingCart.emit(p);
   }
 
+  onViewDetails(p: Product) {
+    this.router.navigate(['/customer/product', p._id]);
+  }
+
   getImageUrl(path: string): string {
     if (!path) return 'assets/no-image.png';
     if (path.startsWith('http')) return path;

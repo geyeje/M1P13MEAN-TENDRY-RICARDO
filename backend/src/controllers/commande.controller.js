@@ -205,9 +205,16 @@ exports.getShopCommandes = async (req, res) => {
     const productIds = await Produit.distinct('_id', { shopId: boutique._id });
 
     // Commandes contenant ces produits (recherche sur productId ou product pour compatibilité)
-    const commandes = await Commande.find({
+    const query = {
       $or: [{ 'items.productId': { $in: productIds } }, { 'items.product': { $in: productIds } }],
-    })
+    };
+
+    // Filtrer par statut si demandé
+    if (req.query.status && req.query.status !== 'all') {
+      query.status = req.query.status;
+    }
+
+    const commandes = await Commande.find(query)
       .populate('buyerId', 'firstname lastname nom prenom email')
       .sort('-createdAt');
 

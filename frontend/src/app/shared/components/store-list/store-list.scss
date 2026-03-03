@@ -37,9 +37,16 @@
 }
 
 .filter-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  background-color: #f3f4f6;
-  color: #111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   white-space: nowrap;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--matcha-border, rgba(0,0,0,0.1));
+  background: transparent;
+  color: var(--color-matcha-spring, #00FF95);
+  transition: background-color 200ms, color 200ms;
 }

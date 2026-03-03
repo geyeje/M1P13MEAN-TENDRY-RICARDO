@@ -100,4 +100,13 @@ export class ShopService {
       'Autres',
     ];
   }
+
+  // Soumettre une évaluation pour une boutique
+  submitRating(shopId: string, rating: number, comment?: string): Observable<any> {
+    const payload = {
+      rating,
+      ...(comment && { comment }),
+    };
+    return this.http.post(`${this.apiUrl}/${shopId}/rate`, payload);
+  }
 }

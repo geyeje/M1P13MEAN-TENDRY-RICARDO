@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { signal, computed } from '@angular/core';
 import { Product } from './product.service';
+import { AuthService } from './auth.service';
 
 export interface CartItem {
   product: Product;
@@ -11,8 +12,25 @@ export interface CartItem {
   providedIn: 'root',
 })
 export class ShoppingCartService {
-  private itemsSignal = signal<CartItem[]>(this.load());
+  private itemsSignal = signal<CartItem[]>([]);
   items = computed(() => this.itemsSignal());
+
+  constructor(private auth: AuthService) {
+    // Initialize from storage for current user/guest
+    this.itemsSignal.set(this.load());
+
+    // Listen to auth changes: when user logs out -> clear cart; when logs in -> load their cart
+    this.auth.currentUser$.subscribe((user) => {
+      if (!user) {
+        // user logged out: clear the in-memory cart and remove stored cart for guest (keep guest separate)
+        this.itemsSignal.set([]);
+        this.save();
+      } else {
+        // user logged in: load cart for this user
+        this.itemsSignal.set(this.load());
+      }
+    });
+  }
 
   get totalCount() {
     return computed(() => this.itemsSignal().reduce((sum, i) => sum + i.quantity, 0));
@@ -55,15 +73,21 @@ export class ShoppingCartService {
     this.save();
   }
 
+  private storageKey(): string {
+    const user = this.auth.currentUserValue;
+    if (user && user.id) return `shopping_cart_${user.id}`;
+    return 'shopping_cart_guest';
+  }
+
   private save() {
     try {
-      localStorage.setItem('shopping_cart', JSON.stringify(this.itemsSignal()));
+      localStorage.setItem(this.storageKey(), JSON.stringify(this.itemsSignal()));
     } catch {}
   }
 
   private load(): CartItem[] {
     try {
-      const raw = localStorage.getItem('shopping_cart');
+      const raw = localStorage.getItem(this.storageKey());
       if (raw) return JSON.parse(raw);
     } catch {}
     return [];
