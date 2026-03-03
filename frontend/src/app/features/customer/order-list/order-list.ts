@@ -160,4 +160,14 @@ export class OrderList implements OnInit {
   getStatusColor(status: string): string {
     return this.orderService.getStatusColor(status);
   }
+
+  getPaymentStatusLabel(status: string): string {
+    const labels: { [key: string]: string } = {
+      pending: 'En attente',
+      paid: 'Payée',
+      failed: 'Échouée',
+      refunded: 'Remboursée'
+    };
+    return labels[status] || status;
+  }
 }

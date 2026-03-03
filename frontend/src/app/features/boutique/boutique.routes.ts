@@ -11,7 +11,7 @@ export const BOUTIQUE_ROUTES: Routes = [
   {
     path: ':id',
     loadComponent: () =>
-      import('./boutique-detail/boutique-detail.component').then((m) => m.BoutiqueDetailComponent),
+      import('../customer/store-detail/store-detail.component').then((m) => m.StoreDetail),
     title: 'Détail de la boutique',
   },
 ];

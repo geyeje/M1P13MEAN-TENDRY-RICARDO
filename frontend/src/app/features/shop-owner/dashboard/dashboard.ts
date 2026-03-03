@@ -49,7 +49,6 @@ export class DashboardComponent implements OnInit {
           this.shop = response.boutique;
           // Support both old and new field names
           this.stats.products = b.productCount ?? b.productqt ?? 0;
-          this.stats.orders = b.commandCount ?? b.commandeqt ?? 0;
           this.stats.revenue = b.CA ?? 0;
           this.stats.avgRating = b.note ?? b.avgRating ?? 0;
         }
@@ -66,6 +65,12 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.success && response.commandes) {
           this.recentOrders = response.commandes;
+          // Utiliser le nombre réel de commandes au lieu de commandeqt
+          this.stats.orders = response.commandes.length;
+          // Calculer le revenue réel à partir des commandes confirmées/payées
+          this.stats.revenue = response.commandes
+            .filter((c: any) => c.paymentStatus === 'paid' || c.status === 'confirmed')
+            .reduce((sum: number, c: any) => sum + (c.totalAmount || 0), 0);
         }
       },
       error: (error) => {

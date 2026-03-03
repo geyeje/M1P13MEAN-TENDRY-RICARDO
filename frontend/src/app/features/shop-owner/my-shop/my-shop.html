@@ -199,7 +199,9 @@
           </svg>
         </div>
         <div class="stat-content">
-          <div class="stat-value">{{ formatCurrency(shop.CA) }}</div>
+          <div class="stat-value">
+            {{ formatCurrency(computedRevenue || shop.CA) }}
+          </div>
           <div class="stat-label">Chiffre d'Affaires</div>
         </div>
       </div>

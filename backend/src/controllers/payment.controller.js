@@ -7,6 +7,8 @@ if (!process.env.STRIPE_SECRET_KEY) {
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Commande = require('../models/Commande');
 const User = require('../models/User');
+const Produit = require('../models/Produit');
+const Boutique = require('../models/Boutique');
 
 /**
  * Créer un PaymentIntent
@@ -135,14 +137,42 @@ exports.confirmPayment = async (req, res) => {
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
     console.log('  Order number généré:', orderNumber);
 
-    // Formater les items avec unitPrice et subtotal
-    const formattedItems = cartItems.map(item => ({
-      productId: item.productId,
-      name: item.name,
-      quantity: item.quantity,
-      unitPrice: item.price,
-      subtotal: item.price * item.quantity,
-    }));
+    // Formater les items avec unitPrice et subtotal ET shopId
+    const formattedItems = [];
+    const shopIdsSet = new Set();
+
+    for (const item of cartItems) {
+      const produit = await Produit.findById(item.productId);
+      const shopId = produit?.shopId || null;
+      
+      console.log('[confirmPayment] Produit:', {
+        productId: item.productId,
+        name: item.name,
+        shopId: shopId,
+        shopId_type: typeof shopId,
+      });
+      
+      if (shopId) {
+        shopIdsSet.add(shopId);
+      }
+
+      formattedItems.push({
+        productId: item.productId,
+        shopId: shopId,
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        subtotal: item.price * item.quantity,
+        color: item.color || null,
+        size: item.size || null,
+        image: item.image || null,
+      });
+    }
+
+    const shopIds = Array.from(shopIdsSet);
+    console.log('[confirmPayment] shopIdsSet:', shopIdsSet);
+    console.log('[confirmPayment] shopIds final:', shopIds);
+    console.log('[confirmPayment] shopIds length:', shopIds.length);
 
     // Convertir shippingAddress en string
     const addressString = `${shippingAddress.street}, ${shippingAddress.postalCode} ${shippingAddress.city}, ${shippingAddress.country}`;
@@ -151,6 +181,7 @@ exports.confirmPayment = async (req, res) => {
       orderNumber: orderNumber,
       buyerId: userId,
       items: formattedItems,
+      shopIds: shopIds,
       totalAmount: paymentIntent.amount / 100,
       status: 'confirmed',
       paymentStatus: 'paid',
@@ -165,10 +196,13 @@ exports.confirmPayment = async (req, res) => {
       buyerId: newCommande.buyerId,
       totalAmount: newCommande.totalAmount,
       itemCount: newCommande.items.length,
+      shopIds: newCommande.shopIds,
+      shopIds_length: newCommande.shopIds.length,
     });
     
     await newCommande.save();
     console.log('✅ Commande créée:', newCommande._id);
+    console.log('[confirmPayment] Commande.shopIds après save:', newCommande.shopIds);
 
     // Décrémenter le stock des produits achetés
     for (const item of formattedItems) {
@@ -182,6 +216,21 @@ exports.confirmPayment = async (req, res) => {
         }
       } catch (err) {
         console.warn('Impossible de mettre à jour le stock pour', item.productId, err.message);
+      }
+    }
+
+    // Mettre à jour les stats des boutiques concernées
+    for (const shopId of shopIds) {
+      try {
+        await Boutique.findByIdAndUpdate(shopId, {
+          $inc: {
+            commandCount: 1,
+            CA: newCommande.totalAmount,
+          },
+        });
+        console.log(`  Boutique ${shopId} mise à jour - commandCount +1, CA +${newCommande.totalAmount}`);
+      } catch (err) {
+        console.warn('Impossible de mettre à jour la boutique', shopId, err.message);
       }
     }
 

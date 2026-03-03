@@ -25,6 +25,9 @@ exports.createCommande = async (req, res) => {
 
     const { items, shippingAddress, phone, note } = req.body;
 
+    console.log('========== DÉBUT createCommande ==========');
+    console.log('[createCommande] items reçus du frontend:', JSON.stringify(items, null, 2));
+
     if (!items || items.length === 0) {
       return res.status(400).json({
         success: false,
@@ -37,6 +40,7 @@ exports.createCommande = async (req, res) => {
     const validatedItems = [];
 
     for (const item of items) {
+      console.log('\n--- Traitement produit:', item.productId);
       const produit = await Produit.findById(item.productId);
 
       if (!produit) {
@@ -45,6 +49,16 @@ exports.createCommande = async (req, res) => {
           message: `Produit ${item.productId} non trouvé`,
         });
       }
+
+      console.log('[createCommande] Produit trouvé:', {
+        id: produit._id,
+        name: produit.name,
+        shopId: produit.shopId,
+        shopId_type: typeof produit.shopId,
+        shopId_string: produit.shopId ? produit.shopId.toString() : 'NULL',
+        stockAvant: produit.stock,
+        quantiteCommandee: item.quantity,
+      });
 
       if (produit.stock < item.quantity) {
         return res.status(400).json({
@@ -59,7 +73,7 @@ exports.createCommande = async (req, res) => {
       const subtotal = unitPrice * item.quantity;
       totalAmount += subtotal;
 
-      validatedItems.push({
+      const validatedItem = {
         productId: produit._id,
         shopId: produit.shopId || null, // conserver boutique propriétaire
         name: produit.name,
@@ -69,19 +83,48 @@ exports.createCommande = async (req, res) => {
         color: item.color || null,
         size: item.size || null,
         image: produit.images[0] || null,
-      });
+      };
+
+      console.log('[createCommande] validatedItem créé:', validatedItem);
+      console.log('[createCommande] validatedItem.shopId:', validatedItem.shopId);
+
+      validatedItems.push(validatedItem);
 
       // Déduire du stock
       produit.stock -= item.quantity;
       produit.salesCount += item.quantity;
-      await produit.save();
+      console.log('[createCommande] Stock mise à jour pour', produit.name, '- Avant:', produit.stock + item.quantity, '-> Après:', produit.stock);
+      
+      try {
+        await produit.save();
+        console.log('[createCommande] ✅ Produit', produit.name, 'sauvegardé avec succès. Stock final en BD:', produit.stock);
+      } catch (err) {
+        console.error('[createCommande] ❌ ERREUR lors de la sauvegarde du stock:', produit.name, err.message);
+        throw err;
+      }
     }
 
     // ---- Créer la commande ----
     // calculer les boutiques impliquées à partir des items validés
-    const shopIds = [
-      ...new Set(validatedItems.map((i) => i.shopId).filter((id) => id)),
-    ];
+    console.log('\n--- Extraction shopIds ---');
+    console.log('[createCommande] validatedItems:', JSON.stringify(validatedItems, null, 2));
+
+    const shopIdsRaw = validatedItems.map((i) => {
+      console.log('[DEBUG] Item shopId:', i.shopId, 'type:', typeof i.shopId);
+      return i.shopId;
+    });
+    console.log('[createCommande] shopIdsRaw (avant filter):', shopIdsRaw);
+
+    const shopIdsFiltered = shopIdsRaw.filter((id) => id);
+    console.log('[createCommande] shopIdsFiltered (après filter):', shopIdsFiltered);
+
+    const shopIds = [...new Set(shopIdsFiltered)];
+    console.log('[createCommande] shopIds final (après Set):', shopIds);
+    console.log('[createCommande] shopIds length:', shopIds.length);
+    
+    if (shopIds.length === 0) {
+      console.warn('[createCommande] ⚠️ ATTENTION: Aucun shopId extrait des items!');
+    }
 
     const commande = await Commande.create({
       orderNumber: generateOrderNumber(),
@@ -102,17 +145,31 @@ exports.createCommande = async (req, res) => {
       ],
     });
 
+    console.log('\n--- Commande créée ---');
+    console.log('[createCommande] Commande._id:', commande._id);
+    console.log('[createCommande] Commande.shopIds (avant populate):', commande.shopIds);
+    console.log('[createCommande] Commande.shopIds.length:', commande.shopIds.length);
+    console.log('[createCommande] Commande.items length:', commande.items.length);
+    console.log('[createCommande] Commande complète:', JSON.stringify(commande, null, 2));
+
     await commande.populate('buyerId', 'nom prenom email');
+    
+    console.log('[createCommande] Commande.shopIds (après populate):', commande.shopIds);
+    console.log('========== FIN createCommande ==========\n');
 
     // ---- Mettre à jour les stats boutiques concernées ----
+    console.log('[createCommande] Début de la boucle de mise à jour. Nombre de boutiques:', shopIds.length);
     for (const shopId of shopIds) {
-      await Boutique.findByIdAndUpdate(shopId, {
+      console.log('[createCommande] Mise à jour de la boutique:', shopId);
+      const updateResult = await Boutique.findByIdAndUpdate(shopId, {
         $inc: {
-          commandeqt: 1,
+          commandCount: 1,
           CA: totalAmount,
         },
       });
+      console.log('[createCommande] Boutique mise à jour:', shopId, 'Résultat:', updateResult ? 'OK' : 'NOT FOUND');
     }
+    console.log('[createCommande] Fin de la boucle de mise à jour');
 
     res.status(201).json({
       success: true,

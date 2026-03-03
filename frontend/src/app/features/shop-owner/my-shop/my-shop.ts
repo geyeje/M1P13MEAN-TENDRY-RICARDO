@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShopService, Shop } from '../../../core/services/shop';
+import { OrderService } from '../../../core/services/order.service';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../../shared/directives/image-error.directive';
 
@@ -17,8 +18,10 @@ export class MyShopComponent implements OnInit {
   shop: Shop | null = null;
   loading = true;
   error = '';
+  // revenue computed from orders (more reliable than shop.CA)
+  computedRevenue = 0;
 
-  constructor(private shopService: ShopService) {}
+  constructor(private shopService: ShopService, private orderService: OrderService) {}
 
   ngOnInit() {
     this.loadShop();
@@ -30,6 +33,8 @@ export class MyShopComponent implements OnInit {
       next: (response) => {
         if (response.success && response.boutique) {
           this.shop = response.boutique;
+          // rafraîchir revenu via commandes
+          this.computeRevenue();
         } else {
           this.error = 'Boutique non trouvée';
         }
@@ -94,5 +99,24 @@ export class MyShopComponent implements OnInit {
     if (!path) return '';
     if (path.startsWith('http')) return path;
     return `${environment.apiUrl.replace('/api', '')}${path}`;
+  }
+
+  // calculer CA réel en interrogeant les commandes de la boutique
+  computeRevenue(): void {
+    this.orderService.getMyShopOrders({})
+      .subscribe({
+        next: (res) => {
+          if (res.success && res.commandes) {
+            const total = res.commandes
+              .filter((c: any) => c.paymentStatus === 'paid' || c.status === 'confirmed')
+              .reduce((sum: number, c: any) => sum + (c.totalAmount || 0), 0);
+            this.computedRevenue = total;
+            console.log('[my-shop] computedRevenue from commandes:', total);
+          }
+        },
+        error: (err) => {
+          console.error('Erreur calcul revenu shop:', err);
+        }
+      });
   }
 }
