@@ -1,12 +1,6 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api',
-  stripePublicKey: 'pk_test_51T6GHF9bqT14xCYZ0VMGADcVAnHEx0gUiyEv8pdeW3icSX5XggPdmTktkDTC0zA3MkuzjtQ5f9SPWQnMNtjTBJnz001W4Yh6PA'
-};
-
-// src/environments/environment.prod.ts
-export const environmentProd = {
-  production: true,
-  apiUrl: 'https://m1p13mean-tendry-ricardo.onrender.com'
-  
+  stripePublicKey:
+    'pk_test_51T6GHF9bqT14xCYZ0VMGADcVAnHEx0gUiyEv8pdeW3icSX5XggPdmTktkDTC0zA3MkuzjtQ5f9SPWQnMNtjTBJnz001W4Yh6PA',
 };
