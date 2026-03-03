@@ -1,5 +1,9 @@
 import { Component, computed, inject, OnInit, signal, ElementRef, ViewChild } from '@angular/core';
-import { ProductService } from '../../../core/services/product.service';import { ShoppingCartService, CartItem } from '../../../core/services/shopping-cart.service';import { Product } from '../../../core/services/product.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProductService } from '../../../core/services/product.service';
+import { ShoppingCartService, CartItem } from '../../../core/services/shopping-cart.service';
+import { Product } from '../../../core/services/product.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from "@angular/material/button";
@@ -8,7 +12,7 @@ import { ProductCardComponent } from '../../../shared/components/product-card/pr
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, MatButtonModule, ProductCardComponent],
+  imports: [CommonModule, FormsModule, MatCardModule, MatIconModule, MatButtonModule, ProductCardComponent],
   templateUrl: './product_list.component.html',
   styleUrl: './product_list.component.scss',
 })
@@ -17,19 +21,27 @@ export class ProductListComponent implements OnInit {
   private cartService = inject(ShoppingCartService);
   categories = signal<string[]>([]);
 
-  products = signal<Product[]>([]); // tous les produits dans le mock du service pour test d'affichage, à remplacer par un appel réel une fois le backend prêt
-  isLoading = signal<boolean>(true); // signal pour gérer l'état de chargement
-  errorMessage = signal<string>(''); // Signal pour stocker les messages d'erreurs, non utilisé pour le moment mais à garder pour la suite
-  selectedCategory = signal<string>('Tous'); // Signal pour stocker la catégorie sélectionnée pour le filtrage des produits
+  products = signal<Product[]>([]);
+  isLoading = signal<boolean>(true);
+  errorMessage = signal<string>('');
+  selectedCategory = signal<string>('Tous');
+  searchTerm = signal<string>('');
 
-  //Signal calculé pour filtrer les produits en fonction de la catégorie sélectionnée, réévalué à chaque changement de catégorie ou de liste de produits
   filteredProducts = computed(() => {
-    const category = this.selectedCategory();
-    const allProducts = this.products();
-    if (category === 'Tous') {
-      return allProducts;
+    let arr = this.products();
+    const searchTermLower = this.searchTerm().toLowerCase().trim();
+    if (searchTermLower) {
+      arr = arr.filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchTermLower) ||
+          p.description?.toLowerCase().includes(searchTermLower)
+      );
     }
-    return allProducts.filter((p) => p.category === category);
+    const category = this.selectedCategory();
+    if (category && category !== 'Tous') {
+      arr = arr.filter((p) => p.category === category);
+    }
+    return arr;
   });
 
   constructor() {}

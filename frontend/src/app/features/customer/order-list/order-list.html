@@ -1,1 +1,188 @@
-<p>order-list works!</p>
+<div class="p-6 min-h-screen">
+  <!-- Titre -->
+  <h1 class="text-4xl font-bold text-white mb-8">Historique des commandes</h1>
+
+  <!-- Barre de filtres et recherche -->
+  <div class="bg-matcha-dark/50 p-4 border border-white/10 rounded-lg mb-6 space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Recherche par numéro de commande -->
+      <div>
+        <label class="text-white text-sm mb-2 block">Rechercher par numéro</label>
+        <input
+          type="text"
+          placeholder="#12345..."
+          (input)="onSearchChange($any($event.target).value)"
+          class="w-full px-4 py-2 bg-matcha-dark/50 border border-white/20 rounded text-white placeholder-gray-500 focus:outline-none focus:border-matcha-spring"
+        />
+      </div>
+
+      <!-- Filtre par statut -->
+      <div>
+        <label class="text-white text-sm mb-2 block">Statut</label>
+        <select
+          [value]="selectedStatus()"
+          (change)="onStatusChange($any($event.target).value)"
+          class="w-full px-4 py-2 bg-matcha-dark/50 border border-white/20 rounded text-white focus:outline-none focus:border-matcha-spring"
+        >
+          @for (status of statusOptions; track status.value) {
+            <option [value]="status.value">{{ status.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Tri -->
+      <div>
+        <label class="text-white text-sm mb-2 block">Trier par</label>
+        <select
+          [value]="sortBy()"
+          (change)="onSortChange($any($event.target).value)"
+          class="w-full px-4 py-2 bg-matcha-dark/50 border border-white/20 rounded text-white focus:outline-none focus:border-matcha-spring"
+        >
+          <option value="date">Date</option>
+          <option value="amount">Montant</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Infos et bouton de tri -->
+    <div class="flex justify-between items-center text-sm">
+      <span class="text-gray-400">{{ totalFiltered() }} commande(s) trouvée(s)</span>
+      <button
+        (click)="toggleSortOrder()"
+        class="px-3 py-1 bg-matcha-spring/20 hover:bg-matcha-spring/30 border border-matcha-spring/50 rounded text-matcha-spring text-xs transition"
+      >
+        Ordre: {{ sortOrder() === 'desc' ? '▼ Décroissant' : '▲ Croissant' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Affichage du chargement -->
+  @if (loading()) {
+    <div class="text-center py-12">
+      <p class="text-gray-400">Chargement des commandes...</p>
+    </div>
+  } @else {
+    <!-- Tableau des commandes -->
+    @if (paginatedOrders().length === 0) {
+      <div class="text-center py-12">
+        <p class="text-gray-400 text-lg">Aucune commande à afficher.</p>
+        <p class="text-gray-500 text-sm mt-2">Lancez des achats pour voir vos commandes ici.</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full bg-matcha-dark border border-white/10 rounded-lg overflow-hidden">
+          <!-- En-tête -->
+          <thead class="bg-matcha-dark/70 border-b border-white/10">
+            <tr class="text-white text-sm">
+              <th class="px-4 py-3 text-left font-bold">Numéro</th>
+              <th
+                class="px-4 py-3 text-left font-bold cursor-pointer hover:text-matcha-spring transition"
+                (click)="onSortChange('date')"
+              >
+                Date
+                @if (sortBy() === 'date') {
+                  <span>{{ sortOrder() === 'desc' ? '▼' : '▲' }}</span>
+                }
+              </th>
+              <th class="px-4 py-3 text-left font-bold">Statut</th>
+              <th
+                class="px-4 py-3 text-right font-bold cursor-pointer hover:text-matcha-spring transition"
+                (click)="onSortChange('amount')"
+              >
+                Montant
+                @if (sortBy() === 'amount') {
+                  <span>{{ sortOrder() === 'desc' ? '▼' : '▲' }}</span>
+                }
+              </th>
+              <th class="px-4 py-3 text-center font-bold">Actions</th>
+            </tr>
+          </thead>
+
+          <!-- Corps du tableau -->
+          <tbody>
+            @for (order of paginatedOrders(); track order._id; let idx = $index) {
+              <tr
+                class="border-b border-white/5 hover:bg-matcha-dark/50 transition text-gray-100"
+                [class.even]="idx % 2 === 0"
+              >
+                <td class="px-4 py-3">
+                  <span class="font-mono text-matcha-spring">#{{ order.orderNumber }}</span>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  {{ order.createdAt | date: 'short' }}
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-bold"
+                    [ngClass]="{
+                      'bg-yellow-900/50 text-yellow-300 border border-yellow-700': getStatusColor(order.status) === 'warning',
+                      'bg-blue-900/50 text-blue-300 border border-blue-700': getStatusColor(order.status) === 'info',
+                      'bg-purple-900/50 text-purple-300 border border-purple-700': getStatusColor(order.status) === 'primary',
+                      'bg-gray-900/50 text-gray-300 border border-gray-700': getStatusColor(order.status) === 'secondary',
+                      'bg-green-900/50 text-green-300 border border-green-700': getStatusColor(order.status) === 'success',
+                      'bg-red-900/50 text-red-300 border border-red-700': getStatusColor(order.status) === 'danger',
+                    }"
+                  >
+                    {{ getStatusLabel(order.status) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 font-bold text-right">
+                  <span class="text-matcha-spring">{{ order.totalAmount | currency: 'EUR' }}</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <a
+                    [routerLink]="['/customer/order', order._id]"
+                    class="px-3 py-1 bg-matcha-spring/20 hover:bg-matcha-spring/40 border border-matcha-spring/50 rounded text-matcha-spring text-xs transition"
+                  >
+                    Détails
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="mt-6 flex justify-center items-center gap-2">
+          <button
+            (click)="goToPage(currentPage() - 1)"
+            [disabled]="currentPage() === 1"
+            class="px-3 py-1 bg-matcha-dark border border-white/10 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed hover:border-white/30 transition"
+          >
+            ← Précédent
+          </button>
+
+          <div class="flex gap-1">
+            @for (page of pageNumbers(); track page) {
+              <button
+                (click)="goToPage(page)"
+                [class.active]="currentPage() === page"
+                [ngClass]="{
+                  'bg-matcha-spring text-black': currentPage() === page,
+                  'bg-matcha-dark border border-white/10 text-white hover:border-white/30': currentPage() !== page,
+                }"
+                class="px-3 py-1 rounded transition"
+              >
+                {{ page }}
+              </button>
+            }
+          </div>
+
+          <button
+            (click)="goToPage(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages()"
+            class="px-3 py-1 bg-matcha-dark border border-white/10 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed hover:border-white/30 transition"
+          >
+            Suivant →
+          </button>
+        </div>
+
+        <div class="mt-4 text-center text-sm text-gray-400">
+          Page {{ currentPage() }} sur {{ totalPages() }}
+        </div>
+      }
+    }
+  }
+</div>
