@@ -4,15 +4,7 @@
     <div class="sidebar-header">
       <div class="brand" routerLink="/" style="cursor: pointer">
         <span class="brand-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 24px; height: 24px"
-          >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
+          <mat-icon>security</mat-icon>
         </span>
         <span class="brand-text" *ngIf="isSidebarOpen">Admin Panel</span>
       </div>
@@ -26,83 +18,8 @@
         class="nav-item"
         [title]="item.label"
       >
-        <span class="nav-icon" [ngSwitch]="item.icon">
-          <svg
-            *ngSwitchCase="'dashboard'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 20px; height: 20px"
-          >
-            <rect x="3" y="3" width="10" height="10"></rect>
-            <rect x="14" y="3" width="10" height="10"></rect>
-            <rect x="14" y="14" width="10" height="10"></rect>
-            <rect x="3" y="14" width="10" height="10"></rect>
-          </svg>
-          <svg
-            *ngSwitchCase="'users'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 20px; height: 20px"
-          >
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 00-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 010 7.75"></path>
-          </svg>
-          <svg
-            *ngSwitchCase="'shop'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 20px; height: 20px"
-          >
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          <svg
-            *ngSwitchCase="'package'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 20px; height: 20px"
-          >
-            <path
-              d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"
-            ></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-          </svg>
-          <svg
-            *ngSwitchCase="'shopping-cart'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 20px; height: 20px"
-          >
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path>
-          </svg>
-          <svg
-            *ngSwitchCase="'settings'"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 20px; height: 20px"
-          >
-            <circle cx="12" cy="12" r="3"></circle>
-            <path
-              d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1V15a2 2 0 01-2-2 2 2 0 012-2v-.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
-            ></path>
-          </svg>
+        <span class="nav-icon">
+          <mat-icon [style.color]="item.color">{{ item.icon }}</mat-icon>
         </span>
         <span class="nav-label" *ngIf="isSidebarOpen">{{ item.label }}</span>
         <span class="nav-badge" *ngIf="item.badge && isSidebarOpen">{{ item.badge }}</span>
@@ -112,17 +29,7 @@
     <div class="sidebar-footer">
       <button class="btn-logout" (click)="logout()" [title]="'Se déconnecter'">
         <span class="logout-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 20px; height: 20px"
-          >
-            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
+          <mat-icon>logout</mat-icon>
         </span>
         <span class="logout-text" *ngIf="isSidebarOpen">Déconnexion</span>
       </button>
@@ -135,23 +42,26 @@
     <header class="top-header">
       <button class="toggle-btn" (click)="toggleSidebar()">
         <span class="icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            style="width: 24px; height: 24px"
-          >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
+          <mat-icon>menu</mat-icon>
         </span>
       </button>
 
       <!-- Theme Toggle -->
-      <button class="toggle-btn ms-2" (click)="toggleTheme()" [title]="'Changer de thème'">
-        <i [ngClass]="themeService.theme === 'dark' ? 'cil-sun' : 'cil-moon'" class="fs-4"></i>
+      <button
+        class="action-button theme-toggle-btn ms-2"
+        (click)="themeService.toggleTheme()"
+        [title]="themeService.theme === 'light' ? 'Mode Sombre' : 'Mode Clair'"
+      >
+        <mat-icon>{{ themeService.theme === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+      </button>
+
+      <!-- Settings Shortcut -->
+      <button
+        class="action-button ms-2"
+        routerLink="/admin/settings"
+        title="Paramètres de la plateforme"
+      >
+        <mat-icon>settings</mat-icon>
       </button>
 
       <div class="header-right">

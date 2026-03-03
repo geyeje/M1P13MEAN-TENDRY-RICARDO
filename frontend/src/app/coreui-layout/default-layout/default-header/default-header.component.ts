@@ -23,6 +23,8 @@ import {
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
+import { ThemeService } from '../../../core/services/theme.service';
+import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-default-header',
@@ -50,6 +52,7 @@ import { IconDirective } from '@coreui/icons-angular';
 })
 export class DefaultHeaderComponent extends HeaderComponent {
   readonly #colorModeService = inject(ColorModeService);
+  private themeService = inject(ThemeService);
   readonly colorMode = this.#colorModeService.colorMode;
 
   readonly colorModes = [
@@ -65,6 +68,11 @@ export class DefaultHeaderComponent extends HeaderComponent {
 
   constructor() {
     super();
+    // Synchroniser le mode CoreUI avec le ThemeService (Tailwind dark mode)
+    effect(() => {
+      const mode = this.colorMode();
+      this.themeService.setTheme(mode === 'dark' ? 'dark' : 'light');
+    });
   }
 
   sidebarId = input('sidebar1');

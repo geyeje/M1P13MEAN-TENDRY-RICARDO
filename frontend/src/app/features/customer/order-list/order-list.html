@@ -56,7 +56,7 @@
         (click)="toggleSortOrder()"
         class="px-3 py-1 bg-matcha-spring/20 hover:bg-matcha-spring/30 border border-matcha-spring/50 rounded text-matcha-spring text-xs transition"
       >
-        {{ sortOrder() === 'desc' ? '▼ Récente d\'abord' : '▲ Ancienne d\'abord' }}
+        {{ sortOrder() === 'desc' ? "▼ Récente d'abord" : "▲ Ancienne d'abord" }}
       </button>
     </div>
   </div>
@@ -65,7 +65,9 @@
   @if (loading()) {
     <div class="text-center py-12">
       <div class="inline-block">
-        <div class="w-8 h-8 border-4 border-matcha-spring border-t-transparent rounded-full animate-spin"></div>
+        <div
+          class="w-8 h-8 border-4 border-matcha-spring border-t-transparent rounded-full animate-spin"
+        ></div>
         <p class="text-gray-400 mt-4">Chargement de vos commandes...</p>
       </div>
     </div>
@@ -95,18 +97,19 @@
                   <div class="order-number-badge">{{ order.orderNumber }}</div>
                   <div>
                     <p class="text-sm text-gray-400">Date de commande</p>
-                    <p class="font-semibold text-white">{{ order.createdAt | date: 'dd MMM yyyy' }}</p>
+                    <p class="font-semibold text-white">
+                      {{ order.createdAt | date: 'dd MMM yyyy' }}
+                    </p>
                   </div>
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="text-right">
                     <p class="text-sm text-gray-400">Montant total</p>
-                    <p class="text-2xl font-bold text-matcha-spring">{{ order.totalAmount | currency: 'EUR' }}</p>
+                    <p class="text-2xl font-bold text-matcha-spring">
+                      {{ order.totalAmount | appCurrency }}
+                    </p>
                   </div>
-                  <span
-                    class="status-badge"
-                    [ngClass]="'status-' + getStatusColor(order.status)"
-                  >
+                  <span class="status-badge" [ngClass]="'status-' + getStatusColor(order.status)">
                     {{ getStatusLabel(order.status) }}
                   </span>
                 </div>
@@ -120,9 +123,11 @@
                 <div class="order-section">
                   <h4 class="section-title">Articles</h4>
                   <div class="items-summary">
-                    <span class="item-count-badge">{{ order.items?.length || 0 }}</span>
+                    <span class="item-count-badge">{{ order.items.length }}</span>
                     <p class="text-sm text-gray-400">
-                      {{ order.items?.length === 1 ? '1 article' : (order.items?.length || 0) + ' articles' }}
+                      {{
+                        order.items.length === 1 ? '1 article' : order.items.length + ' articles'
+                      }}
                     </p>
                   </div>
                   @if (order.items && order.items.length > 0) {
@@ -146,10 +151,7 @@
                 <div class="order-section">
                   <h4 class="section-title">Paiement</h4>
                   <div class="payment-status">
-                    <div
-                      class="payment-badge"
-                      [ngClass]="'payment-' + order.paymentStatus"
-                    >
+                    <div class="payment-badge" [ngClass]="'payment-' + order.paymentStatus">
                       {{ getPaymentStatusLabel(order.paymentStatus) }}
                     </div>
                     <p class="text-xs text-gray-500 mt-2">Statut du paiement</p>
@@ -175,10 +177,7 @@
 
             <!-- Pied de page de la carte -->
             <div class="order-card-footer">
-              <a
-                [routerLink]="['/customer/order', order._id]"
-                class="btn-details"
-              >
+              <a [routerLink]="['/customer/order', order._id]" class="btn-details">
                 Voir les détails
                 <span class="arrow">→</span>
               </a>
@@ -205,7 +204,8 @@
                 [class.active]="currentPage() === page"
                 [ngClass]="{
                   'bg-matcha-spring text-black': currentPage() === page,
-                  'bg-matcha-dark border border-white/10 text-white hover:border-white/30': currentPage() !== page,
+                  'bg-matcha-dark border border-white/10 text-white hover:border-white/30':
+                    currentPage() !== page,
                 }"
                 class="px-3 py-1 rounded transition"
               >
@@ -230,4 +230,3 @@
     }
   }
 </div>
-

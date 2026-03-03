@@ -3,15 +3,16 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Order, OrderService } from '../../../core/services/order.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
-  selector: 'app-order-list',
+  selector: 'app-customer-order-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, AppCurrencyPipe],
   templateUrl: './order-list.html',
   styleUrl: './order-list.scss',
 })
-export class OrderList implements OnInit {
+export class CustomerOrderList implements OnInit {
   orderService = inject(OrderService);
 
   // Données
@@ -49,9 +50,7 @@ export class OrderList implements OnInit {
     // Filtrer par recherche (numéro de commande)
     if (this.searchQuery()) {
       const query = this.searchQuery().toLowerCase();
-      result = result.filter((o) =>
-        o.orderNumber.toLowerCase().includes(query),
-      );
+      result = result.filter((o) => o.orderNumber.toLowerCase().includes(query));
     }
 
     // Trier
@@ -63,9 +62,7 @@ export class OrderList implements OnInit {
       });
     } else if (this.sortBy() === 'amount') {
       result.sort((a, b) =>
-        this.sortOrder() === 'desc'
-          ? b.totalAmount - a.totalAmount
-          : a.totalAmount - b.totalAmount,
+        this.sortOrder() === 'desc' ? b.totalAmount - a.totalAmount : a.totalAmount - b.totalAmount,
       );
     }
 
@@ -82,9 +79,7 @@ export class OrderList implements OnInit {
 
   // Informations de pagination
   totalFiltered = computed(() => this.filteredOrders().length);
-  totalPages = computed(() =>
-    Math.ceil(this.totalFiltered() / this.pageSize()),
-  );
+  totalPages = computed(() => Math.ceil(this.totalFiltered() / this.pageSize()));
 
   // Array pour boucle des pages
   pageNumbers = computed(() => {
@@ -166,7 +161,7 @@ export class OrderList implements OnInit {
       pending: 'En attente',
       paid: 'Payée',
       failed: 'Échouée',
-      refunded: 'Remboursée'
+      refunded: 'Remboursée',
     };
     return labels[status] || status;
   }

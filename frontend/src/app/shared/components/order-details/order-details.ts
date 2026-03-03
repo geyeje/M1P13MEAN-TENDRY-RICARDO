@@ -1,13 +1,15 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService, Order } from '../../../core/services/order.service';
 import { environment } from '../../../../environments/environment';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
   selector: 'app-order-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AppCurrencyPipe],
   templateUrl: './order-details.html',
   styleUrl: './order-details.scss',
 })
@@ -15,6 +17,7 @@ export class OrderDetails implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private orderService = inject(OrderService);
+  private authService = inject(AuthService);
 
   order = signal<Order | null>(null);
   loading = signal<boolean>(false);
@@ -45,7 +48,14 @@ export class OrderDetails implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/customer/order-list']);
+    const user = this.authService.currentUserValue;
+    if (user?.role === 'admin') {
+      this.router.navigate(['/admin/orders']);
+    } else if (user?.role === 'boutique') {
+      this.router.navigate(['/shop-owner/orders']);
+    } else {
+      this.router.navigate(['/customer/order-list']);
+    }
   }
 
   getImageUrl(path?: string | null): string | null {

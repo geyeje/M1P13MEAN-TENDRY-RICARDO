@@ -7,11 +7,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../../shared/directives/image-error.directive';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
   selector: 'app-store-detail',
   standalone: true,
-  imports: [CommonModule, ImageErrorDirective],
+  imports: [CommonModule, ImageErrorDirective, AppCurrencyPipe],
   templateUrl: './store-detail.component.html',
   styleUrl: './store-detail.component.scss',
 })
@@ -42,12 +43,14 @@ export class StoreDetail implements OnInit {
             this.boutique.set(res.boutique);
             // si le serveur nous donne une note déjà existante, l'afficher
             if (res.myRating && res.myRating > 0) {
-              this.userRating.set(res.myRating);            } else {
+              this.userRating.set(res.myRating);
+            } else {
               // fallback cache local si serveur n'a pas renvoyé de note
               const cached = localStorage.getItem(`rating_boutique_${id}`);
               if (cached) {
                 this.userRating.set(Number(cached));
-              }            }
+              }
+            }
             this.loadShopProducts();
           } else {
             this.error.set('Boutique introuvable');
@@ -143,8 +146,9 @@ export class StoreDetail implements OnInit {
               updatedBoutique.reviewCount = res.boutique.reviewCount;
               this.boutique.set(updatedBoutique);
             }
-            console.log(`Note ${rating}/5 soumise avec succès`);            // enregistrer aussi dans le cache local
-            localStorage.setItem(`rating_boutique_${shopId}`, rating.toString());          }
+            console.log(`Note ${rating}/5 soumise avec succès`); // enregistrer aussi dans le cache local
+            localStorage.setItem(`rating_boutique_${shopId}`, rating.toString());
+          }
           // Réinitialiser après 3 secondes
           setTimeout(() => {
             this.ratingSubmitted.set(false);
@@ -152,7 +156,7 @@ export class StoreDetail implements OnInit {
           }, 3000);
         },
         error: (err) => {
-          console.error('Erreur lors de la soumission de l\'évaluation:', err);
+          console.error("Erreur lors de la soumission de l'évaluation:", err);
           this.ratingSubmitted.set(false);
         },
       });

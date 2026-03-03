@@ -1,6 +1,6 @@
-// frontend/src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { maintenanceGuard } from './core/guards/maintenance.guard';
 import { MainLayout } from './core/layouts/main-layout/main-layout';
 import { AuthLayout } from './core/layouts/auth-layout/auth-layout';
 
@@ -8,6 +8,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayout,
+    canActivate: [maintenanceGuard],
     children: [
       {
         path: '',
@@ -49,23 +50,29 @@ export const routes: Routes = [
       },
       {
         path: 'product-list',
-        loadComponent: () => import('./features/customer/product_list/product_list.component')
-        .then((m) => m.ProductListComponent),
+        loadComponent: () =>
+          import('./features/customer/product_list/product_list.component').then(
+            (m) => m.ProductListComponent,
+          ),
       },
       {
         path: 'store-list',
-        loadComponent: () => import('./shared/components/store-list/store-list')
-        .then((m) => m.StoreList),
+        loadComponent: () =>
+          import('./shared/components/store-list/store-list').then((m) => m.StoreList),
       },
       {
         path: 'boutique/:id',
-        loadComponent: () => import('./features/customer/store-detail/store-detail.component')
-        .then((m) => m.StoreDetail),
+        loadComponent: () =>
+          import('./features/customer/store-detail/store-detail.component').then(
+            (m) => m.StoreDetail,
+          ),
       },
       {
         path: 'product/:id',
-        loadComponent: () => import('./shared/components/product-details/product-details')
-        .then((m) => m.ProductDetails),
+        loadComponent: () =>
+          import('./shared/components/product-details/product-details').then(
+            (m) => m.ProductDetails,
+          ),
       },
       {
         path: 'unauthorized',
@@ -95,12 +102,15 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] },
+    data: { role: 'admin' },
     loadComponent: () =>
-      import('./coreui-layout/default-layout/default-layout.component').then(
-        (m) => m.DefaultLayoutComponent,
-      ),
-    loadChildren: () => import('./features/admin/admin.route').then((m) => m.adminRoutes),
+      import('./features/admin/admin-layout/admin-layout').then((m) => m.AdminLayout),
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./features/admin/admin.route').then((m) => m.adminRoutes),
+      },
+    ],
   },
 
   {
@@ -127,6 +137,13 @@ export const routes: Routes = [
           import('./features/shop-owner/shop-owner.route').then((m) => m.shopOwnerRoutes),
       },
     ],
+  },
+  {
+    path: 'maintenance',
+    loadComponent: () =>
+      import('./shared/components/maintenance/maintenance.component').then(
+        (m) => m.MaintenanceComponent,
+      ),
   },
   {
     path: '**',

@@ -9,11 +9,12 @@ import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../directives/image-error.directive';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, ImageErrorDirective, MatIconModule, MatButtonModule],
+  imports: [CommonModule, ImageErrorDirective, MatIconModule, MatButtonModule, AppCurrencyPipe],
   templateUrl: './product-details.html',
   styleUrl: './product-details.scss',
 })

@@ -25,9 +25,28 @@ export const adminRoutes: Routes = [
       },
       {
         path: 'shops',
-        loadComponent: () => import('./shops/shops.component')
-          .then(m => m.ShopsComponent)
-      }
+        loadComponent: () => import('./shops/shops.component').then((m) => m.ShopsComponent),
+      },
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./products/product-list.component').then((m) => m.ProductListComponent),
+      },
+      {
+        path: 'orders',
+        loadComponent: () =>
+          import('./orders/order-list.component').then((m) => m.OrderListComponent),
+      },
+      {
+        path: 'orders/:id',
+        loadComponent: () =>
+          import('../../shared/components/order-details/order-details').then((m) => m.OrderDetails),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./settings/settings.component').then((m) => m.SettingsComponent),
+      },
     ],
   },
 ];

@@ -2,6 +2,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { PlatformSettingsService } from '../../../core/services/platform-settings.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -36,11 +37,16 @@ export class Navbar {
   authService = inject(AuthService);
   cart = inject(ShoppingCartService);
   themeService = inject(ThemeService);
+  platformSettings = inject(PlatformSettingsService);
   router = inject(Router);
 
   currentUser = toSignal(this.authService.currentUser$);
   name = computed(() => this.currentUser()?.prenom || 'Utilisateur');
   cartCount = computed(() => this.cart.items().reduce((sum, i) => sum + i.quantity, 0));
+
+  // Dynamic site name and registration flag from admin settings
+  siteName = this.platformSettings.siteName;
+  allowRegistrations = this.platformSettings.allowRegistrations;
 
   menuItem = input<MenuItem[]>([
     { label: 'Accueil', route: 'home' },

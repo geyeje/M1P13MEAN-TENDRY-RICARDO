@@ -2,8 +2,8 @@
 <nav class="navbar-container">
   <!-- Left: Logo & Branding -->
   <div class="navbar-brand">
-    <div class="logo-badge">{{ Logo }}</div>
-    <span class="brand-title">{{ title }}<span class="brand-accent">Center</span></span>
+    <div class="logo-badge">{{ siteName().charAt(0) }}</div>
+    <span class="brand-title">{{ siteName() }}</span>
   </div>
 
   <!-- Center: Navigation Menu -->
@@ -80,6 +80,14 @@
         <mat-icon>login</mat-icon>
         <span>Connexion</span>
       </a>
+
+      <!-- Register button - only shown when registrations are open -->
+      @if (allowRegistrations()) {
+        <a mat-flat-button class="login-btn" routerLink="/register" style="background: rgba(132,204,22,0.15); border: 1px solid #84cc16; color:#84cc16; margin-left: 0.5rem">
+          <mat-icon>person_add</mat-icon>
+          <span>S'inscrire</span>
+        </a>
+      }
 
       <!-- Shopping Cart (anonymous) -->
       <button class="action-button cart-btn" routerLink="/shopping-cart" title="Panier">

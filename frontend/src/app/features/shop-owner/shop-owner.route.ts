@@ -47,7 +47,8 @@ export const shopOwnerRoutes: Routes = [
       },
       {
         path: 'orders',
-        loadComponent: () => import('./orders/order-list/order-list').then((m) => m.OrderList),
+        loadComponent: () =>
+          import('./orders/order-list/order-list').then((m) => m.ShopOwnerOrderList),
       },
       {
         path: 'orders/:id',

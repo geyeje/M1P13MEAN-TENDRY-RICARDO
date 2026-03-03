@@ -23,4 +23,8 @@ router.delete('/users/:id', protect, authorize('admin'), adminController.deleteU
 // Shops management
 router.get('/shops', protect, authorize('admin'), adminController.getAllShops);
 
+// Platform Settings
+router.get('/settings', protect, authorize('admin'), adminController.getSettings);
+router.put('/settings', protect, authorize('admin'), adminController.updateSettings);
+
 module.exports = router;
