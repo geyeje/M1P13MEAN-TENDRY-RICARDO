@@ -20,7 +20,8 @@ export interface Order {
   orderNumber: string;
   orderCount?: string; // Pour compatibilité ancienne base
   buyerId: any;
-  items: OrderItem[];
+  items: (OrderItem & { shopId?: string })[];
+  shopIds?: string[]; // boutiques impliquées
   totalAmount: number;
   shippingAddress: string;
   phone: string;
