@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { body } = require('express-validator');
 const ctrl = require('../controllers/produit.controller');
-const { protect, authorize } = require('../middlewares/auth.middleware');
+const { protect, authorize, optionalProtect } = require('../middlewares/auth.middleware');
 
 // ========================================
 // VALIDATION
@@ -85,7 +85,7 @@ const upload = multer({
 // ========================================
 router.get('/featured', ctrl.getFeaturedProduits); // Produits vedettes
 router.get('/', ctrl.getAllProduits);              // Liste tous les produits
-router.get('/:id', ctrl.getProduitById);           // Détails d'un produit
+router.get('/:id', optionalProtect, ctrl.getProduitById);           // Détails d'un produit (token optionnel pour myRating)
 
 // Route pour soumettre une évaluation (protégée, tous les utilisateurs connectés)
 router.post('/:id/rate', protect, ctrl.submitRating);

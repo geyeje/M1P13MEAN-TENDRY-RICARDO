@@ -55,6 +55,7 @@ export interface ProductResponse {
   totalPages?: number;
   currentPage?: number;
   message?: string;
+  myRating?: number; // note de l'utilisateur courant
 }
 
 @Injectable({ providedIn: 'root' })

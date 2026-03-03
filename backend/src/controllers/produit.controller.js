@@ -251,7 +251,19 @@ exports.getProduitById = async (req, res) => {
     produit.viewCount += 1;
     await produit.save();
 
-    res.status(200).json({ success: true, produit });
+    // inclure note utilisateur actuel s'il est connecté
+    let myRating = null;
+    if (req.user) {
+      const existing = await ProductRating.findOne({
+        userId: req.user.id,
+        productId: req.params.id,
+      });
+      if (existing) {
+        myRating = existing.rating;
+      }
+    }
+
+    res.status(200).json({ success: true, produit, myRating });
   } catch (error) {
     console.error('Erreur récupération produit:', error);
     res.status(500).json({

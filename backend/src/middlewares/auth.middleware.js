@@ -71,6 +71,26 @@ exports.protect = async (req, res, next) => {
   }
 };
 
+// Middleware optionnel : décode le token si présent mais n'impose pas son existence
+exports.optionalProtect = async (req, res, next) => {
+  try {
+    console.log('[optionalProtect] authorization header:', req.headers.authorization);
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id);
+      if (user && user.isActive) {
+        req.user = user;
+        console.log('[optionalProtect] user set:', user._id.toString());
+      }
+    }
+  } catch (err) {
+    // ignore errors, on ne fais rien si le token est invalide/expiré
+    console.warn('[Auth Middleware] optionalProtect ignore token error:', err.message);
+  }
+  next();
+};
+
 // Middleware pour vérifier le rôle de l'utilisateur
 exports.authorize = (...roles) => {
   return (req, res, next) => {

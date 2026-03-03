@@ -68,4 +68,15 @@ export class Navbar {
     const route = routeMap[role || 'customer'] || '/customer/dashboard';
     this.router.navigate([route]);
   }
+
+  navigateToMenuItem(route: string): void {
+    // Si c'est le lien "Commandes" et l'utilisateur n'est pas connecté, rediriger vers login
+    if (route === '/customer/order-list' && !this.authService.isLoggedIn) {
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: route },
+      });
+      return;
+    }
+    this.router.navigate([route]);
+  }
 }
