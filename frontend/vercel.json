@@ -1,15 +1,13 @@
 {
   "version": 2,
-  "outputDirectory": "frontend/dist/frontend",
+  "rootDirectory": "frontend",
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { 
-        "distDir": "frontend/dist/frontend" 
-      }
+      "use": "@vercel/angular"
     }
   ],
+  "outputDirectory": "dist/frontend",
   "routes": [
     { "src": "/(.*)", "dest": "/index.html" }
   ]
