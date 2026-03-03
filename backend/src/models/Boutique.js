@@ -106,6 +106,10 @@ const boutiqueSchema = new mongoose.Schema(
       twitter: String,
       website: String,
     },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

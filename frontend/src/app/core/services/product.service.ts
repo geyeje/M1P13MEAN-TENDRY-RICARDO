@@ -80,6 +80,12 @@ export class ProductService {
     return this.http.get<ProductResponse>(this.apiUrl, { params });
   }
 
+  // Produits vedettes
+  getFeaturedProducts(limit = 5): Observable<ProductResponse> {
+    const params = new HttpParams().set('limit', limit.toString());
+    return this.http.get<ProductResponse>(`${this.apiUrl}/featured`, { params });
+  }
+
   // Détails d'un produit
   getProductById(productId: string): Observable<ProductResponse> {
     return this.http.get<ProductResponse>(`${this.apiUrl}/${productId}`);

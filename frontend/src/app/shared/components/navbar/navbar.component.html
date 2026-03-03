@@ -6,12 +6,15 @@
         <span class="text-white font-bold text-xl tracking-tight">{{title}}<span class="text-matcha-spring"> Center</span></span>
     </div>
     <div class="m-4 py-4">
+        <!-- Search bar commented out per customer page design change
         <div class="!mx-auto mt-2 flex items-center justify-center w-lg max-w-lg ">
             <input type="text" placeholder="Recherche" class="relative h-8 !rounded-full w-full border border-white/10 bg-white/15 text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-matcha-spring focus:border-transparent transition-colors">
             <button mat-mini-fab class="absolute right-8 !w-7 !h-7 text-white !rounded-full border border-white/10 !bg-matcha-spring/20 hover:ring-2 !hover:ring-matcha-spring hover:!bg-matcha-spring/80 z-50 !transition-colors">
                 <mat-icon>search</mat-icon>
             </button>
         </div>
+
+        -->
         <div class="flex w-full items-center justify-between p-2">
             @for (item of menuItem(); track item.route) {
                 <a
@@ -32,17 +35,38 @@
             <button mat-flat-button class="!bg-matcha-spring/80 !text-black !rounded-3xl" (click)="authService.logout()">
                 Deconnexion <mat-icon>logout</mat-icon> 
             </button>
-        }@else{
+            <button class="relative text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart">
+              <mat-icon>shopping_cart</mat-icon>
+              @if(cartCount() > 0) {
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{{ cartCount() }}</span>
+              }
+            </button>
+            <!-- user profile button directing to dashboard -->
+            <button (click)="goToDashboard()" class="flex items-center gap-2 ml-4 px-3 py-1 !rounded-full !hover:bg-matcha-spring/20 transition-colors border border-white/10 hover:border-matcha-spring/50">
+              <div class="w-8 h-8 bg-matcha-spring/20 rounded-full overflow-hidden flex items-center justify-center">
+                @if(currentUser()?.avatar) {
+                  <img [src]="getAvatarUrl(currentUser()?.avatar)" alt="avatar" class="w-full h-full object-cover" appImageError />
+                } @else {
+                  <span class="font-bold text-matcha-spring text-xs">
+                    @if(currentUser()?.role === 'admin') {A}
+                    @if(currentUser()?.role === 'acheteur') {C}
+                    @if(currentUser()?.role === 'boutique') {B}
+                    @if(currentUser()?.role !== 'admin' && currentUser()?.role !== 'acheteur' && currentUser()?.role !== 'boutique') {U}
+                  </span>
+                }
+              </div>
+              <span class="text-white text-sm font-medium truncate hidden sm:inline">{{name()}}</span>
+            </button>
+        } @else {
             <a mat-flat-button class="!bg-matcha-spring/80 !text-black !rounded-3xl" routerLink="/login">
                 connexion <mat-icon>login</mat-icon> 
             </a>
+            <button class="relative text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart">
+              <mat-icon>shopping_cart</mat-icon>
+              @if(cartCount() > 0) {
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{{ cartCount() }}</span>
+              }
+            </button>
         }
-        
-        <button class="relative text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart">
-  <mat-icon>shopping_cart</mat-icon>
-  @if(cartCount() > 0) {
-    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{{ cartCount() }}</span>
-  }
-</button>
     </div>
 </nav>

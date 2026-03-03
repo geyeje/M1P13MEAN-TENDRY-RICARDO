@@ -138,6 +138,28 @@ exports.createProduit = async (req, res) => {
 };
 
 // ========================================
+// Produit vedettes
+// ========================================
+exports.getFeaturedProduits = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    const produits = await Produit.find({ featured: true, stock: { $gt: 0 } })
+      .populate('shopId', 'name logo')
+      .sort('-createdAt')
+      .limit(limit);
+
+    res.status(200).json({ success: true, produits });
+  } catch (error) {
+    console.error('Erreur récupération produits vedettes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération des produits vedettes',
+      error: error.message,
+    });
+  }
+};
+
+// ========================================
 // 2. LISTE DES PRODUITS (avec filtres)
 // ========================================
 exports.getAllProduits = async (req, res) => {

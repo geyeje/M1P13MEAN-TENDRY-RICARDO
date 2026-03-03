@@ -83,6 +83,7 @@ const upload = multer({
 // ========================================
 // ROUTES PUBLIQUES (sans authentification)
 // ========================================
+router.get('/featured', ctrl.getFeaturedProduits); // Produits vedettes
 router.get('/', ctrl.getAllProduits);              // Liste tous les produits
 router.get('/:id', ctrl.getProduitById);           // Détails d'un produit
 

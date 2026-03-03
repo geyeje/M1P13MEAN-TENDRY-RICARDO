@@ -80,6 +80,7 @@ const updateBoutiqueValidation = [
 ];
 
 // Routes publiques
+router.get('/featured', boutiqueController.getFeaturedBoutiques);
 router.get('/', boutiqueController.getAllBoutiques);
 router.get('/:id', boutiqueController.getBoutiqueById);
 

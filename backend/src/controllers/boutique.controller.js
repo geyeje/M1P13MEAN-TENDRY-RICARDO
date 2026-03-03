@@ -131,6 +131,27 @@ exports.getAllBoutiques = async (req, res) => {
   }
 };
 
+// Obtenir boutiques vedettes
+exports.getFeaturedBoutiques = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    const filter = { status: 'active', featured: true };
+
+    const boutiques = await Boutique.find(filter)
+      .sort('-createdAt')
+      .limit(limit);
+
+    res.status(200).json({ success: true, boutiques });
+  } catch (error) {
+    console.error('Erreur récupération boutiques vedettes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération des boutiques vedettes',
+      error: error.message,
+    });
+  }
+};
+
 // Obtenir une boutique par ID
 exports.getBoutiqueById = async (req, res) => {
   try {
