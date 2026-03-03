@@ -1,9 +1,10 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ShopService, Shop } from '../../../core/services/shop.service';
+import { ShopService, Shop, ShopResponse } from '../../../core/services/shop.service';
 import { ProductService, Product } from '../../../core/services/product.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { SeoService } from '../../../core/services/seo.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../../shared/directives/image-error.directive';
@@ -23,6 +24,7 @@ export class StoreDetail implements OnInit {
   private productService = inject(ProductService);
   private cartService = inject(ShoppingCartService);
   private authService = inject(AuthService);
+  private seoService = inject(SeoService);
   private shopId = signal<string>('');
 
   boutique = signal<Shop | null>(null);
@@ -37,10 +39,20 @@ export class StoreDetail implements OnInit {
     if (id) {
       this.shopId.set(id);
       this.shopService.getShopById(id).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           console.log('store-detail GET response', res);
           if (res && res.boutique) {
-            this.boutique.set(res.boutique);
+            const b = res.boutique;
+            this.boutique.set(b);
+
+            // SEO
+            this.seoService.updateSeo({
+              title: b.name,
+              description: b.description || `Découvrez la boutique ${b.name} sur Matcha Center.`,
+              image: b.logo ? this.getImageUrl(b.logo) : undefined,
+              type: 'profile',
+            });
+
             // si le serveur nous donne une note déjà existante, l'afficher
             if (res.myRating && res.myRating > 0) {
               this.userRating.set(res.myRating);

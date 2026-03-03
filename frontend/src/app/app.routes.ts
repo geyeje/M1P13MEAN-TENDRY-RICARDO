@@ -18,6 +18,7 @@ export const routes: Routes = [
       {
         path: 'home',
         loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+        data: { title: 'Accueil', description: 'Bienvenue sur Matcha Center, votre marketplace locale et artisanale.' }
       },
       {
         path: 'boutiques',
@@ -54,6 +55,7 @@ export const routes: Routes = [
           import('./features/customer/product_list/product_list.component').then(
             (m) => m.ProductListComponent,
           ),
+        data: { title: 'Tous nos produits', description: 'Découvrez notre large sélection de produits artisanaux et locaux.' }
       },
       {
         path: 'store-list',
@@ -91,11 +93,13 @@ export const routes: Routes = [
         path: 'register',
         loadComponent: () =>
           import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+        data: { title: 'Créer un compte', description: 'Rejoignez la communauté Matcha Center et commencez à acheter local.' }
       },
       {
         path: 'login',
         loadComponent: () =>
           import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+        data: { title: 'Connexion', description: 'Connectez-vous à votre compte Matcha Center.' }
       },
     ],
   },

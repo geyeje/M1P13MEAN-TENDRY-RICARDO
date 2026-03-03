@@ -7,5 +7,6 @@ export const environment = {
 // src/environments/environment.prod.ts
 export const environmentProd = {
   production: true,
-  apiUrl: 'https://matcha-center.com/api'
+  apiUrl: 'https://m1p13mean-tendry-ricardo.onrender.com'
+  
 };
