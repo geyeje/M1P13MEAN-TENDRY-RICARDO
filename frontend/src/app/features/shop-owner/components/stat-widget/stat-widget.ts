@@ -7,27 +7,30 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './stat-widget.html',
-  styleUrls: ['./stat-widget.scss']
+  styleUrls: ['./stat-widget.scss'],
 })
 export class StatWidget {
   @Input() title: string = '';
   @Input() value: number | string = 0;
-  @Input() icon: string = '📊';
-  @Input() color: 'blue' | 'green' | 'orange' | 'purple' = 'blue';
-  @Input() trend?: number; // Pourcentage de changement
+  @Input() icon: string = 'chart-pie';
+  @Input() color:
+    | 'primary'
+    | 'success'
+    | 'info'
+    | 'warning'
+    | 'danger'
+    | 'blue'
+    | 'green'
+    | 'orange'
+    | 'purple' = 'primary';
+  @Input() trend?: number;
   @Input() subtitle?: string;
 
   get colorClass(): string {
-    return `stat-${this.color}`;
+    return `bg-${this.color}`;
   }
 
-  get trendClass(): string {
-    if (!this.trend) return '';
-    return this.trend > 0 ? 'trend-up' : 'trend-down';
-  }
-
-  get trendIcon(): string {
-    if (!this.trend) return '';
-    return this.trend > 0 ? '↗' : '↘';
+  get iconClass(): string {
+    return `cil-${this.icon}`;
   }
 }

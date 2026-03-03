@@ -2,7 +2,7 @@
 .shop-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: var(--cui-body-bg);
 
   &.sidebar-closed {
     app-sidebar {

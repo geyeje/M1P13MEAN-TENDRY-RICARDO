@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Sidebar } from '../sidebar/sidebar';
-import { Topbar } from '../topbar/topbar';
+import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
   selector: 'app-shop-layout',
+  standalone: true,
   imports: [CommonModule, RouterModule, Sidebar],
   templateUrl: './shop-layout.html',
   styleUrl: './shop-layout.scss',
@@ -13,7 +14,13 @@ import { Topbar } from '../topbar/topbar';
 export class ShopLayout {
   isSidebarOpen = true;
 
+  constructor(public themeService: ThemeService) {}
+
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }

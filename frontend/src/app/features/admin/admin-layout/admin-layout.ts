@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { AuthService, User } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { Observable } from 'rxjs';
 
 interface MenuItem {
@@ -34,11 +35,16 @@ export class AdminLayout implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    public themeService: ThemeService,
   ) {
     this.user$ = this.authService.currentUser$;
   }
 
   ngOnInit(): void {}
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;

@@ -1,3 +1,48 @@
 :host {
   display: block;
 }
+
+.product-card-container {
+  background: var(--cui-card-bg);
+  border-color: var(--cui-border-color) !important;
+
+  &:hover {
+    background: var(--cui-tertiary-bg);
+    transform: translateY(-2px);
+  }
+}
+
+.bg-theme-subtle {
+  background-color: var(--cui-tertiary-bg);
+}
+
+.product-title {
+  color: var(--cui-body-color);
+}
+
+.price-text {
+  color: var(--cui-body-color);
+  font-size: 1.15rem;
+}
+
+.stat-value {
+  color: var(--cui-body-color);
+  font-size: 0.9rem;
+}
+
+.bg-promo-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.stock-badge-rupture {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+.stock-badge-bas {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+.stock-badge-ok {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}

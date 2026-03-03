@@ -76,9 +76,9 @@ export class DashboardComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      en_attente: '⏳ En attente de validation',
-      active: ' Active',
-      suspendue: ' Suspendue',
+      en_attente: 'En attente',
+      active: 'Active',
+      suspendue: 'Suspendue',
     };
     return labels[status] || status;
   }
