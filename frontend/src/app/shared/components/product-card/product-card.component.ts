@@ -33,7 +33,7 @@ export class ProductCardComponent {
   }
 
   onViewDetails(p: Product) {
-    this.router.navigate(['/customer/product', p._id]);
+    this.router.navigate(['/product', p._id]);
   }
 
   getImageUrl(path: string): string {

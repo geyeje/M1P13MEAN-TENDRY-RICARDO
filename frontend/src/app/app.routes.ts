@@ -46,6 +46,26 @@ export const routes: Routes = [
         .then((m) => m.CheckoutComponent),
       },
       {
+        path: 'product-list',
+        loadComponent: () => import('./features/customer/product_list/product_list.component')
+        .then((m) => m.ProductListComponent),
+      },
+      {
+        path: 'store-list',
+        loadComponent: () => import('./shared/components/store-list/store-list')
+        .then((m) => m.StoreList),
+      },
+      {
+        path: 'boutique/:id',
+        loadComponent: () => import('./features/customer/store-detail/store-detail.component')
+        .then((m) => m.StoreDetail),
+      },
+      {
+        path: 'product/:id',
+        loadComponent: () => import('./shared/components/product-details/product-details')
+        .then((m) => m.ProductDetails),
+      },
+      {
         path: 'unauthorized',
         loadComponent: () =>
           import('./shared/components/unauthorized/unauthorized.component').then(

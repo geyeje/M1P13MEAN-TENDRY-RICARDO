@@ -61,6 +61,7 @@ exports.createCommande = async (req, res) => {
 
       validatedItems.push({
         productId: produit._id,
+        shopId: produit.shopId || null, // conserver boutique propriétaire
         name: produit.name,
         quantity: item.quantity,
         unitPrice,
@@ -77,10 +78,16 @@ exports.createCommande = async (req, res) => {
     }
 
     // ---- Créer la commande ----
+    // calculer les boutiques impliquées à partir des items validés
+    const shopIds = [
+      ...new Set(validatedItems.map((i) => i.shopId).filter((id) => id)),
+    ];
+
     const commande = await Commande.create({
       orderNumber: generateOrderNumber(),
       buyerId: req.user._id, // Utiliser ._id pour la cohérence
       items: validatedItems,
+      shopIds,
       totalAmount,
       shippingAddress,
       phone,
@@ -98,27 +105,7 @@ exports.createCommande = async (req, res) => {
     await commande.populate('buyerId', 'nom prenom email');
 
     // ---- Mettre à jour les stats boutiques concernées ----
-    const shopIds = [
-      ...new Set(
-        validatedItems.map(async (item) => {
-          const p = await Produit.findById(item.productId);
-          return p?.shopId?.toString();
-        })
-      ),
-    ];
-
-    // Méthode simplifiée : chercher les boutiques via les produits
-    const productIds = validatedItems.map((i) => i.productId);
-    const shopIdsUnique = await Produit.distinct('shopId', { _id: { $in: productIds } });
-
-    for (const shopId of shopIdsUnique) {
-      const shopSubtotal = validatedItems
-        .filter(async (i) => {
-          const p = await Produit.findById(i.productId);
-          return p?.shopId?.toString() === shopId.toString();
-        })
-        .reduce((sum, i) => sum + i.subtotal, 0);
-
+    for (const shopId of shopIds) {
       await Boutique.findByIdAndUpdate(shopId, {
         $inc: {
           commandeqt: 1,
@@ -205,9 +192,16 @@ exports.getShopCommandes = async (req, res) => {
     const productIds = await Produit.distinct('_id', { shopId: boutique._id });
 
     // Commandes contenant ces produits (recherche sur productId ou product pour compatibilité)
-    const query = {
-      $or: [{ 'items.productId': { $in: productIds } }, { 'items.product': { $in: productIds } }],
-    };
+    // on autorise aussi le filtrage par items.shopId pour garder les anciennes commandes même si
+    // le produit a été supprimé ensuite.
+    const orConditions = [];
+    if (productIds.length > 0) {
+      orConditions.push({ 'items.productId': { $in: productIds } });
+      orConditions.push({ 'items.product': { $in: productIds } });
+    }
+    orConditions.push({ 'items.shopId': boutique._id });
+
+    const query = { $or: orConditions };
 
     // Filtrer par statut si demandé
     if (req.query.status && req.query.status !== 'all') {
@@ -218,10 +212,14 @@ exports.getShopCommandes = async (req, res) => {
       .populate('buyerId', 'firstname lastname nom prenom email')
       .sort('-createdAt');
 
-    // Ne garder que les items de cette boutique
+    // Ne garder que les items de cette boutique (utilise shopId si disponible)
     const filtered = commandes.map((cmd) => {
       const items = cmd.items || [];
       const shopItems = items.filter((item) => {
+        // prioriser shopId, sinon retomber sur productId
+        if (item.shopId && item.shopId.toString() === boutique._id.toString()) {
+          return true;
+        }
         const id = item.productId || item.product;
         return id && productIds.some((pId) => pId.toString() === id.toString());
       });
@@ -318,12 +316,24 @@ exports.updateStatus = async (req, res) => {
     // Vérifier permissions gérant
     if (req.user.role !== 'admin') {
       const boutique = await Boutique.findOne({ userId: req.user.id });
-      const productIds = await Produit.distinct('_id', { shopId: boutique._id });
-      const isOwner = commande.items.some((item) =>
-        productIds.some((id) => id.toString() === item.productId.toString())
-      );
-      if (!isOwner) {
-        return res.status(403).json({ success: false, message: 'Non autorisé' });
+      // si la commande a déjà une liste explicite de boutiques, l'utiliser d'abord
+      if (commande.shopIds && commande.shopIds.some((s) => s.toString() === boutique._id.toString())) {
+        // accès accordé
+      } else {
+        const productIds = await Produit.distinct('_id', { shopId: boutique._id });
+        // vérifier que l'une des lignes de la commande appartient bien à un produit de la boutique
+        const isOwner = commande.items.some((item) => {
+          // si shopId est présent on l'utilise en priorité
+          if (item.shopId && item.shopId.toString() === boutique._id.toString()) {
+            return true;
+          }
+          const pid = item.productId ? item.productId.toString() : null;
+          const alt = item.product ? item.product.toString() : null;
+          return productIds.some((id) => id.toString() === pid || id.toString() === alt);
+        });
+        if (!isOwner) {
+          return res.status(403).json({ success: false, message: 'Non autorisé' });
+        }
       }
     }
 

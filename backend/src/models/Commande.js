@@ -7,6 +7,11 @@ const orderItemSchema = new mongoose.Schema({
     ref: 'Produit',
     required: true,
   },
+  // boutique propriétaire au moment de la commande. Ajouté pour permissions ultérieures
+  shopId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Boutique',
+  },
   name: String,
   quantity: { type: Number, required: true, min: 1 },
   unitPrice: { type: Number, required: true },
@@ -27,6 +32,8 @@ const commandeSchema = new mongoose.Schema(
     orderNumber: { type: String, unique: true, required: true },
     buyerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     items: [orderItemSchema],
+    // boutiques concernées par la commande (peut contenir plusieurs si panier multi-boutiques)
+    shopIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Boutique' }],
     totalAmount: { type: Number, required: true },
     status: {
       type: String,

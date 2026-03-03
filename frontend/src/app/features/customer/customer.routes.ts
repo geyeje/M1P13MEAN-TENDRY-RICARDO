@@ -44,26 +44,6 @@ export const routes:Routes = [
                 path: 'profil',
                 loadComponent:
                 () => import('./profil/profil').then(m => m.Profil)
-            },
-            {
-                path: 'product-list',
-                loadComponent:
-                () => import('./product_list/product_list.component').then(m => m.ProductListComponent)
-            },
-            {
-                path: 'store-list',
-                loadComponent:
-                  () => import('../../shared/components/store-list/store-list').then(m => m.StoreList)
-            },
-            {
-                path: 'boutique/:id',
-                loadComponent:
-                  () => import('./store-detail/store-detail.component').then(m => m.StoreDetail)
-            },
-            {
-                path: 'product/:id',
-                loadComponent:
-                  () => import('../../shared/components/product-details/product-details').then(m => m.ProductDetails)
             }
         ]
     }

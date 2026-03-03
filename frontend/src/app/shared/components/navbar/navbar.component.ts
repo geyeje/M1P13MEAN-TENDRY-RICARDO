@@ -42,8 +42,8 @@ export class Navbar {
 
   menuItem = input<MenuItem[]>([
     { label: 'Accueil', route: 'home' },
-    { label: 'Produits', route: '/customer/product-list' },
-    { label: 'Boutiques', route: '/customer/store-list' },
+    { label: 'Produits', route: '/product-list' },
+    { label: 'Boutiques', route: '/store-list' },
     { label: 'Commandes', route: '/customer/order-list' },
   ]);
 
