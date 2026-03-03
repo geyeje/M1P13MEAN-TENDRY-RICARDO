@@ -20,6 +20,7 @@ export interface Product {
   tags: string[];
   images: string[];
   shopId: any;
+  boutiqueId?: string;
   avgRating: number;
   reviewCount: number;
   salesCount: number;
@@ -120,6 +121,15 @@ export class ProductService {
     review: { rating: number; comment?: string },
   ): Observable<ProductResponse> {
     return this.http.post<ProductResponse>(`${this.apiUrl}/${productId}/reviews`, review);
+  }
+
+  // Soumettre une évaluation pour un produit
+  submitRating(productId: string, rating: number, comment?: string): Observable<any> {
+    const payload = {
+      rating,
+      ...(comment && { comment }),
+    };
+    return this.http.post(`${this.apiUrl}/${productId}/rate`, payload);
   }
 
   // Catégories disponibles

@@ -25,6 +25,8 @@ export class StoreDetail implements OnInit {
   products = signal<Product[]>([]);
   loading = signal<boolean>(true);
   error = signal<string>('');
+  userRating = signal<number>(0);
+  ratingSubmitted = signal<boolean>(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -101,5 +103,44 @@ export class StoreDetail implements OnInit {
     } catch (e) {
       console.error('Erreur ajout panier', e);
     }
+  }
+
+  setRating(rating: number): void {
+    this.userRating.set(rating);
+  }
+
+  submitRating(): void {
+    const rating = this.userRating();
+    const shopId = this.shopId();
+    if (rating > 0 && shopId) {
+      this.ratingSubmitted.set(true);
+      this.shopService.submitRating(shopId, rating).subscribe({
+        next: (res) => {
+          if (res.success && res.boutique) {
+            // Mettre à jour les données de la boutique avec les nouvelles notes
+            const updatedBoutique = this.boutique();
+            if (updatedBoutique) {
+              updatedBoutique.avgRating = res.boutique.avgRating;
+              updatedBoutique.reviewCount = res.boutique.reviewCount;
+              this.boutique.set(updatedBoutique);
+            }
+            console.log(`Note ${rating}/5 soumise avec succès`);
+          }
+          // Réinitialiser après 3 secondes
+          setTimeout(() => {
+            this.ratingSubmitted.set(false);
+            this.userRating.set(0);
+          }, 3000);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la soumission de l\'évaluation:', err);
+          this.ratingSubmitted.set(false);
+        },
+      });
+    }
+  }
+
+  getStarArray(): number[] {
+    return [1, 2, 3, 4, 5];
   }
 }
