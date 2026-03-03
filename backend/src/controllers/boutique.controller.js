@@ -179,9 +179,24 @@ exports.getBoutiqueById = async (req, res) => {
       }
     }
 
+    // ajouter la note de l'utilisateur courant si connecté
+    let myRating = null;
+    console.log('[boutiqueController] req.user:', req.user ? req.user.id : 'none');
+    if (req.user) {
+      const existing = await Rating.findOne({
+        userId: req.user.id,
+        boutiqueId: req.params.id,
+      });
+      console.log('[boutiqueController] found existing rating:', existing);
+      if (existing) {
+        myRating = existing.rating;
+      }
+    }
+
     res.status(200).json({
       success: true,
       boutique,
+      myRating,
     });
   } catch (error) {
     console.error('Erreur récupération boutique:', error);

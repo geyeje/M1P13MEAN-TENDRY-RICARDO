@@ -9,7 +9,7 @@
   <!-- Center: Navigation Menu -->
   <div class="navbar-menu">
     @for (item of menuItem(); track item.route) {
-      <a [routerLink]="item.route" class="nav-item" routerLinkActive="active">
+      <a (click)="navigateToMenuItem(item.route)" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
         <span>{{ item.label }}</span>
         @if(item.badge && item.badge > 0) {
           <span class="nav-badge">{{ item.badge }}</span>

@@ -45,6 +45,10 @@ export class ProductDetails implements OnInit {
             if (res.produit.images && res.produit.images.length > 0) {
               this.selectedImage.set(res.produit.images[0]);
             }
+            // si on a reçu la note de l'utilisateur courant
+            if (res.myRating && res.myRating > 0) {
+              this.userRating.set(res.myRating);
+            }
             // Charger la boutique
             if (res.produit.boutiqueId) {
               this.shopService.getShopById(res.produit.boutiqueId).subscribe({
@@ -132,10 +136,11 @@ export class ProductDetails implements OnInit {
               this.product.set(updatedProduct);
             }
             console.log(`Note ${rating}/5 soumise avec succès`);
+            localStorage.setItem(`rating_product_${this.productId()}`, rating.toString());
           }
           setTimeout(() => {
             this.ratingSubmitted.set(false);
-            this.userRating.set(0);
+            // conserve la note pour permettre une modification ultérieure
           }, 3000);
         },
         error: (err) => {

@@ -34,6 +34,7 @@ export interface ShopResponse {
   count?: number;
   total?: number;
   message?: string;
+  myRating?: number; // note de l'utilisateur courant si authentifié
 }
 
 @Injectable({ providedIn: 'root' })

@@ -154,7 +154,9 @@
             [disabled]="userRating() === 0 || ratingSubmitted()"
             class="px-6 py-2 bg-matcha-spring text-white font-semibold !rounded-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            <span *ngIf="!ratingSubmitted()">Soumettre la note</span>
+            <span *ngIf="!ratingSubmitted()">
+              {{ userRating() > 0 ? 'Modifier la note' : 'Soumettre la note' }}
+            </span>
             <span *ngIf="ratingSubmitted()" class="flex items-center gap-2">
               <svg class="w-5 h-5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />

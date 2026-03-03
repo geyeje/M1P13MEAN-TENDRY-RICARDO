@@ -37,8 +37,17 @@ export class StoreDetail implements OnInit {
       this.shopId.set(id);
       this.shopService.getShopById(id).subscribe({
         next: (res) => {
+          console.log('store-detail GET response', res);
           if (res && res.boutique) {
             this.boutique.set(res.boutique);
+            // si le serveur nous donne une note déjà existante, l'afficher
+            if (res.myRating && res.myRating > 0) {
+              this.userRating.set(res.myRating);            } else {
+              // fallback cache local si serveur n'a pas renvoyé de note
+              const cached = localStorage.getItem(`rating_boutique_${id}`);
+              if (cached) {
+                this.userRating.set(Number(cached));
+              }            }
             this.loadShopProducts();
           } else {
             this.error.set('Boutique introuvable');
@@ -134,12 +143,12 @@ export class StoreDetail implements OnInit {
               updatedBoutique.reviewCount = res.boutique.reviewCount;
               this.boutique.set(updatedBoutique);
             }
-            console.log(`Note ${rating}/5 soumise avec succès`);
-          }
+            console.log(`Note ${rating}/5 soumise avec succès`);            // enregistrer aussi dans le cache local
+            localStorage.setItem(`rating_boutique_${shopId}`, rating.toString());          }
           // Réinitialiser après 3 secondes
           setTimeout(() => {
             this.ratingSubmitted.set(false);
-            this.userRating.set(0);
+            // keep userRating so the "modifier" label remains
           }, 3000);
         },
         error: (err) => {

@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const boutiqueController = require('../controllers/boutique.controller');
-const { protect, authorize } = require('../middlewares/auth.middleware');
+const { protect, authorize, optionalProtect } = require('../middlewares/auth.middleware');
 const upload = require('../middlewares/upload.middleware');
 
 // Validation pour création
@@ -82,7 +82,8 @@ const updateBoutiqueValidation = [
 // Routes publiques
 router.get('/featured', boutiqueController.getFeaturedBoutiques);
 router.get('/', boutiqueController.getAllBoutiques);
-router.get('/:id', boutiqueController.getBoutiqueById);
+// détails boutique : on peut fournir un JWT optionnel pour récupérer myRating
+router.get('/:id', optionalProtect, boutiqueController.getBoutiqueById);
 
 // Route pour soumettre une évaluation (protégée, tous les utilisateurs connectés)
 router.post('/:id/rate', protect, boutiqueController.submitRating);
