@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Product, ProductService } from '../../../core/services/product.service';
-import { ShopService, Shop } from '../../../core/services/Shop.service';
+import { ShopService, Shop } from '../../../core/services/shop.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
@@ -130,7 +130,7 @@ export class ProductDetails implements OnInit {
           }, 3000);
         },
         error: (err) => {
-          console.error('Erreur lors de la soumission de l\'évaluation:', err);
+          console.error("Erreur lors de la soumission de l'évaluation:", err);
           this.ratingSubmitted.set(false);
         },
       });

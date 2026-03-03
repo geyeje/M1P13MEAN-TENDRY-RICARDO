@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ShopService, Shop } from '../../../core/services/Shop.service';
+import { ShopService, Shop } from '../../../core/services/shop.service';
 import { ProductService, Product } from '../../../core/services/product.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
 import { CommonModule } from '@angular/common';

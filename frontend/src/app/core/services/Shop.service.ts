@@ -13,13 +13,19 @@ export interface Shop {
   category: string;
   phone: string;
   email: string;
-  adresse: string;
+  address: string;
+  adresse?: string;
   schedule?: any;
-  statut: 'en_attente' | 'active' | 'suspendue';
-  productqt: number;
-  commandeqt: number;
+  status: 'en_attente' | 'active' | 'suspendue';
+  statut?: string; // transition alias
+  productCount: number;
+  productqt?: number; // transition alias
+  commandCount: number;
+  commandeqt?: number; // transition alias
   CA: number;
-  avgRating: number;
+  featured?: boolean;
+  note: number;
+  avgRating?: number; // transition alias
   reviewCount: number;
   socialNetwork?: any;
   userId?: any;
@@ -34,6 +40,8 @@ export interface ShopResponse {
   count?: number;
   total?: number;
   message?: string;
+  currentPage?: number;
+  totalPages?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -67,15 +75,23 @@ export class ShopService {
     return this.http.get<ShopResponse>(`${this.apiUrl}/${shopId}`);
   }
 
+  getBoutiqueById(id: string): Observable<ShopResponse> {
+    return this.getShopById(id);
+  }
+
   // Liste toutes les boutiques (public)
-  getAllShops(params?: any): Observable<any> {
-    return this.http.get(this.apiUrl, { params });
+  getAllShops(params?: any): Observable<ShopResponse> {
+    return this.http.get<ShopResponse>(this.apiUrl, { params });
+  }
+
+  getAllBoutiques(params?: any): Observable<ShopResponse> {
+    return this.getAllShops(params);
   }
 
   // Shops vedettes (sidebar)
-  getFeaturedShops(limit = 5): Observable<any> {
+  getFeaturedShops(limit = 5): Observable<ShopResponse> {
     const params = new HttpParams().set('limit', limit.toString());
-    return this.http.get(`${this.apiUrl}/featured`, { params });
+    return this.http.get<ShopResponse>(`${this.apiUrl}/featured`, { params });
   }
 
   // Statistiques (admin)
@@ -108,5 +124,11 @@ export class ShopService {
       ...(comment && { comment }),
     };
     return this.http.post(`${this.apiUrl}/${shopId}/rate`, payload);
+  }
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return 'assets/no-image.png';
+    if (path.startsWith('http')) return path;
+    // Ajustez selon votre configuration serveur
+    return `${environment.apiUrl.replace('/api', '')}${path}`;
   }
 }

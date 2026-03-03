@@ -1,7 +1,7 @@
 <div class="product-card-container border rounded-3 p-3 transition-all">
   <div class="d-flex gap-3">
     <div class="relative w-20 h-20 rounded-3 overflow-hidden bg-theme-subtle flex-shrink-0">
-      <img [src]="product().images[0]" class="object-cover w-100 h-100 opacity-80" />
+      <img [src]="product().images[0]" class="object-cover w-100 h-100 opacity-80" appImageError />
       @if (product().onSale) {
         <div class="absolute inset-0 bg-promo-overlay d-flex align-items-center justify-center">
           <span class="badge bg-warning text-dark">PROMO</span>

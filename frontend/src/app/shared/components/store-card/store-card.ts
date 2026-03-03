@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Shop } from '../../../core/services/Shop.service';
+import { Shop } from '../../../core/services/shop.service';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../directives/image-error.directive';
 
