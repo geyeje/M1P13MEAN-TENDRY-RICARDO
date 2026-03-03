@@ -2,7 +2,7 @@ import { Component, computed, inject, signal, ElementRef, ViewChild, OnInit } fr
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { ShopService, Shop } from '../../../core/services/Shop.service';
+import { ShopService, Shop } from '../../../core/services/shop.service';
 import { StoreCard } from '../store-card/store-card';
 
 @Component({
@@ -35,8 +35,7 @@ export class StoreList implements OnInit {
     const term = this.searchTerm().toLowerCase().trim();
     if (term) {
       arr = arr.filter(
-        (b) =>
-          b.name.toLowerCase().includes(term) || b.category.toLowerCase().includes(term),
+        (b) => b.name.toLowerCase().includes(term) || b.category.toLowerCase().includes(term),
       );
     }
     const cat = this.selectedCategory();
@@ -46,7 +45,8 @@ export class StoreList implements OnInit {
     return arr;
   });
 
-  @ViewChild('filters', { read: ElementRef, static: false }) filtersRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('filters', { read: ElementRef, static: false })
+  filtersRef?: ElementRef<HTMLDivElement>;
 
   ngOnInit(): void {
     // initialize categories

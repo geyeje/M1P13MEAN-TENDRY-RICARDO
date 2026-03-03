@@ -16,34 +16,36 @@ export const routes: Routes = [
       },
       {
         path: 'home',
-        loadComponent: () => import('./features/home/home.component')
-        .then((m) => m.HomeComponent),
+        loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+      },
+      {
+        path: 'boutiques',
+        loadChildren: () =>
+          import('./features/boutique/boutique.routes').then((m) => m.BOUTIQUE_ROUTES),
       },
       {
         path: 'store',
         canActivate: [AuthGuard],
         data: { roles: ['boutique'] },
-        loadChildren: () => import('./features/store/store.routes')
-        .then((m) => m.routes),
+        loadChildren: () => import('./features/store/store.routes').then((m) => m.routes),
       },
       {
         path: 'shopping-cart',
         redirectTo: 'customer/shopping-cart',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: 'customer',
         canActivate: [AuthGuard],
-        data: { roles: ['acheteur']},
-        loadChildren: () => import('./features/customer/customer.routes')
-        .then((m)=> m.routes)
+        data: { roles: ['acheteur'] },
+        loadChildren: () => import('./features/customer/customer.routes').then((m) => m.routes),
       },
       {
         path: 'checkout',
         canActivate: [AuthGuard],
-        data: {roles: ['acheteur']},
-        loadComponent: () => import('./shared/checkout-component/checkout-component')
-        .then((m) => m.CheckoutComponent),
+        data: { roles: ['acheteur'] },
+        loadComponent: () =>
+          import('./shared/checkout-component/checkout-component').then((m) => m.CheckoutComponent),
       },
       {
         path: 'product-list',
@@ -81,14 +83,12 @@ export const routes: Routes = [
       {
         path: 'register',
         loadComponent: () =>
-          import('./features/auth/register/register.component')
-        .then((m) => m.RegisterComponent),
+          import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
       },
       {
         path: 'login',
         loadComponent: () =>
-          import('./features/auth/login/login.component')
-        .then((m) => m.LoginComponent),
+          import('./features/auth/login/login.component').then((m) => m.LoginComponent),
       },
     ],
   },
@@ -102,30 +102,31 @@ export const routes: Routes = [
       ),
     loadChildren: () => import('./features/admin/admin.route').then((m) => m.adminRoutes),
   },
-  
+
   {
     path: 'shop-owner',
     canActivate: [AuthGuard],
     // data: { roles: ['admin', 'boutique'] },
-    loadComponent: () => import('./features/shop-owner/layout/shop-layout/shop-layout')
-      .then(m => m.ShopLayout),
+    loadComponent: () =>
+      import('./features/shop-owner/layout/shop-layout/shop-layout').then((m) => m.ShopLayout),
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/shop-owner/dashboard/dashboard')
-          .then(m => m.DashboardComponent)
+        loadComponent: () =>
+          import('./features/shop-owner/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
       {
         path: 'my-shop',
-        loadComponent: () => import('./features/shop-owner/my-shop/my-shop')
-          .then(m => m.MyShopComponent)
+        loadComponent: () =>
+          import('./features/shop-owner/my-shop/my-shop').then((m) => m.MyShopComponent),
       },
       // route list imported from shop-owner.route.ts for deeper pages
       {
         path: '',
-        loadChildren: () => import('./features/shop-owner/shop-owner.route').then((m) => m.shopOwnerRoutes)
-      }
-    ]
+        loadChildren: () =>
+          import('./features/shop-owner/shop-owner.route').then((m) => m.shopOwnerRoutes),
+      },
+    ],
   },
   {
     path: '**',

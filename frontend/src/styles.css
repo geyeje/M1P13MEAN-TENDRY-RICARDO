@@ -1,14 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@theme{
-    --color-matcha-dark: #3a4a4a;
-    --color-matcha-spring: #00ff7f;
-    --color-matcha-gray: #f5f5f5;
-    --color-matcha-red: #f2111a;
-    --color-matcha-alert: #9b2c2c;
-    --color-matcha-pinky: #fc8181;
-    --color-matcha-success: #22543d;
-    --color-withered-dried: #a0522d;
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --matcha-dark: #3a4a4a;
+  --matcha-spring: #00ff7f;
+  --matcha-gray: #f5f5f5;
+  --matcha-red: #f2111a;
+  --matcha-alert: #9b2c2c;
+  --matcha-pinky: #fc8181;
+  --matcha-success: #22543d;
+  --withered-dried: #a0522d;
+  --atlas-gray: #f8fafc;
+}
+
+.dark {
+  --matcha-dark: #1a2020;
+  --matcha-gray: #2d3748;
+  --atlas-gray: #0f172a;
+}
+
+@theme {
+  --color-matcha-dark: var(--matcha-dark);
+  --color-matcha-spring: var(--matcha-spring);
+  --color-matcha-gray: var(--matcha-gray);
+  --color-matcha-red: var(--matcha-red);
+  --color-matcha-alert: var(--matcha-alert);
+  --color-matcha-pinky: var(--matcha-pinky);
+  --color-matcha-success: var(--matcha-success);
+  --color-withered-dried: var(--withered-dried);
+  --color-atlas-gray: var(--atlas-gray);
+}
+
+html,
+body {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }

@@ -107,7 +107,7 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 
   getProfile(): Observable<any> {
@@ -141,7 +141,7 @@ export class AuthService {
     const user = this.currentUserValue;
     if (!user) return false;
     // map 'store' to 'boutique' as necessary
-    const normalizedRoles = roles.map(r => (r === 'store' ? 'boutique' : r));
+    const normalizedRoles = roles.map((r) => (r === 'store' ? 'boutique' : r));
     return normalizedRoles.includes(user.role);
   }
 

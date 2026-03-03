@@ -15,7 +15,7 @@ export const customerNavItems: INavData[] = [
     iconComponent: { name: ''}
   },
   { name: 'nos boutiques',
-    url: './store-list',
+    url: './boutiques',
     iconComponent: { name: ''}
   },
   { name: 'historique',

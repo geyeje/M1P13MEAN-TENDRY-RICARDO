@@ -11,7 +11,7 @@
     @for (item of menuItem(); track item.route) {
       <a (click)="navigateToMenuItem(item.route)" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
         <span>{{ item.label }}</span>
-        @if(item.badge && item.badge > 0) {
+        @if (item.badge && item.badge > 0) {
           <span class="nav-badge">{{ item.badge }}</span>
         }
       </a>
@@ -20,6 +20,15 @@
 
   <!-- Right: Actions & User -->
   <div class="navbar-actions">
+    <!-- Theme Toggle -->
+    <button
+      class="action-button theme-toggle-btn"
+      (click)="themeService.toggleTheme()"
+      [title]="themeService.theme === 'light' ? 'Mode Sombre' : 'Mode Clair'"
+    >
+      <mat-icon>{{ themeService.theme === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+    </button>
+
     @if (authService.currentUser$ | async; as user) {
       <!-- Notifications -->
       <button class="action-button notification-btn" title="Notifications">
@@ -30,7 +39,7 @@
       <!-- Shopping Cart -->
       <button class="action-button cart-btn" routerLink="/shopping-cart" title="Panier">
         <mat-icon>shopping_cart</mat-icon>
-        @if(cartCount() > 0) {
+        @if (cartCount() > 0) {
           <span class="cart-badge">{{ cartCount() }}</span>
         }
       </button>
@@ -39,14 +48,19 @@
       <div class="user-menu">
         <button class="user-profile-btn" (click)="goToDashboard()" title="Tableau de bord">
           <div class="avatar-circle">
-            @if(currentUser()?.avatar) {
+            @if (currentUser()?.avatar) {
               <img [src]="getAvatarUrl(currentUser()?.avatar)" alt="avatar" appImageError />
             } @else {
               <span class="avatar-letter">
-                @if(currentUser()?.role === 'admin') { A }
-                @else if(currentUser()?.role === 'acheteur') { C }
-                @else if(currentUser()?.role === 'boutique') { B }
-                @else { U }
+                @if (currentUser()?.role === 'admin') {
+                  A
+                } @else if (currentUser()?.role === 'acheteur') {
+                  C
+                } @else if (currentUser()?.role === 'boutique') {
+                  B
+                } @else {
+                  U
+                }
               </span>
             }
           </div>
@@ -70,7 +84,7 @@
       <!-- Shopping Cart (anonymous) -->
       <button class="action-button cart-btn" routerLink="/shopping-cart" title="Panier">
         <mat-icon>shopping_cart</mat-icon>
-        @if(cartCount() > 0) {
+        @if (cartCount() > 0) {
           <span class="cart-badge">{{ cartCount() }}</span>
         }
       </button>

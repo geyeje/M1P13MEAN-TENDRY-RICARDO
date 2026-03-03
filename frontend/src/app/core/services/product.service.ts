@@ -21,6 +21,7 @@ export interface Product {
   images: string[];
   shopId: any;
   boutiqueId?: string;
+  featured?: boolean;
   avgRating: number;
   reviewCount: number;
   salesCount: number;
@@ -68,6 +69,11 @@ export class ProductService {
   getMyProducts(): Observable<ProductResponse> {
     return this.http.get<ProductResponse>(`${this.apiUrl}/me/myproduits`);
   }
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return 'assets/no-image.png';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl.replace('/api', '')}${path}`;
+  }
 
   // Liste tous les produits (public)
   getAllProducts(filters?: any): Observable<ProductResponse> {
@@ -80,6 +86,12 @@ export class ProductService {
       });
     }
     return this.http.get<ProductResponse>(this.apiUrl, { params });
+  }
+
+  // Produits d'une boutique (spécifique)
+  getProductsByBoutique(shopId: string, filters?: any): Observable<ProductResponse> {
+    const params = { ...filters, shop: shopId };
+    return this.getAllProducts(params);
   }
 
   // Produits vedettes

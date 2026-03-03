@@ -1,9 +1,15 @@
 <!-- shared/sidebar adapted from shop-owner style -->
 <aside class="sidebar" [class.open]="isOpen()">
   <div class="sidebar-header">
-    <div class="brand">
+    <div class="brand" routerLink="/" style="cursor: pointer">
       <span class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="width: 24px; height: 24px"
+        >
           <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
@@ -17,10 +23,18 @@
     <h3 *ngIf="isOpen()" class="section-title">Produits vedettes</h3>
     <ul class="featured-list">
       <li *ngFor="let p of featuredProducts()" class="featured-item">
-        <a [routerLink]="['/product', p._id]" (click)="onToggleSidebar()" class="flex items-center gap-2">
+        <a
+          [routerLink]="['/product', p._id]"
+          (click)="onToggleSidebar()"
+          class="flex items-center gap-2"
+        >
           <img
             *ngIf="p.images?.length"
-            [src]="p.images[0].startsWith('http') ? p.images[0] : environment.apiUrl.replace('/api','') + p.images[0]"
+            [src]="
+              p.images[0].startsWith('http')
+                ? p.images[0]
+                : environment.apiUrl.replace('/api', '') + p.images[0]
+            "
             alt="{{ p.name }}"
             class="w-10 h-10 object-cover rounded"
             appImageError
@@ -28,7 +42,9 @@
           <span class="truncate" [title]="p.name">{{ p.name }}</span>
         </a>
       </li>
-      <li *ngIf="!featuredProducts().length" class="text-sm italic p-2">Aucun produit à afficher</li>
+      <li *ngIf="!featuredProducts().length" class="text-sm italic p-2">
+        Aucun produit à afficher
+      </li>
     </ul>
   </div>
 
@@ -36,10 +52,16 @@
     <h3 *ngIf="isOpen()" class="section-title">Boutiques vedettes</h3>
     <ul class="featured-list">
       <li *ngFor="let s of featuredShops()" class="featured-item">
-        <a [routerLink]="['/boutique', s._id]" (click)="onToggleSidebar()" class="flex items-center gap-2">
+        <a
+          [routerLink]="['/boutique', s._id]"
+          (click)="onToggleSidebar()"
+          class="flex items-center gap-2"
+        >
           <img
             *ngIf="s.logo"
-            [src]="s.logo.startsWith('http') ? s.logo : environment.apiUrl.replace('/api','') + s.logo"
+            [src]="
+              s.logo.startsWith('http') ? s.logo : environment.apiUrl.replace('/api', '') + s.logo
+            "
             alt="{{ s.name }}"
             class="w-10 h-10 object-cover rounded-full"
             appImageError
@@ -51,11 +73,21 @@
     </ul>
   </div>
 
-
   <!-- Footer -->
-  
+
   <button class="btn-logout mt-4" (click)="logout()" [title]="'Se déconnecter'">
-    <span class="logout-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>
+    <span class="logout-icon"
+      ><svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        style="width: 20px; height: 20px"
+      >
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line></svg
+    ></span>
     <span class="logout-text" *ngIf="isOpen()">Déconnexion</span>
   </button>
 </aside>

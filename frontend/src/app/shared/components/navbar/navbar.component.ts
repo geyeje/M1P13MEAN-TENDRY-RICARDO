@@ -1,6 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -34,6 +35,7 @@ interface MenuItem {
 export class Navbar {
   authService = inject(AuthService);
   cart = inject(ShoppingCartService);
+  themeService = inject(ThemeService);
   router = inject(Router);
 
   currentUser = toSignal(this.authService.currentUser$);
@@ -43,7 +45,7 @@ export class Navbar {
   menuItem = input<MenuItem[]>([
     { label: 'Accueil', route: 'home' },
     { label: 'Produits', route: '/product-list' },
-    { label: 'Boutiques', route: '/store-list' },
+    { label: 'Boutiques', route: '/boutiques' },
     { label: 'Commandes', route: '/customer/order-list' },
   ]);
 

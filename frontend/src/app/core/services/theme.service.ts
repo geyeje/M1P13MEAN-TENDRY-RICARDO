@@ -33,6 +33,13 @@ export class ThemeService {
       localStorage.setItem('theme', theme);
       // CoreUI uses data-coreui-theme attribute
       this.renderer.setAttribute(document.documentElement, 'data-coreui-theme', theme);
+
+      // Tailwind uses 'dark' class
+      if (theme === 'dark') {
+        this.renderer.addClass(document.documentElement, 'dark');
+      } else {
+        this.renderer.removeClass(document.documentElement, 'dark');
+      }
     }
   }
 

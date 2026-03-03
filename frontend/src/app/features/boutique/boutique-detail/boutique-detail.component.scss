@@ -1,0 +1,604 @@
+// src/app/features/boutiques/boutique-detail/boutique-detail.component.scss
+.boutique-detail-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+// Loading & Error
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--cui-border-color);
+  border-top-color: var(--cui-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  &.small {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-icon {
+  width: 64px;
+  height: 64px;
+  color: var(--cui-danger);
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--cui-primary) 0%, var(--cui-secondary) 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--cui-primary-rgb), 0.4);
+  }
+}
+
+// Banner
+.boutique-banner {
+  height: 320px;
+  border-radius: 24px;
+  overflow: hidden;
+  margin-bottom: 80px;
+  position: relative;
+  background: linear-gradient(135deg, var(--cui-primary) 0%, var(--cui-secondary) 100%);
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.banner-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.5);
+
+  svg {
+    width: 96px;
+    height: 96px;
+  }
+}
+
+// Header
+.boutique-header {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.logo-container {
+  margin-top: -100px;
+  flex-shrink: 0;
+}
+
+.boutique-logo {
+  width: 160px;
+  height: 160px;
+  border-radius: 24px;
+  border: 6px solid var(--cui-card-bg);
+  background: var(--cui-card-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  object-fit: cover;
+
+  &.logo-placeholder {
+    background: linear-gradient(135deg, var(--cui-primary) 0%, var(--cui-secondary) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    font-weight: 700;
+  }
+}
+
+.header-info {
+  flex: 1;
+  padding-top: 1rem;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.boutique-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--cui-body-color);
+  margin: 0;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.875rem;
+
+  &.status-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+  &.status-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+  &.status-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+}
+
+.featured-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.875rem;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.boutique-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--cui-secondary-color);
+  font-size: 0.875rem;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Stats Grid
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--cui-card-bg);
+  border: 1px solid var(--cui-border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, rgba(var(--cui-primary-rgb), 0.1) 0%, rgba(var(--cui-secondary-rgb), 0.1) 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cui-primary);
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.stat-content {
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--cui-body-color);
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--cui-secondary-color);
+  }
+}
+
+// Info Sections
+.info-section {
+  background: var(--cui-card-bg);
+  border: 1px solid var(--cui-border-color);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cui-body-color);
+  margin: 0 0 1.5rem 0;
+}
+
+.boutique-description {
+  color: var(--cui-secondary-color);
+  line-height: 1.8;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.info-card {
+  background: var(--cui-card-bg);
+  border: 1px solid var(--cui-border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cui-body-color);
+  margin: 0 0 1.5rem 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: var(--cui-primary);
+  }
+}
+
+.info-content {
+  p {
+    margin: 1rem 0;
+    color: var(--cui-secondary-color);
+
+    strong {
+      color: var(--cui-body-color);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    a {
+      color: var(--cui-primary);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Schedule
+.schedule-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.schedule-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--cui-border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.day {
+  font-weight: 600;
+  color: var(--cui-body-color);
+  text-transform: capitalize;
+}
+
+.hours {
+  color: #10b981;
+  font-weight: 500;
+
+  &.closed {
+    color: #ef4444;
+  }
+}
+
+// Social Links
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--cui-body-color);
+  transition: all 0.3s;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.facebook:hover {
+    background: #1877f2;
+    color: white;
+  }
+
+  &.instagram:hover {
+    background: linear-gradient(45deg, #f09433, #d62976, #962fbf, #4f5bd5);
+    color: white;
+  }
+
+  &.twitter:hover {
+    background: #1da1f2;
+    color: white;
+  }
+
+  &.website:hover {
+    background: var(--cui-primary);
+    color: white;
+  }
+}
+
+// Products Section
+.products-section {
+  margin-top: 3rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.products-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--cui-tertiary-bg);
+  padding: 0.25rem;
+  border-radius: 30px;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--cui-secondary-color);
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+
+  &.active {
+    background: var(--cui-card-bg);
+    color: var(--cui-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.tab-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--cui-primary);
+  color: white;
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 30px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.products-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem;
+  color: var(--cui-secondary-color);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.no-products {
+  text-align: center;
+  padding: 4rem;
+  color: var(--cui-secondary-color);
+
+  svg {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--cui-body-color);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.pagination-btn {
+  min-width: 40px;
+  height: 40px;
+  border: 1px solid var(--cui-border-color);
+  background: var(--cui-card-bg);
+  color: var(--cui-body-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--cui-primary);
+    color: white;
+    border-color: var(--cui-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.active {
+    background: var(--cui-primary);
+    color: white;
+    border-color: var(--cui-primary);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .boutique-banner {
+    height: 200px;
+    margin-bottom: 60px;
+  }
+
+  .boutique-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .logo-container {
+    margin-top: -60px;
+  }
+
+  .boutique-logo {
+    width: 120px;
+    height: 120px;
+    font-size: 3rem;
+  }
+
+  .title-section {
+    justify-content: center;
+  }
+
+  .boutique-name {
+    font-size: 1.75rem;
+  }
+
+  .boutique-meta {
+    justify-content: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .products-tabs {
+    width: 100%;
+    overflow-x: auto;
+    padding: 0.5rem;
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+}

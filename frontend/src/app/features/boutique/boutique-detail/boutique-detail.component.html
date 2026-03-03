@@ -1,0 +1,369 @@
+<!-- src/app/features/boutiques/boutique-detail/boutique-detail.component.html -->
+<div class="boutique-detail-container">
+  <!-- Loading -->
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Chargement de la boutique...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error && !loading) {
+    <div class="error-state">
+      <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <circle cx="12" cy="16" r="1" fill="currentColor"></circle>
+      </svg>
+      <h2>{{ error }}</h2>
+      <button class="btn-primary" routerLink="/boutiques">Retour aux boutiques</button>
+    </div>
+  }
+
+  <!-- Boutique Content -->
+  @if (boutique && !loading) {
+    <!-- Banner -->
+    <div class="boutique-banner">
+      @if (boutique.banner) {
+        <img
+          [src]="getImageUrl(boutique.banner)"
+          [alt]="boutique.name"
+          class="banner-img"
+          appImageError
+        />
+      } @else {
+        <div class="banner-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+      }
+    </div>
+
+    <!-- Header with Logo -->
+    <div class="boutique-header">
+      <div class="logo-container">
+        @if (boutique.logo) {
+          <img
+            [src]="getImageUrl(boutique.logo)"
+            [alt]="boutique.name"
+            class="boutique-logo"
+            appImageError
+          />
+        } @else {
+          <div class="boutique-logo logo-placeholder">
+            {{ boutique.name.charAt(0) }}
+          </div>
+        }
+      </div>
+
+      <div class="header-info">
+        <div class="title-section">
+          <h1 class="boutique-name">{{ boutique.name }}</h1>
+          <span class="status-badge" [ngClass]="getStatusClass(boutique.status)">
+            {{ getStatusLabel(boutique.status) }}
+          </span>
+          @if (boutique.featured) {
+            <span class="featured-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              Boutique vedette
+            </span>
+          }
+        </div>
+
+        <div class="boutique-meta">
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 7h-4.5A2.5 2.5 0 0013 9.5v0A2.5 2.5 0 0015.5 12H18"></path>
+              <path
+                d="M18 12v4.5A2.5 2.5 0 0115.5 19h-9A2.5 2.5 0 014 16.5v-9A2.5 2.5 0 016.5 5H11"
+              ></path>
+            </svg>
+            {{ boutique.category }}
+          </span>
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="12 6 12 12 16 14"></polygon>
+            </svg>
+            Membre depuis {{ boutique.createdAt | date: 'MMMM yyyy' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path
+              d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"
+            ></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ boutique.productCount }}</div>
+          <div class="stat-label">Produits</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ boutique.commandCount }}</div>
+          <div class="stat-label">Commandes</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+            ></polygon>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ boutique.note.toFixed(1) }}/5</div>
+          <div class="stat-label">{{ boutique.reviewCount }} avis</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="info-section">
+      <h2 class="section-title">À propos</h2>
+      <p class="boutique-description">{{ boutique.description }}</p>
+    </div>
+
+    <!-- Contact Info Grid -->
+    <div class="info-grid">
+      <!-- Contact -->
+      <div class="info-card">
+        <h3 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path
+              d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
+            ></path>
+          </svg>
+          Contact
+        </h3>
+        <div class="info-content">
+          <p>
+            <strong>Téléphone:</strong><br />
+            {{ boutique.phone }}
+          </p>
+          <p>
+            <strong>Email:</strong><br />
+            <a [href]="'mailto:' + boutique.email">{{ boutique.email }}</a>
+          </p>
+          <p>
+            <strong>Adresse:</strong><br />
+            {{ boutique.address }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Horaires -->
+      <div class="info-card">
+        <h3 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Horaires
+        </h3>
+        <div class="schedule-content">
+          @for (
+            day of ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+            track day
+          ) {
+            <div class="schedule-item">
+              <span class="day">{{ day | titlecase }}</span>
+              <span class="hours" [class.closed]="formatSchedule(day) === 'Fermé'">
+                {{ formatSchedule(day) }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Réseaux sociaux -->
+      @if (
+        boutique.socialNetwork &&
+        (boutique.socialNetwork.facebook ||
+          boutique.socialNetwork.instagram ||
+          boutique.socialNetwork.twitter ||
+          boutique.socialNetwork.website)
+      ) {
+        <div class="info-card">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+            </svg>
+            Réseaux sociaux
+          </h3>
+          <div class="social-links">
+            @if (boutique.socialNetwork.facebook) {
+              <a
+                [href]="boutique.socialNetwork.facebook"
+                target="_blank"
+                class="social-link facebook"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                </svg>
+                <span>Facebook</span>
+              </a>
+            }
+            @if (boutique.socialNetwork.instagram) {
+              <a
+                [href]="boutique.socialNetwork.instagram"
+                target="_blank"
+                class="social-link instagram"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <span>Instagram</span>
+              </a>
+            }
+            @if (boutique.socialNetwork.twitter) {
+              <a
+                [href]="boutique.socialNetwork.twitter"
+                target="_blank"
+                class="social-link twitter"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path
+                    d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"
+                  ></path>
+                </svg>
+                <span>Twitter</span>
+              </a>
+            }
+            @if (boutique.socialNetwork.website) {
+              <a
+                [href]="boutique.socialNetwork.website"
+                target="_blank"
+                class="social-link website"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path
+                    d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"
+                  ></path>
+                </svg>
+                <span>Site Web</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Products Section -->
+    <div id="products-section" class="products-section">
+      <div class="section-header">
+        <h2 class="section-title">Nos produits</h2>
+
+        <!-- Tabs -->
+        <div class="products-tabs">
+          <button class="tab-btn" [class.active]="currentTab === 'all'" (click)="setTab('all')">
+            Tous les produits
+          </button>
+          <button class="tab-btn" [class.active]="currentTab === 'promo'" (click)="setTab('promo')">
+            Promotions
+            @if (productsOnSale.length > 0) {
+              <span class="tab-badge">{{ productsOnSale.length }}</span>
+            }
+          </button>
+          <button
+            class="tab-btn"
+            [class.active]="currentTab === 'featured'"
+            (click)="setTab('featured')"
+          >
+            Meilleures ventes
+          </button>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      @if (loadingProducts && currentTab === 'all') {
+        <div class="products-loading">
+          <div class="spinner small"></div>
+          <p>Chargement des produits...</p>
+        </div>
+      } @else {
+        @if (getCurrentProducts().length > 0) {
+          <div class="products-grid">
+            @for (product of getCurrentProducts(); track product._id) {
+              <app-product-card [product]="product" />
+            }
+          </div>
+
+          <!-- Pagination (only for all products tab) -->
+          @if (currentTab === 'all' && productTotalPages > 1) {
+            <div class="pagination">
+              <button
+                class="pagination-btn"
+                [disabled]="productPage === 1"
+                (click)="changeProductPage(productPage - 1)"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+
+              @for (page of [].constructor(productTotalPages); track $index; let i = $index) {
+                <button
+                  class="pagination-btn"
+                  [class.active]="productPage === i + 1"
+                  (click)="changeProductPage(i + 1)"
+                >
+                  {{ i + 1 }}
+                </button>
+              }
+
+              <button
+                class="pagination-btn"
+                [disabled]="productPage === productTotalPages"
+                (click)="changeProductPage(productPage + 1)"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          }
+        } @else {
+          <div class="no-products">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3>Aucun produit disponible</h3>
+            <p>Cette boutique n'a pas encore de produits dans cette catégorie.</p>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

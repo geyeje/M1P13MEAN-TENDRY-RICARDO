@@ -1,0 +1,143 @@
+<!-- src/app/features/boutiques/boutiques-list/boutiques-list.component.html -->
+<div class="boutiques-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Boutiques</h1>
+      <p class="page-subtitle">Découvrez toutes nos boutiques et leurs produits</p>
+    </div>
+    <div class="boutiques-count">
+      {{ totalBoutiques }} boutique{{ totalBoutiques > 1 ? 's' : '' }}
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <svg
+        class="search-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
+        placeholder="Rechercher une boutique..."
+        class="search-input"
+      />
+    </div>
+
+    <div class="filters-group">
+      <select [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="">Toutes catégories</option>
+        @for (category of categories; track category) {
+          <option [value]="category">{{ category }}</option>
+        }
+      </select>
+
+      <select [(ngModel)]="sortBy" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="createdAt">Plus récentes</option>
+        <option value="note">Mieux notées</option>
+        <option value="name">Nom (A-Z)</option>
+      </select>
+
+      <button class="btn-reset" (click)="resetFilters()" title="Réinitialiser les filtres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"></path>
+          <path d="M8 4V3a1 1 0 011-1h6a1 1 0 011 1v1"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Chargement des boutiques...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error && !loading) {
+    <div class="error-state">
+      <svg
+        class="error-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <circle cx="12" cy="16" r="1" fill="currentColor"></circle>
+      </svg>
+      <h3>{{ error }}</h3>
+      <button class="btn-primary" (click)="loadBoutiques()">Réessayer</button>
+    </div>
+  }
+
+  <!-- Boutiques Grid -->
+  @if (!loading && !error) {
+    @if (filteredBoutiques.length > 0) {
+      <div class="boutiques-grid">
+        @for (boutique of filteredBoutiques; track boutique._id) {
+          <app-boutique-card [boutique]="boutique" />
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages > 1) {
+        <div class="pagination">
+          <button
+            class="pagination-btn"
+            [disabled]="currentPage === 1"
+            (click)="changePage(currentPage - 1)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          @for (page of [].constructor(totalPages); track $index; let i = $index) {
+            <button
+              class="pagination-btn"
+              [class.active]="currentPage === i + 1"
+              (click)="changePage(i + 1)"
+            >
+              {{ i + 1 }}
+            </button>
+          }
+
+          <button
+            class="pagination-btn"
+            [disabled]="currentPage === totalPages"
+            (click)="changePage(currentPage + 1)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      }
+    } @else {
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h3>Aucune boutique trouvée</h3>
+        <p>Essayez de modifier vos filtres de recherche</p>
+        <button class="btn-primary" (click)="resetFilters()">Réinitialiser les filtres</button>
+      </div>
+    }
+  }
+</div>
