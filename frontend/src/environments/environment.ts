@@ -7,5 +7,5 @@ export const environment = {
 // src/environments/environment.prod.ts
 export const environmentProd = {
   production: true,
-  apiUrl: 'https://votre-api-prod.com/api'
+  apiUrl: 'https://matcha-center.com/api'
 };
