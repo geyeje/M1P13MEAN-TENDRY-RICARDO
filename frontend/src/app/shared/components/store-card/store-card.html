@@ -1,11 +1,11 @@
-<div class="store-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+<div class="store-card !bg-white/5 !border !border-white/10 rounded-lg shadow-md overflow-hidden flex flex-col">
   <!-- logo/banner -->
   <div class="h-32 w-full bg-gray-100 flex items-center justify-center">
     <img
       [src]="logoUrl"
       alt="{{ boutique.name }} logo"
       class="h-full w-full object-cover"
-      (error)="$any($event.target).src = 'assets/no-image.png'"
+      appImageError
     />
   </div>
 
@@ -13,7 +13,8 @@
   <div class="p-4 flex-1 flex flex-col justify-between">
     <div>
       <h3 class="text-lg font-semibold mb-1 truncate">{{ boutique.name }}</h3>
-      <p class="text-sm text-gray-600 mb-2">{{ boutique.category }}</p>
+      <p class="text-sm text-gray-600 mb-1">{{ boutique.category }}</p>
+      <p class="text-sm text-gray-300 mb-2" style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">{{ boutique.description }}</p>
       <div class="flex items-center text-yellow-600 mb-2">
         <svg
           viewBox="0 0 24 24"
@@ -31,7 +32,7 @@
 
     <a
       [routerLink]="['/customer','boutique', boutique._id]"
-      class="mt-2 inline-block text-center bg-matcha-spring text-white py-2 px-4 rounded hover:bg-matcha-spring-dark"
+      class="mt-2 !no-underline inline-block text-center bg-matcha-spring text-white py-2 px-4 rounded hover:bg-matcha-spring-dark"
       >Visiter</a
     >
   </div>

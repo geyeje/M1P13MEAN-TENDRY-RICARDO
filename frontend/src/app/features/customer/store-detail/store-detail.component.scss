@@ -1,3 +1,132 @@
 :host {
   display: block;
 }
+// Hero banner enhancements
+.hero-banner {
+  position: relative;
+  
+  img {
+    animation: zoomIn 0.6s ease-out;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.8));
+    pointer-events: none;
+  }
+}
+
+// Smooth animations
+@keyframes zoomIn {
+  from {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Product card animations
+.product-card {
+  animation: slideUp 0.4s ease-out backwards;
+  
+  &:nth-child(1) { animation-delay: 0.05s; }
+  &:nth-child(2) { animation-delay: 0.1s; }
+  &:nth-child(3) { animation-delay: 0.15s; }
+  &:nth-child(4) { animation-delay: 0.2s; }
+  &:nth-child(n+5) { animation-delay: 0.25s; }
+  
+  &:hover {
+    transform: translateY(-4px);
+    
+    img {
+      transform: scale(1.05);
+    }
+  }
+  
+  img {
+    transition: transform 0.3s ease;
+  }
+}
+
+// Contact info cards
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  
+  svg {
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+  }
+  
+  p {
+    margin: 0;
+    
+    &:first-child {
+      font-size: 0.75rem;
+    }
+    
+    &:last-child {
+      font-weight: 500;
+    }
+  }
+}
+
+// Schedule badges
+.schedule-badge {
+  font-weight: 500;
+  font-size: 0.875rem;
+  
+  &.open {
+    color: #4ade80;
+  }
+  
+  &.closed {
+    color: #f87171;
+  }
+}
+
+// Loading state
+.loading-spinner {
+  animation: fadeIn 0.3s ease;
+  
+  span {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .hero-banner {
+    height: 16rem; // 256px instead of 320px
+  }
+  
+  .product-grid {
+    gap: 1rem;
+  }
+}

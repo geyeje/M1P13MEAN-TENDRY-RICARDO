@@ -78,6 +78,10 @@ exports.authorize = (...roles) => {
     if (req.user.role === 'store') {
       req.user.role = 'boutique';    // mutate so subsequent logic/handlers see correct value
     }
+    // normalize old role names to new ones
+    if (req.user.role === 'acheteur') {
+      req.user.role = 'customer';
+    }
     const userRole = req.user.role;
 
     if (!roles.includes(userRole)) {

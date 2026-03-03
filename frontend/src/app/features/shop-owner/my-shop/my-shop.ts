@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShopService, Shop } from '../../../core/services/shop';
 import { environment } from '../../../../environments/environment';
+import { ImageErrorDirective } from '../../../shared/directives/image-error.directive';
 
 @Component({
   selector: 'app-my-shop',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ImageErrorDirective],
   templateUrl: './my-shop.html',
   styleUrls: ['./my-shop.scss'],
 })

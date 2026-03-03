@@ -1,6 +1,7 @@
 // backend/src/controllers/produit.controller.js - CHAMPS EN ANGLAIS
 const Produit = require('../models/Produit');
 const Boutique = require('../models/Boutique');
+const ProductRating = require('../models/ProductRating');
 const { validationResult } = require('express-validator');
 
 // ========================================
@@ -132,6 +133,28 @@ exports.createProduit = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la création du produit',
+      error: error.message,
+    });
+  }
+};
+
+// ========================================
+// Produit vedettes
+// ========================================
+exports.getFeaturedProduits = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    const produits = await Produit.find({ featured: true, stock: { $gt: 0 } })
+      .populate('shopId', 'name logo')
+      .sort('-createdAt')
+      .limit(limit);
+
+    res.status(200).json({ success: true, produits });
+  } catch (error) {
+    console.error('Erreur récupération produits vedettes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération des produits vedettes',
       error: error.message,
     });
   }
@@ -489,6 +512,83 @@ exports.updateStock = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la mise à jour du stock',
+      error: error.message,
+    });
+  }
+};
+
+// Soumettre une évaluation pour un produit
+exports.submitRating = async (req, res) => {
+  try {
+    const { id: productId } = req.params;
+    const { rating, comment } = req.body;
+    const userId = req.user.id;
+
+    // Validation basique du rating
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'La note doit être entre 1 et 5',
+      });
+    }
+
+    // Vérifier que le produit existe
+    const produit = await Produit.findById(productId);
+    if (!produit) {
+      return res.status(404).json({
+        success: false,
+        message: 'Produit non trouvé',
+      });
+    }
+
+    // Vérifier si l'utilisateur a déjà noté ce produit
+    let existingRating = await ProductRating.findOne({
+      userId,
+      productId,
+    });
+
+    if (existingRating) {
+      // Mettre à jour l'évaluation existante
+      existingRating.rating = rating;
+      if (comment) {
+        existingRating.comment = comment;
+      }
+      await existingRating.save();
+    } else {
+      // Créer une nouvelle évaluation
+      existingRating = await ProductRating.create({
+        userId,
+        productId,
+        rating,
+        comment: comment || null,
+      });
+    }
+
+    // Recalculer la moyenne des notes et le nombre d'avis
+    const ratings = await ProductRating.find({ productId });
+    const averageRating =
+      ratings.length > 0 ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length : 0;
+
+    // Mettre à jour le produit
+    produit.avgRating = Math.round(averageRating * 10) / 10; // Arrondir à 1 décimale
+    produit.reviewCount = ratings.length;
+    await produit.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Évaluation soumise avec succès',
+      rating: existingRating,
+      produit: {
+        _id: produit._id,
+        avgRating: produit.avgRating,
+        reviewCount: produit.reviewCount,
+      },
+    });
+  } catch (error) {
+    console.error('Erreur soumission évaluation:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la soumission de l\'évaluation',
       error: error.message,
     });
   }

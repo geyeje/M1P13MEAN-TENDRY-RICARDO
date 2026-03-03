@@ -118,6 +118,10 @@ const produitSchema = new mongoose.Schema(
       ref: 'Boutique',
       required: true,
     },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
     // Statistiques
     avgRating: {
       // note → avgRating

@@ -31,6 +31,11 @@ export const routes:Routes = [
                 ()=> import('./order-list/order-list').then(m => m.OrderList)
             },
             {
+                path: 'order/:id',
+                loadComponent:
+                  () => import('../../shared/components/order-details/order-details').then(m => m.OrderDetails)
+            },
+            {
                 path: 'order-history',
                 loadComponent:
                 ()=> import('./order-history/order-history').then(m => m.OrderHistory)
@@ -54,6 +59,11 @@ export const routes:Routes = [
                 path: 'boutique/:id',
                 loadComponent:
                   () => import('./store-detail/store-detail.component').then(m => m.StoreDetail)
+            },
+            {
+                path: 'product/:id',
+                loadComponent:
+                  () => import('../../shared/components/product-details/product-details').then(m => m.ProductDetails)
             }
         ]
     }

@@ -1,6 +1,8 @@
 import { Component, input, output, EventEmitter } from '@angular/core';
 import { Product } from '../../../core/services/product.service';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../../../environments/environment';
+import { ImageErrorDirective } from '../../directives/image-error.directive';
 
 export interface CartItem {
   product: Product;
@@ -10,7 +12,7 @@ export interface CartItem {
 @Component({
   selector: 'app-cart-item',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, ImageErrorDirective],
   templateUrl: './cart-item.component.html',
   styleUrl: './cart-item.component.scss',
 })
@@ -19,6 +21,12 @@ export class CartItemComponent {
   item = input.required<CartItem>();
   remove = output<string>();
   quantityChange = output<{ productId: string; quantity: number }>();
+
+  getImageUrl(path: string): string {
+    if (!path) return 'assets/no-image.png';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl.replace('/api', '')}${path}`;
+  }
 
   onRemove() {
     this.remove.emit(this.item().product._id);

@@ -1,6 +1,6 @@
 // src/app/core/services/shop.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -72,6 +72,12 @@ export class ShopService {
     return this.http.get(this.apiUrl, { params });
   }
 
+  // Shops vedettes (sidebar)
+  getFeaturedShops(limit = 5): Observable<any> {
+    const params = new HttpParams().set('limit', limit.toString());
+    return this.http.get(`${this.apiUrl}/featured`, { params });
+  }
+
   // Statistiques (admin)
   getStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/stats/overview`);
@@ -93,5 +99,14 @@ export class ShopService {
       'Services',
       'Autres',
     ];
+  }
+
+  // Soumettre une évaluation pour une boutique
+  submitRating(shopId: string, rating: number, comment?: string): Observable<any> {
+    const payload = {
+      rating,
+      ...(comment && { comment }),
+    };
+    return this.http.post(`${this.apiUrl}/${shopId}/rate`, payload);
   }
 }

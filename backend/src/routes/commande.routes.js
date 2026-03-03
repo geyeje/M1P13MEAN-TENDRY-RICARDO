@@ -14,20 +14,20 @@ const createValidation = [
     .matches(/^[0-9]{10}$/).withMessage('Numéro invalide (10 chiffres)')
 ];
 
-// ---- Acheteur ----
+// ---- Acheteur (Customer) ----
 router.post('/',
-  protect, authorize('acheteur'),
+  protect, authorize('customer'),
   createValidation,
   ctrl.createCommande
 );
 
 router.get('/me/myorders',
-  protect, authorize('acheteur'),
+  protect, authorize('customer'),
   ctrl.getMyCommandes
 );
 
 router.patch('/:id/cancel',
-  protect, authorize('acheteur'),
+  protect, authorize('customer'),
   ctrl.cancelCommande
 );
 

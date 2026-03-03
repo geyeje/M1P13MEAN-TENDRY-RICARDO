@@ -6,11 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { CurrencyPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { environment } from '../../../../environments/environment';
+import { ImageErrorDirective } from '../../directives/image-error.directive';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [MatIconModule, CurrencyPipe, MatCardModule],
+  imports: [MatIconModule, CurrencyPipe, MatCardModule, ImageErrorDirective],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
 })
@@ -29,6 +30,10 @@ export class ProductCardComponent {
       return;
     }
     this.addToShoppingCart.emit(p);
+  }
+
+  onViewDetails(p: Product) {
+    this.router.navigate(['/customer/product', p._id]);
   }
 
   getImageUrl(path: string): string {

@@ -79,7 +79,7 @@
         <img
           [src]="getImageUrl(product.images[0])"
           [alt]="product.name"
-          (error)="$any($event.target).src = 'assets/no-image.png'"
+          appImageError
         />
         <span *ngIf="product.onSale" class="badge-promo">PROMO</span>
         <span *ngIf="product.stock === 0" class="badge-stock">RUPTURE</span>

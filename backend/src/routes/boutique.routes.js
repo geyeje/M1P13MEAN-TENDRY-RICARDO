@@ -80,8 +80,12 @@ const updateBoutiqueValidation = [
 ];
 
 // Routes publiques
+router.get('/featured', boutiqueController.getFeaturedBoutiques);
 router.get('/', boutiqueController.getAllBoutiques);
 router.get('/:id', boutiqueController.getBoutiqueById);
+
+// Route pour soumettre une évaluation (protégée, tous les utilisateurs connectés)
+router.post('/:id/rate', protect, boutiqueController.submitRating);
 
 // Routes protégées - Gérant
 router.get('/me/myboutique', protect, authorize('boutique'), boutiqueController.getMyBoutique);

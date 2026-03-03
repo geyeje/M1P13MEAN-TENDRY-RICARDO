@@ -2,7 +2,7 @@ import { Component, input, output, signal } from '@angular/core';
 import { Navbar } from '../../../shared/components/navbar/navbar.component';
 import { RouterOutlet } from '@angular/router';
 import { Sidebar } from '../../../shared/components/sidebar/sidebar.component';
-import { customerNavItems } from '../_nav';
+// customerNavItems no longer needed since sidebar displays featured content
 
 @Component({
   selector: 'app-customer-layout',
@@ -13,7 +13,6 @@ import { customerNavItems } from '../_nav';
 })
 export class CustomerLayout {
   isSidebar = true;
-  menuItems = signal(customerNavItems);
 
   onToggleSidebar(){
     this.isSidebar = !this.isSidebar;
