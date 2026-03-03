@@ -62,20 +62,47 @@ body {
     --cui-footer-bg: var(--cui-body-bg);
   }
 
+  // Robust Dark Mode Input Fix
   input:not([type='checkbox']):not([type='radio']),
   select,
-  textarea {
+  textarea,
+  .form-control,
+  .form-select {
     background-color: var(--cui-tertiary-bg) !important;
     color: var(--cui-body-color) !important;
     border-color: var(--cui-border-color) !important;
 
     &:focus {
       background-color: var(--cui-body-bg) !important;
+      color: var(--cui-body-color) !important;
     }
 
     &::placeholder {
       color: var(--cui-secondary-color) !important;
       opacity: 0.6;
+    }
+
+    &:disabled,
+    &[readonly] {
+      background-color: rgba(var(--cui-tertiary-bg-rgb), 0.5) !important;
+      opacity: 0.6;
+    }
+  }
+}
+
+// Ensure it applies to the data attribute as well
+[data-coreui-theme='dark'] {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea,
+  .form-control,
+  .form-select {
+    background-color: var(--cui-tertiary-bg) !important;
+    color: var(--cui-body-color) !important;
+    border-color: var(--cui-border-color) !important;
+
+    &:focus {
+      background-color: var(--cui-body-bg) !important;
     }
   }
 }
