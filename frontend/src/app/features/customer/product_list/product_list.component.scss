@@ -2,6 +2,25 @@
   display: block;
 }
 
+/* Search input styling */
+.search-input {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(132, 204, 22, 0.3);
+  color: #000;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #84cc16;
+    box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.1);
+  }
+
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
 /* Filters bar styling */
 .filters-wrapper {
   position: relative;

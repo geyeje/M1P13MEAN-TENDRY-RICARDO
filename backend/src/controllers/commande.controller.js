@@ -79,7 +79,7 @@ exports.createCommande = async (req, res) => {
     // ---- Créer la commande ----
     const commande = await Commande.create({
       orderNumber: generateOrderNumber(),
-      buyerId: req.user.id,
+      buyerId: req.user._id, // Utiliser ._id pour la cohérence
       items: validatedItems,
       totalAmount,
       shippingAddress,
@@ -149,8 +149,14 @@ exports.getMyCommandes = async (req, res) => {
   try {
     const { status, page = 1, limit = 10 } = req.query;
 
-    const filter = { buyerId: req.user.id };
+    console.log('📋 getMyCommandes - req.user:', req.user);
+    console.log('📋 getMyCommandes - req.user._id:', req.user._id);
+    console.log('📋 getMyCommandes - req.user.id:', req.user.id);
+
+    const filter = { buyerId: req.user._id }; // Utiliser ._id plutôt que .id pour être sûr
     if (status) filter.status = status;
+
+    console.log('📋 Filter utilisé:', filter);
 
     const skip = (page - 1) * limit;
 
@@ -158,6 +164,9 @@ exports.getMyCommandes = async (req, res) => {
       .sort('-createdAt')
       .limit(parseInt(limit))
       .skip(skip);
+
+    console.log(`📋 ${commandes.length} commande(s) trouvée(s)`);
+    console.log('📋 Commandes:', commandes);
 
     const total = await Commande.countDocuments(filter);
 

@@ -18,21 +18,25 @@ connectDB();
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
 const frontendUrlHttps = frontendUrl.replace(/^http:/, 'https:');
 
+// Configure CORS: in development allow the requesting origin (helps with dev servers)
 app.use(
   cors({
-    // allow whichever origin is used by the client (http or https)
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // allow non-browser tools
-      if (origin === frontendUrl || origin === frontendUrlHttps) {
-        return callback(null, true);
+      // Allow non-browser tools (curl, Postman) or same-origin requests
+      if (!origin) return callback(null, true);
+      // In production you may want to restrict this to a specific frontend URL
+      if (process.env.NODE_ENV === 'production') {
+        if (origin === frontendUrl || origin === frontendUrlHttps) return callback(null, true);
+        console.warn('CORS blocked origin', origin);
+        return callback(new Error('Not allowed by CORS'));
       }
-      // you can also add a wildcard or log the rejected origin here
-      console.warn('CORS blocked origin', origin);
-      callback(new Error('Not allowed by CORS'));
+      // In development, reflect the request origin to avoid opaque responses
+      return callback(null, true);
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
     credentials: true,
+    preflightContinue: false,
   })
 );
 app.use(express.json());

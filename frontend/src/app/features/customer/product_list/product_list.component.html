@@ -1,7 +1,18 @@
 <!--productListComponent pour afficher une liste de produit-->
 <div class="p-8 mx-2 mt-4 min-h-screen bg-matcha-dark rounded-xl shadow-md border-white/10 border-2">
     <h2 class="text-3xl font-bold mb-8 text-white border-l-4 border-matcha-spring pl-4">Liste des produits Matcha & co</h2>
-        <div class="filters-wrapper mb-8 relative">
+    
+    <!-- Barre de recherche -->
+    <div class="mb-8">
+      <input
+        type="search"
+        [(ngModel)]="searchTerm"
+        placeholder="Rechercher un produit..."
+        class="search-input w-full mb-4 p-2 rounded"
+      />
+    </div>
+    
+    <div class="filters-wrapper mb-8 relative">
             <button class="filter-nav left" (click)="scrollFilters(-240)" aria-label="Précédent">
                 <mat-icon>chevron_left</mat-icon>
             </button>

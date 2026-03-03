@@ -1,72 +1,79 @@
-<!-- NavbarComponent-->
-<nav class="h-20 bg-matcha-dark border-b border-gray-900 flex items-center justify-between px-16 fixed top-0 w-full">
-     <!-- Logo du Matcha center-->
-    <div class="flex items-center gap-2">
-        <div class="w-8 h-8 flex bg-matcha-spring items-center rounded-lg justify-center font-black text-matcha-dark">{{Logo}}</div>
-        <span class="text-white font-bold text-xl tracking-tight">{{title}}<span class="text-matcha-spring"> Center</span></span>
-    </div>
-    <div class="m-4 py-4">
-        <!-- Search bar commented out per customer page design change
-        <div class="!mx-auto mt-2 flex items-center justify-center w-lg max-w-lg ">
-            <input type="text" placeholder="Recherche" class="relative h-8 !rounded-full w-full border border-white/10 bg-white/15 text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-matcha-spring focus:border-transparent transition-colors">
-            <button mat-mini-fab class="absolute right-8 !w-7 !h-7 text-white !rounded-full border border-white/10 !bg-matcha-spring/20 hover:ring-2 !hover:ring-matcha-spring hover:!bg-matcha-spring/80 z-50 !transition-colors">
-                <mat-icon>search</mat-icon>
-            </button>
-        </div>
+<!-- Matcha Center Navbar -->
+<nav class="navbar-container">
+  <!-- Left: Logo & Branding -->
+  <div class="navbar-brand">
+    <div class="logo-badge">{{ Logo }}</div>
+    <span class="brand-title">{{ title }}<span class="brand-accent">Center</span></span>
+  </div>
 
-        -->
-        <div class="flex w-full items-center justify-between p-2">
-            @for (item of menuItem(); track item.route) {
-                <a
-                    [routerLink]="item.route"
-                    class="px-2 py-1 rounded-full !no-underline !text-xs text-white border border-white/10 hover:border-matcha-spring bg-matcha-spring/40 hover:bg-mat"
-                >
-                <span class="font-black ">{{item.label}}</span>
-                </a>
-            }
-        </div>
-    </div>
-    <!-- Bouton de login/logout et le panier d'achat, à voir pour le register-->
-    <div class="flex items-center gap-4">
-        @if (authService.currentUser$ | async; as user) {
-            <button class="text-gray-400 hover:bg-matcha-spring transition-colors rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell-icon lucide-bell"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>
-            </button>
-            <button mat-flat-button class="!bg-matcha-spring/80 !text-black !rounded-3xl" (click)="authService.logout()">
-                Deconnexion <mat-icon>logout</mat-icon> 
-            </button>
-            <button class="relative text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart">
-              <mat-icon>shopping_cart</mat-icon>
-              @if(cartCount() > 0) {
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{{ cartCount() }}</span>
-              }
-            </button>
-            <!-- user profile button directing to dashboard -->
-            <button (click)="goToDashboard()" class="flex items-center gap-2 ml-4 px-3 py-1 !rounded-full !hover:bg-matcha-spring/20 transition-colors border border-white/10 hover:border-matcha-spring/50">
-              <div class="w-8 h-8 bg-matcha-spring/20 rounded-full overflow-hidden flex items-center justify-center">
-                @if(currentUser()?.avatar) {
-                  <img [src]="getAvatarUrl(currentUser()?.avatar)" alt="avatar" class="w-full h-full object-cover" appImageError />
-                } @else {
-                  <span class="font-bold text-matcha-spring text-xs">
-                    @if(currentUser()?.role === 'admin') {A}
-                    @if(currentUser()?.role === 'acheteur') {C}
-                    @if(currentUser()?.role === 'boutique') {B}
-                    @if(currentUser()?.role !== 'admin' && currentUser()?.role !== 'acheteur' && currentUser()?.role !== 'boutique') {U}
-                  </span>
-                }
-              </div>
-              <span class="text-white text-sm font-medium truncate hidden sm:inline">{{name()}}</span>
-            </button>
-        } @else {
-            <a mat-flat-button class="!bg-matcha-spring/80 !text-black !rounded-3xl" routerLink="/login">
-                connexion <mat-icon>login</mat-icon> 
-            </a>
-            <button class="relative text-gray-400 hover:bg-matcha-spring transition-colors rounded-full w-8 h-8" mat-mini-fab routerLink="/shopping-cart">
-              <mat-icon>shopping_cart</mat-icon>
-              @if(cartCount() > 0) {
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">{{ cartCount() }}</span>
-              }
-            </button>
+  <!-- Center: Navigation Menu -->
+  <div class="navbar-menu">
+    @for (item of menuItem(); track item.route) {
+      <a [routerLink]="item.route" class="nav-item" routerLinkActive="active">
+        <span>{{ item.label }}</span>
+        @if(item.badge && item.badge > 0) {
+          <span class="nav-badge">{{ item.badge }}</span>
         }
-    </div>
+      </a>
+    }
+  </div>
+
+  <!-- Right: Actions & User -->
+  <div class="navbar-actions">
+    @if (authService.currentUser$ | async; as user) {
+      <!-- Notifications -->
+      <button class="action-button notification-btn" title="Notifications">
+        <mat-icon>notifications</mat-icon>
+        <span class="notification-dot"></span>
+      </button>
+
+      <!-- Shopping Cart -->
+      <button class="action-button cart-btn" routerLink="/shopping-cart" title="Panier">
+        <mat-icon>shopping_cart</mat-icon>
+        @if(cartCount() > 0) {
+          <span class="cart-badge">{{ cartCount() }}</span>
+        }
+      </button>
+
+      <!-- User Profile Dropdown -->
+      <div class="user-menu">
+        <button class="user-profile-btn" (click)="goToDashboard()" title="Tableau de bord">
+          <div class="avatar-circle">
+            @if(currentUser()?.avatar) {
+              <img [src]="getAvatarUrl(currentUser()?.avatar)" alt="avatar" appImageError />
+            } @else {
+              <span class="avatar-letter">
+                @if(currentUser()?.role === 'admin') { A }
+                @else if(currentUser()?.role === 'acheteur') { C }
+                @else if(currentUser()?.role === 'boutique') { B }
+                @else { U }
+              </span>
+            }
+          </div>
+          <span class="user-name">{{ name() }}</span>
+          <mat-icon class="dropdown-arrow">expand_more</mat-icon>
+        </button>
+      </div>
+
+      <!-- Logout Button -->
+      <button class="logout-btn" (click)="authService.logout()" title="Déconnexion">
+        <mat-icon>logout</mat-icon>
+        <span class="logout-text">Quitter</span>
+      </button>
+    } @else {
+      <!-- Login button when not authenticated -->
+      <a mat-flat-button class="login-btn" routerLink="/login">
+        <mat-icon>login</mat-icon>
+        <span>Connexion</span>
+      </a>
+
+      <!-- Shopping Cart (anonymous) -->
+      <button class="action-button cart-btn" routerLink="/shopping-cart" title="Panier">
+        <mat-icon>shopping_cart</mat-icon>
+        @if(cartCount() > 0) {
+          <span class="cart-badge">{{ cartCount() }}</span>
+        }
+      </button>
+    }
+  </div>
 </nav>
