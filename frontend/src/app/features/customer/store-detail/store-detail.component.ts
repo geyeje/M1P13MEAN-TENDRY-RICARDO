@@ -1,8 +1,9 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ShopService, Shop } from '../../../core/services/shop.service';
 import { ProductService, Product } from '../../../core/services/product.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../../shared/directives/image-error.directive';
@@ -16,9 +17,11 @@ import { ImageErrorDirective } from '../../../shared/directives/image-error.dire
 })
 export class StoreDetail implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private shopService = inject(ShopService);
   private productService = inject(ProductService);
   private cartService = inject(ShoppingCartService);
+  private authService = inject(AuthService);
   private shopId = signal<string>('');
 
   boutique = signal<Shop | null>(null);
@@ -97,6 +100,13 @@ export class StoreDetail implements OnInit {
   }
 
   addToCart(product: Product): void {
+    // Vérifier que l'utilisateur est connecté
+    if (!this.authService.isLoggedIn) {
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: this.router.url },
+      });
+      return;
+    }
     try {
       this.cartService.add(product);
       console.log('Produit ajouté au panier:', product._id || product.name);

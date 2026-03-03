@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Product, ProductService } from '../../../core/services/product.service';
 import { ShopService, Shop } from '../../../core/services/shop.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../directives/image-error.directive';
@@ -22,6 +23,7 @@ export class ProductDetails implements OnInit {
   private productService = inject(ProductService);
   private shopService = inject(ShopService);
   private cartService = inject(ShoppingCartService);
+  private authService = inject(AuthService);
 
   product = signal<Product | null>(null);
   shop = signal<Shop | null>(null);
@@ -87,6 +89,13 @@ export class ProductDetails implements OnInit {
   }
 
   addToCart(): void {
+    // Vérifier que l'utilisateur est connecté
+    if (!this.authService.isLoggedIn) {
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: this.router.url },
+      });
+      return;
+    }
     const prod = this.product();
     if (prod) {
       this.cartService.add(prod);
@@ -96,12 +105,12 @@ export class ProductDetails implements OnInit {
   goToShop(): void {
     const shopId = this.product()?.boutiqueId;
     if (shopId) {
-      this.router.navigate(['/customer/boutique', shopId]);
+      this.router.navigate(['/boutique', shopId]);
     }
   }
 
   goBack(): void {
-    this.router.navigate(['/customer/product-list']);
+    this.router.navigate(['/product-list']);
   }
 
   setRating(rating: number): void {

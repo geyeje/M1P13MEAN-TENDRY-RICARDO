@@ -56,7 +56,7 @@
           </span>
         </td>
         <td>
-          <a [routerLink]="['/shop-owner/orders', order._id]" class="btn-view">
+          <a [routerLink]="['/shop-owner/orders', order._id]" class="btn-view flex items-center">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -72,6 +72,7 @@
           <select
             (change)="quickUpdateStatus(order._id, $any($event.target).value)"
             [value]="order.status"
+            [disabled]="!canEdit(order)"
             class="status-select"
           >
             <option value="pending">En attente</option>
