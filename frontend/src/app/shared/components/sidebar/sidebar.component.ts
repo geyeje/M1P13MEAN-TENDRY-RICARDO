@@ -1,9 +1,12 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ShopService } from '../../../core/services/shop';
+import { ProductService } from '../../../core/services/product.service';
+import { ImageErrorDirective } from '../../directives/image-error.directive';
+import { environment } from '../../../../environments/environment';
 
 interface SimpleNavItem {
   icon?: string;
@@ -18,13 +21,14 @@ interface SimpleNavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ImageErrorDirective],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class Sidebar {
   authService = inject(AuthService);
   shopService = inject(ShopService);
+  productService = inject(ProductService);
   currentUser = toSignal(this.authService.currentUser$);
   name = computed(() => this.currentUser()?.prenom || 'invité');
 
@@ -32,25 +36,37 @@ export class Sidebar {
   isOpen = input<boolean>(true);
   toggleSidebar = output();
 
-  // accept arbitrary nav item arrays (could be INavData or simple objects)
-  navItems = input<any[]>([]);
-
-  // normalized items for template: {label, route, icon, badge}
-  items = computed(() => {
-    const raw = this.navItems?.() || [];
-    return raw.map((r: any) => {
-      const label = r.label?.toString() || r.name?.toString() || '';
-      const route = r.route || r.url || '';
-      const icon = r.icon || r.iconComponent?.name || '';
-      return { label, route, icon, badge: r.badge };
-    });
-  });
+  // featured content signals
+  featuredShops = signal<any[]>([]);
+  featuredProducts = signal<any[]>([]);
 
   logout() {
     this.authService.logout();
   }
 
+  getAvatarUrl(path?: string | null): string | null {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl.replace('/api', '')}${path}`;
+  }
+
   onToggleSidebar() {
     this.toggleSidebar.emit();
+  }
+
+  environment = environment;
+
+  constructor() {
+    // fetch featured data immediately
+    this.shopService.getFeaturedShops(5).subscribe((res: any) => {
+      if (res?.boutiques) {
+        this.featuredShops.set(res.boutiques);
+      }
+    });
+    this.productService.getFeaturedProducts(5).subscribe((res: any) => {
+      if (res?.produits) {
+        this.featuredProducts.set(res.produits);
+      }
+    });
   }
 }

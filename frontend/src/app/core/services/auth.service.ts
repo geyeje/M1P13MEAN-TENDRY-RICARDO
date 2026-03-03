@@ -14,6 +14,7 @@ export interface User {
   role: 'admin' | 'boutique' | 'acheteur';
   telephone?: string;
   adresse?: string;
+  avatar?: string | null;
 }
 
 export interface RegisterData {
@@ -54,7 +55,19 @@ export class AuthService {
     this.loadUserFromStorage();
   }
 
-  register(data: RegisterData): Observable<AuthResponse> {
+  register(data: RegisterData | FormData): Observable<AuthResponse> {
+    // Accepts either a plain object or FormData (when avatar included)
+    if (data instanceof FormData) {
+      // assume front-end already appended all necessary fields, including firstname/lastname etc
+      return this.http.post<any>(`${this.apiUrl}/register`, data).pipe(
+        tap((response: any) => {
+          if (response.success) {
+            this.handleAuth(response);
+          }
+        }),
+      );
+    }
+
     // Ne pas envoyer confirmPassword au backend
     const { confirmPassword, acceptTerms, nom, prenom, role, telephone, adresse, ...rest } = data;
 

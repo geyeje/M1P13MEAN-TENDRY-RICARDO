@@ -25,6 +25,10 @@ exports.register = async (req, res) => {
     }
 
     const { firstname, lastname, email, password, role, phone, address } = req.body;
+    let avatarPath = null;
+    if (req.file) {
+      avatarPath = `/uploads/users/${req.file.filename}`;
+    }
 
     // Vérifier si l'utilisateur existe déjà
     const userExists = await User.findOne({ email: email.toLowerCase() });
@@ -44,6 +48,7 @@ exports.register = async (req, res) => {
       role: role || 'customer', // Par défaut : acheteur
       phone,
       address,
+      avatar: avatarPath,
     });
 
     // Générer le token
@@ -64,6 +69,7 @@ exports.register = async (req, res) => {
         prenom: user.prenom,
         phone: user.phone,
         address: user.address,
+        avatar: user.avatar,
       },
     });
   } catch (error) {
