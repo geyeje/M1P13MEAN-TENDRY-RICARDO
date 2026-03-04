@@ -23,6 +23,10 @@ app.use(
     credentials: true,
   })
 );
+
+// Gestion explicite des requêtes OPTIONS (preflight CORS)
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -82,6 +86,12 @@ app.use((req, res) => {
 // Gestion globale des erreurs
 app.use((err, req, res, next) => {
   console.error('Erreur serveur:', err.stack);
+  // Ajouter les headers CORS même en cas d'erreur
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
   res.status(err.status || 500).json({
     message: err.message || 'Erreur interne du serveur',
     error: process.env.NODE_ENV === 'development' ? err : {},

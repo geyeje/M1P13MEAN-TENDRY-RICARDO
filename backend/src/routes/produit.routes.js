@@ -12,27 +12,54 @@ const { protect, authorize, optionalProtect } = require('../middlewares/auth.mid
 // VALIDATION
 // ========================================
 const createValidation = [
-  body('name').trim().notEmpty().withMessage('Le nom est requis')
-    .isLength({ min: 3, max: 200 }).withMessage('Entre 3 et 200 caractères'),
-  body('description').trim().notEmpty().withMessage('La description est requise')
-    .isLength({ min: 10 }).withMessage('Minimum 10 caractères'),
-  body('price').notEmpty().withMessage('Le prix est requis')
-    .isFloat({ min: 0 }).withMessage('Prix invalide'),
-  body('stock').notEmpty().withMessage('Le stock est requis')
-    .isInt({ min: 0 }).withMessage('Stock invalide'),
-  body('category').notEmpty().withMessage('La catégorie est requise')
+  body('name')
+    .trim()
+    .notEmpty()
+    .withMessage('Le nom est requis')
+    .isLength({ min: 3, max: 200 })
+    .withMessage('Entre 3 et 200 caractères'),
+  body('description')
+    .trim()
+    .notEmpty()
+    .withMessage('La description est requise')
+    .isLength({ min: 10 })
+    .withMessage('Minimum 10 caractères'),
+  body('price')
+    .notEmpty()
+    .withMessage('Le prix est requis')
+    .isFloat({ min: 0 })
+    .withMessage('Prix invalide'),
+  body('stock')
+    .notEmpty()
+    .withMessage('Le stock est requis')
+    .isInt({ min: 0 })
+    .withMessage('Stock invalide'),
+  body('category')
+    .notEmpty()
+    .withMessage('La catégorie est requise')
     .isIn([
-      'Mode & Vêtements', 'Électronique & High-tech', 'Alimentation & Boissons',
-      'Beauté & Cosmétiques', 'Sport & Loisirs', 'Maison & Décoration',
-      'Livres & Culture', 'Jouets & Enfants', 'Santé & Bien-être',
-      'Bijouterie & Accessoires', 'Autres'
-    ]).withMessage('Catégorie invalide')
+      'Mode & Vêtements',
+      'Électronique & High-tech',
+      'Alimentation & Boissons',
+      'Beauté & Cosmétiques',
+      'Sport & Loisirs',
+      'Maison & Décoration',
+      'Livres & Culture',
+      'Jouets & Enfants',
+      'Santé & Bien-être',
+      'Bijouterie & Accessoires',
+      'Autres',
+    ])
+    .withMessage('Catégorie invalide'),
 ];
 
 const reviewValidation = [
-  body('rating').notEmpty().withMessage('La note est requise')
-    .isInt({ min: 1, max: 5 }).withMessage('Note entre 1 et 5'),
-  body('comment').optional().trim().isLength({ max: 500 })
+  body('rating')
+    .notEmpty()
+    .withMessage('La note est requise')
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Note entre 1 et 5'),
+  body('comment').optional().trim().isLength({ max: 500 }),
 ];
 
 // ========================================
@@ -40,10 +67,14 @@ const reviewValidation = [
 // ========================================
 const uploadDir = 'uploads/products';
 
-// Créer le dossier s'il n'existe pas
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-  console.log('📁 Dossier créé:', uploadDir);
+// Créer le dossier s'il n'existe pas (non-bloquant sur Render)
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('📁 Dossier créé:', uploadDir);
+  }
+} catch (e) {
+  console.warn('⚠️ Impossible de créer le dossier uploads (environnement restreint):', e.message);
 }
 
 // Configuration du stockage
@@ -52,40 +83,40 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, 'product-' + uniqueSuffix + ext);
-  }
+  },
 });
 
 // Configuration Multer
 const upload = multer({
   storage: storage,
-  limits: { 
+  limits: {
     fileSize: 5 * 1024 * 1024, // 5MB max par fichier
-    files: 5 // Max 5 fichiers
+    files: 5, // Max 5 fichiers
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    
+
     if (mimetype && extname) {
       console.log('✅ Image acceptée:', file.originalname);
       return cb(null, true);
     }
-    
+
     console.log('❌ Image rejetée:', file.originalname);
     cb(new Error('Seules les images (JPEG, PNG, GIF, WEBP) sont autorisées!'));
-  }
+  },
 });
 
 // ========================================
 // ROUTES PUBLIQUES (sans authentification)
 // ========================================
 router.get('/featured', ctrl.getFeaturedProduits); // Produits vedettes
-router.get('/', ctrl.getAllProduits);              // Liste tous les produits
-router.get('/:id', optionalProtect, ctrl.getProduitById);           // Détails d'un produit (token optionnel pour myRating)
+router.get('/', ctrl.getAllProduits); // Liste tous les produits
+router.get('/:id', optionalProtect, ctrl.getProduitById); // Détails d'un produit (token optionnel pour myRating)
 
 // Route pour soumettre une évaluation (protégée, tous les utilisateurs connectés)
 router.post('/:id/rate', protect, ctrl.submitRating);
@@ -93,47 +124,32 @@ router.post('/:id/rate', protect, ctrl.submitRating);
 // ========================================
 // ROUTES GÉRANT (authentification requise)
 // ========================================
-router.get('/me/myproduits', 
-  protect, 
-  authorize('boutique'), 
-  ctrl.getMyProduits
-);                                                  // Mes produits
+router.get('/me/myproduits', protect, authorize('boutique'), ctrl.getMyProduits); // Mes produits
 
-router.post('/', 
-  protect, 
-  authorize('boutique'), 
-  upload.array('images', 5),                       // ← Upload max 5 images
-  createValidation, 
+router.post(
+  '/',
+  protect,
+  authorize('boutique'),
+  upload.array('images', 5), // ← Upload max 5 images
+  createValidation,
   ctrl.createProduit
-);                                                  // Créer produit
+); // Créer produit
 
-router.put('/:id', 
-  protect, 
-  authorize('boutique', 'admin'), 
-  upload.array('images', 5),                       // ← Upload max 5 images
+router.put(
+  '/:id',
+  protect,
+  authorize('boutique', 'admin'),
+  upload.array('images', 5), // ← Upload max 5 images
   ctrl.updateProduit
-);                                                  // Modifier produit
+); // Modifier produit
 
-router.delete('/:id', 
-  protect, 
-  authorize('boutique', 'admin'), 
-  ctrl.deleteProduit
-);                                                  // Supprimer produit
+router.delete('/:id', protect, authorize('boutique', 'admin'), ctrl.deleteProduit); // Supprimer produit
 
-router.patch('/:id/stock', 
-  protect, 
-  authorize('boutique', 'admin'), 
-  ctrl.updateStock
-);                                                  // Mettre à jour stock
+router.patch('/:id/stock', protect, authorize('boutique', 'admin'), ctrl.updateStock); // Mettre à jour stock
 
 // ========================================
 // ROUTES ACHETEUR
 // ========================================
-router.post('/:id/reviews', 
-  protect, 
-  authorize('customer'), 
-  reviewValidation, 
-  ctrl.addReview
-);                                                  // Ajouter un avis
+router.post('/:id/reviews', protect, authorize('customer'), reviewValidation, ctrl.addReview); // Ajouter un avis
 
 module.exports = router;
