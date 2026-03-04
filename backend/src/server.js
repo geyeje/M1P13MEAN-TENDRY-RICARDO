@@ -14,29 +14,13 @@ const app = express();
 connectDB();
 
 // Middlewares
-// accept both HTTP and HTTPS frontend during development
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
-const frontendUrlHttps = frontendUrl.replace(/^http:/, 'https:');
-
-// Configure CORS: in development allow the requesting origin (helps with dev servers)
+// Configure CORS
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow non-browser tools (curl, Postman) or same-origin requests
-      if (!origin) return callback(null, true);
-      // In production you may want to restrict this to a specific frontend URL
-      if (process.env.NODE_ENV === 'production') {
-        if (origin === frontendUrl || origin === frontendUrlHttps) return callback(null, true);
-        console.warn('CORS blocked origin', origin);
-        return callback(new Error('Not allowed by CORS'));
-      }
-      // In development, reflect the request origin to avoid opaque responses
-      return callback(null, true);
-    },
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
     credentials: true,
-    preflightContinue: false,
   })
 );
 app.use(express.json());
