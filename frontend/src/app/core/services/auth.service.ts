@@ -140,6 +140,10 @@ export class AuthService {
   hasAnyRole(roles: string[]): boolean {
     const user = this.currentUserValue;
     if (!user) return false;
+    // admins can access everything
+    if (user.role === 'admin') {
+      return true;
+    }
     // map 'store' to 'boutique' as necessary
     const normalizedRoles = roles.map((r) => (r === 'store' ? 'boutique' : r));
     return normalizedRoles.includes(user.role);
