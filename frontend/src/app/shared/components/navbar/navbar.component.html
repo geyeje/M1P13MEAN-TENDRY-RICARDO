@@ -9,7 +9,7 @@
   <!-- Center: Navigation Menu -->
   <div class="navbar-menu">
     @for (item of menuItem(); track item.route) {
-      <a (click)="navigateToMenuItem(item.route)" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
+      <a (click)="navigateToMenuItem(item.route)" class="nav-item !hover:cursor-pointer" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
         <span>{{ item.label }}</span>
         @if (item.badge && item.badge > 0) {
           <span class="nav-badge">{{ item.badge }}</span>
@@ -31,10 +31,10 @@
 
     @if (authService.currentUser$ | async; as user) {
       <!-- Notifications -->
-      <button class="action-button notification-btn" title="Notifications">
+      <!--<button class="action-button notification-btn" title="Notifications">
         <mat-icon>notifications</mat-icon>
         <span class="notification-dot"></span>
-      </button>
+      </button>-->
 
       <!-- Shopping Cart -->
       <button class="action-button cart-btn" routerLink="/shopping-cart" title="Panier">
