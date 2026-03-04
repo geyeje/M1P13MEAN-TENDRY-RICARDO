@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { AuthService, User } from '../../../core/services/auth.service';
 
 @Component({
-  selector: 'app-unauthorized.component',
+  selector: 'app-unauthorized',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './unauthorized.component.html',
-  styleUrl: './unauthorized.component.scss',
+  styleUrls: ['./unauthorized.component.scss'],
 })
 export class UnauthorizedComponent {
   user: User | null;
