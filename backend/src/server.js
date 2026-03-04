@@ -14,31 +14,19 @@ const app = express();
 connectDB();
 
 // Middlewares
-// accept both HTTP and HTTPS frontend during development
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
-const frontendUrlHttps = frontendUrl.replace(/^http:/, 'https:');
-
-// Configure CORS: in development allow the requesting origin (helps with dev servers)
+// Configure CORS
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow non-browser tools (curl, Postman) or same-origin requests
-      if (!origin) return callback(null, true);
-      // In production you may want to restrict this to a specific frontend URL
-      if (process.env.NODE_ENV === 'production') {
-        if (origin === frontendUrl || origin === frontendUrlHttps) return callback(null, true);
-        console.warn('CORS blocked origin', origin);
-        return callback(new Error('Not allowed by CORS'));
-      }
-      // In development, reflect the request origin to avoid opaque responses
-      return callback(null, true);
-    },
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
     credentials: true,
-    preflightContinue: false,
   })
 );
+
+// Gestion explicite des requêtes OPTIONS (preflight CORS)
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -76,6 +64,7 @@ const adminRoutes = require('./routes/admin.routes');
 const produitRoutes = require('./routes/produit.routes');
 const commandeRoutes = require('./routes/commande.routes');
 const paymentRoutes = require('./routes/payment.routes');
+const settingsRoutes = require('./routes/settings.routes');
 
 // Utiliser les routes
 app.use('/api/auth', authRoutes);
@@ -84,6 +73,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/produits', produitRoutes);
 app.use('/api/commandes', commandeRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Gestion des erreurs 404
 app.use((req, res) => {
@@ -96,6 +86,12 @@ app.use((req, res) => {
 // Gestion globale des erreurs
 app.use((err, req, res, next) => {
   console.error('Erreur serveur:', err.stack);
+  // Ajouter les headers CORS même en cas d'erreur
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
   res.status(err.status || 500).json({
     message: err.message || 'Erreur interne du serveur',
     error: process.env.NODE_ENV === 'development' ? err : {},

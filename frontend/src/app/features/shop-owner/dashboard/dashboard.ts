@@ -1,5 +1,6 @@
 // src/app/features/shop-owner/dashboard/dashboard.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { PlatformSettingsService } from '../../../core/services/platform-settings.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShopService, Shop } from '../../../core/services/shop';
@@ -19,6 +20,7 @@ export class DashboardComponent implements OnInit {
   loading = true;
   shop: Shop | null = null;
   recentOrders: Order[] = [];
+  private platformSettings = inject(PlatformSettingsService);
 
   // Stats
   stats = {
@@ -98,9 +100,6 @@ export class DashboardComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(amount);
+    return this.platformSettings.formatPrice(amount);
   }
 }

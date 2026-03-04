@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../core/services/product.service';
 import { MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe } from '@angular/common';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 import { MatCardModule } from '@angular/material/card';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../directives/image-error.directive';
@@ -11,7 +11,7 @@ import { ImageErrorDirective } from '../../directives/image-error.directive';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [MatIconModule, CurrencyPipe, MatCardModule, ImageErrorDirective],
+  imports: [MatIconModule, AppCurrencyPipe, MatCardModule, ImageErrorDirective],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
 })

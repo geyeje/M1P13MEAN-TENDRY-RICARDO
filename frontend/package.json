@@ -1,12 +1,14 @@
 {
-  "name": "frontend",
+  "name": "Matcha_center",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "npm run prebuild:vercel && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "prebuild:vercel": "node scripts/set-env.js",
+    "build:vercel": "npm run prebuild:vercel && ng build --configuration production --output-path=dist/frontend"
   },
   "prettier": {
     "printWidth": 100,
@@ -23,14 +25,14 @@
   "private": true,
   "packageManager": "npm@11.6.2",
   "dependencies": {
-    "@angular/cdk": "~21.1.3",
-    "@angular/common": "^21.0.0",
+    "@angular/animations": "^21.2.0",
+    "@angular/cdk": "^21.2.0",
+    "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.0.0",
-    "@angular/core": "^21.0.0",
-    "@angular/forms": "^21.0.0",
-    "@angular/material": "~21.1.3",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/router": "^21.0.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
     "@coreui/angular": "^5.6.13",
     "@coreui/coreui": "^5.5.0",
     "@coreui/icons": "^3.0.1",
@@ -45,10 +47,10 @@
     "zone.js": "^0.16.0"
   },
   "devDependencies": {
-    "@angular/build": "^21.0.3",
+    "@angular/build": "^21.2.0",
     "@angular/cli": "^21.0.3",
-    "@angular/compiler-cli": "^21.0.0",
-    "@angular/material": "^21.1.3",
+    "@angular/compiler-cli": "^21.2.0",
+    "@angular/material": "^21.2.0",
     "@tailwindcss/postcss": "^4.1.12",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.3",

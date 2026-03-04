@@ -87,8 +87,13 @@
 
 <ng-template #themeDropdown>
   <c-dropdown alignment="end" variant="nav-item">
-    <button [caret]="false" cDropdownToggle aria-label="Open theme picker">
-      <svg cIcon [name]="icons()" size="lg"></svg>
+    <button
+      [caret]="false"
+      cDropdownToggle
+      class="nav-link py-1 d-flex align-items-center"
+      aria-label="Open theme picker"
+    >
+      <svg cIcon [name]="icons()" size="lg" style="color: var(--cui-body-color)"></svg>
     </button>
     <div cDropdownMenu>
       @for (mode of colorModes; track mode.name) {

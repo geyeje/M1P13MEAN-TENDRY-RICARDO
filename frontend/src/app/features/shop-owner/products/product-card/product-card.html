@@ -12,7 +12,7 @@
     <div class="flex-grow-1 min-w-0">
       <h4 class="product-title font-bold text-truncate">{{ product().name }}</h4>
       <div class="d-flex align-items-center gap-2 mt-1">
-        <span class="price-text font-black">{{ product().price | currency: 'EUR' }}</span>
+        <span class="price-text font-black">{{ product().price | appCurrency }}</span>
         <span
           [class]="[
             'badge',

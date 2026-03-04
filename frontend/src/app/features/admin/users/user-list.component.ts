@@ -2,15 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
 import { RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatIconModule],
   template: `
     <div class="container-fluid py-4">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Gestion des Utilisateurs</h1>
+        <h1 class="h3 mb-0 d-flex align-items-center gap-2" style="color: var(--cui-body-color)">
+          <mat-icon>people</mat-icon>
+          Gestion des Utilisateurs
+        </h1>
       </div>
 
       <div class="card shadow mb-4">
@@ -46,10 +50,22 @@ import { RouterModule } from '@angular/router';
                     </span>
                   </td>
                   <td>
-                    <button class="btn btn-sm btn-info me-2" (click)="toggleActive(user)">
+                    <button
+                      class="btn btn-sm btn-info me-2 d-inline-flex align-items-center gap-1"
+                      (click)="toggleActive(user)"
+                    >
+                      <mat-icon style="font-size: 1rem; width: 1rem; height: 1rem;">{{
+                        user.isActive ? 'block' : 'check_circle'
+                      }}</mat-icon>
                       {{ user.isActive ? 'Désactiver' : 'Activer' }}
                     </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteUser(user._id)">
+                    <button
+                      class="btn btn-sm btn-danger d-inline-flex align-items-center gap-1"
+                      (click)="deleteUser(user._id)"
+                    >
+                      <mat-icon style="font-size: 1rem; width: 1rem; height: 1rem;"
+                        >delete</mat-icon
+                      >
                       Supprimer
                     </button>
                   </td>

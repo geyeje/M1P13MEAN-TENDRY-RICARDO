@@ -1,14 +1,20 @@
 <div class="p-4">
   @if (!currentUser()) {
-    <div class="flex flex-col items-center justify-around text-white bg-white/5 border border-white/10">
-      <h3 class="text-md font-black text-white">
-        Vous n'êtes connecté à aucun compte
-      </h3>
+    <div
+      class="flex flex-col items-center justify-around text-white bg-white/5 border border-white/10"
+    >
+      <h3 class="text-md font-black text-white">Vous n'êtes connecté à aucun compte</h3>
       <div class="flex items-center gap-2">
-        <a routerLink="/auth/login" class="m-2 px-4 py-2 bg-matcha-spring/80 hover:bg-matcha-spring text-white text-sm no-underline rounded-3xl border border-white/10 hover:border-white ring-1 ring-white/15">
+        <a
+          routerLink="/auth/login"
+          class="m-2 px-4 py-2 bg-matcha-spring/80 hover:bg-matcha-spring text-white text-sm no-underline rounded-3xl border border-white/10 hover:border-white ring-1 ring-white/15"
+        >
           Connexion
         </a>
-        <a routerLink="/auth/register" class="m-2 px-4 py-2 bg-matcha-spring/80 hover:bg-matcha-spring text-white text-sm no-underline rounded-3xl border border-white/10 hover:border-white ring-1 ring-white/15">
+        <a
+          routerLink="/auth/register"
+          class="m-2 px-4 py-2 bg-matcha-spring/80 hover:bg-matcha-spring text-white text-sm no-underline rounded-3xl border border-white/10 hover:border-white ring-1 ring-white/15"
+        >
           Inscription
         </a>
       </div>
@@ -17,15 +23,21 @@
     <div class="space-y-8">
       <!-- statistiques -->
       <section class="flex flex-wrap gap-6">
-        <div class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1">
+        <div
+          class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1"
+        >
           <h4 class="text-lg font-bold text-white">Commandes passées</h4>
           <p class="text-3xl text-matcha-spring font-black">{{ ordersCount() }}</p>
         </div>
-        <div class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1">
+        <div
+          class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1"
+        >
           <h4 class="text-lg font-bold text-white">Produits notés</h4>
           <p class="text-3xl text-matcha-spring font-black">{{ productsRated() }}</p>
         </div>
-        <div class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1">
+        <div
+          class="bg-matcha-dark !border !border-white/10 !border-l-matcha-spring !border-l-5 p-4 rounded-xl shadow flex-1"
+        >
           <h4 class="text-lg font-bold text-white">dernière commande</h4>
           <p class="text-2xl text-matcha-spring font-black">
             {{ lastOrder()?.status || 'aucune' }}
@@ -73,25 +85,35 @@
               <div class="flex items-center gap-2">
                 <img
                   *ngIf="item.product.images.length"
-                  [src]="item.product.images[0].startsWith('http') ? item.product.images[0] : environment.apiUrl.replace('/api','') + item.product.images[0]"
+                  [src]="
+                    item.product.images[0].startsWith('http')
+                      ? item.product.images[0]
+                      : environment.apiUrl.replace('/api', '') + item.product.images[0]
+                  "
                   alt="{{ item.product.name }}"
                   class="w-12 h-12 object-cover rounded"
                   appImageError
                 />
                 <div class="flex-1">
-                  <div class="text-white">{{item.product.name}}</div>
-                  <div class="text-sm text-gray-400">Qty: {{item.quantity}}</div>
+                  <div class="text-white">{{ item.product.name }}</div>
+                  <div class="text-sm text-gray-400">Qty: {{ item.quantity }}</div>
                 </div>
-                <div class="text-matcha-spring font-bold">{{ (item.product.price * item.quantity) | currency:'EUR' }}</div>
+                <div class="text-matcha-spring font-bold">
+                  {{ item.product.price * item.quantity | appCurrency }}
+                </div>
               </div>
             }
           </div>
           <div class="mt-4 flex justify-between items-center">
-            <span class="font-bold text-white">Total ({{cartCount()}} articles)</span>
-            <span class="font-bold text-matcha-spring">{{ cartTotal() | currency:'EUR' }}</span>
+            <span class="font-bold text-white">Total ({{ cartCount() }} articles)</span>
+            <span class="font-bold text-matcha-spring">{{ cartTotal() | appCurrency }}</span>
           </div>
           <div class="mt-4">
-            <a routerLink="/customer/shopping-cart" class="px-4 py-2 bg-matcha-spring text-white rounded">Voir le panier</a>
+            <a
+              routerLink="/customer/shopping-cart"
+              class="px-4 py-2 bg-matcha-spring text-white rounded"
+              >Voir le panier</a
+            >
           </div>
         }
       </section>
@@ -103,7 +125,9 @@
           <p class="text-gray-400">Aucune commande récente.</p>
         } @else {
           <!-- En-tête des colonnes -->
-          <div class="bg-matcha-dark/50 p-4 rounded-t border-b border-white/10 grid grid-cols-6 gap-4 font-bold text-white text-sm">
+          <div
+            class="bg-matcha-dark/50 p-4 rounded-t border-b border-white/10 grid grid-cols-6 gap-4 font-bold text-white text-sm"
+          >
             <span>Numéro</span>
             <span>Date de commande</span>
             <span>Livraison prévue</span>
@@ -111,17 +135,21 @@
             <span>Statut</span>
             <span class="text-right">Montant</span>
           </div>
-          
+
           <!-- Liste des commandes -->
           <div class="border border-t-0 border-white/10 rounded-b overflow-hidden">
-            @for(order of orders(); track order._id) {
-              <div class="bg-matcha-dark p-4 grid grid-cols-6 gap-4 hover:bg-matcha-dark/80 transition border-b border-white/5 last:border-b-0 items-center">
+            @for (order of orders(); track order._id) {
+              <div
+                class="bg-matcha-dark p-4 grid grid-cols-6 gap-4 hover:bg-matcha-dark/80 transition border-b border-white/5 last:border-b-0 items-center"
+              >
                 <span class="font-medium text-white">#{{ order.orderNumber }}</span>
-                <span class="text-sm text-gray-400">{{ order.createdAt| date:'short' }}</span>
-                <span class="text-sm text-gray-400">{{ order.deliveryDate| date:'short' }}</span>
+                <span class="text-sm text-gray-400">{{ order.createdAt | date: 'short' }}</span>
+                <span class="text-sm text-gray-400">{{ order.deliveryDate | date: 'short' }}</span>
                 <span class="text-sm text-gray-400">{{ order.paymentStatus }}</span>
                 <span class="text-sm text-matcha-spring">{{ order.status }}</span>
-                <span class="text-matcha-spring text-right">{{ order.totalAmount | currency:'EUR' }}</span>
+                <span class="text-matcha-spring text-right">{{
+                  order.totalAmount | appCurrency
+                }}</span>
               </div>
             }
           </div>

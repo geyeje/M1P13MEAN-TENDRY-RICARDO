@@ -24,7 +24,12 @@
         class="flex items-center gap-2 text-matcha-spring hover:text-matcha-medium transition-colors mb-8"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
         Retour
       </button>
@@ -76,21 +81,36 @@
                 class="w-5 h-5 fill-current"
                 viewBox="0 0 24 24"
               >
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
               </svg>
             </div>
-            <span class="text-gray-300">{{ product()?.avgRating?.toFixed(1) || '0' }} ({{ product()?.reviewCount || 0 }} avis)</span>
+            <span class="text-gray-300"
+              >{{ product()?.avgRating?.toFixed(1) || '0' }} ({{
+                product()?.reviewCount || 0
+              }}
+              avis)</span
+            >
           </div>
 
           <!-- Price & Stock -->
           <div class="mb-6 pb-6 border-b border-white/10">
             <div class="flex items-center gap-4 mb-4">
               @if (product()?.promoPrice) {
-                <span class="text-gray-500 line-through text-lg">{{ product()?.price | currency: 'EUR' }}</span>
-                <span class="text-matcha-spring text-3xl font-bold">{{ product()?.promoPrice | currency: 'EUR' }}</span>
-                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">PROMO</span>
+                <span class="text-gray-500 line-through text-lg">{{
+                  product()?.price | appCurrency
+                }}</span>
+                <span class="text-matcha-spring text-3xl font-bold">{{
+                  product()?.promoPrice | appCurrency
+                }}</span>
+                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold"
+                  >PROMO</span
+                >
               } @else {
-                <span class="text-matcha-spring text-3xl font-bold">{{ product()?.price | currency: 'EUR' }}</span>
+                <span class="text-matcha-spring text-3xl font-bold">{{
+                  product()?.price | appCurrency
+                }}</span>
               }
             </div>
             <p
@@ -98,7 +118,9 @@
               [class.text-red-400]="product()!.stock === 0"
               class="font-semibold text-lg"
             >
-              {{ product()!.stock > 0 ? 'En stock (' + product()!.stock + ')' : 'Rupture de stock' }}
+              {{
+                product()!.stock > 0 ? 'En stock (' + product()!.stock + ')' : 'Rupture de stock'
+              }}
             </p>
           </div>
 
@@ -116,8 +138,18 @@
               class="text-matcha-spring hover:text-matcha-medium font-semibold transition-colors"
             >
               {{ shop()?.name || 'Boutique' }}
-              <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                class="w-4 h-4 inline ml-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
           </div>
@@ -135,10 +167,14 @@
       </div>
 
       <!-- Rating Section -->
-      <div class="bg-gradient-to-r from-matcha-spring/10 to-matcha-medium/10 border border-matcha-spring/30 rounded-xl p-6">
+      <div
+        class="bg-gradient-to-r from-matcha-spring/10 to-matcha-medium/10 border border-matcha-spring/30 rounded-xl p-6"
+      >
         <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
           <svg class="w-6 h-6 text-matcha-spring" fill="currentColor" viewBox="0 0 24 24">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+            />
           </svg>
           Évaluer ce produit
         </h2>
@@ -156,12 +192,18 @@
                 [disabled]="ratingSubmitted()"
               >
                 <svg class="w-10 h-10 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                  />
                 </svg>
               </button>
             </div>
-            <span *ngIf="userRating() > 0" class="text-matcha-spring font-bold text-lg">{{ userRating() }}/5</span>
-            <span *ngIf="userRating() === 0" class="text-gray-400 text-sm">Sélectionner une note</span>
+            <span *ngIf="userRating() > 0" class="text-matcha-spring font-bold text-lg"
+              >{{ userRating() }}/5</span
+            >
+            <span *ngIf="userRating() === 0" class="text-gray-400 text-sm"
+              >Sélectionner une note</span
+            >
           </div>
 
           <!-- Submit Button -->

@@ -93,16 +93,41 @@ exports.createCommande = async (req, res) => {
       // Déduire du stock
       produit.stock -= item.quantity;
       produit.salesCount += item.quantity;
-      console.log('[createCommande] Stock mise à jour pour', produit.name, '- Avant:', produit.stock + item.quantity, '-> Après:', produit.stock);
-      
+      console.log(
+        '[createCommande] Stock mise à jour pour',
+        produit.name,
+        '- Avant:',
+        produit.stock + item.quantity,
+        '-> Après:',
+        produit.stock
+      );
+
       try {
         await produit.save();
-        console.log('[createCommande] ✅ Produit', produit.name, 'sauvegardé avec succès. Stock final en BD:', produit.stock);
+        console.log(
+          '[createCommande] ✅ Produit',
+          produit.name,
+          'sauvegardé avec succès. Stock final en BD:',
+          produit.stock
+        );
       } catch (err) {
-        console.error('[createCommande] ❌ ERREUR lors de la sauvegarde du stock:', produit.name, err.message);
+        console.error(
+          '[createCommande] ❌ ERREUR lors de la sauvegarde du stock:',
+          produit.name,
+          err.message
+        );
         throw err;
       }
     }
+
+    // ---- Calculer le montant par boutique pour les stats ----
+    const revenuePerShop = {};
+    validatedItems.forEach((item) => {
+      if (item.shopId) {
+        const sid = item.shopId.toString();
+        revenuePerShop[sid] = (revenuePerShop[sid] || 0) + item.subtotal;
+      }
+    });
 
     // ---- Créer la commande ----
     // calculer les boutiques impliquées à partir des items validés
@@ -121,7 +146,7 @@ exports.createCommande = async (req, res) => {
     const shopIds = [...new Set(shopIdsFiltered)];
     console.log('[createCommande] shopIds final (après Set):', shopIds);
     console.log('[createCommande] shopIds length:', shopIds.length);
-    
+
     if (shopIds.length === 0) {
       console.warn('[createCommande] ⚠️ ATTENTION: Aucun shopId extrait des items!');
     }
@@ -153,21 +178,29 @@ exports.createCommande = async (req, res) => {
     console.log('[createCommande] Commande complète:', JSON.stringify(commande, null, 2));
 
     await commande.populate('buyerId', 'nom prenom email');
-    
+
     console.log('[createCommande] Commande.shopIds (après populate):', commande.shopIds);
     console.log('========== FIN createCommande ==========\n');
 
     // ---- Mettre à jour les stats boutiques concernées ----
-    console.log('[createCommande] Début de la boucle de mise à jour. Nombre de boutiques:', shopIds.length);
-    for (const shopId of shopIds) {
-      console.log('[createCommande] Mise à jour de la boutique:', shopId);
+    console.log(
+      '[createCommande] Début de la boucle de mise à jour. Nombre de boutiques:',
+      Object.keys(revenuePerShop).length
+    );
+    for (const [shopId, amount] of Object.entries(revenuePerShop)) {
+      console.log('[createCommande] Mise à jour de la boutique:', shopId, 'Montant:', amount);
       const updateResult = await Boutique.findByIdAndUpdate(shopId, {
         $inc: {
           commandCount: 1,
-          CA: totalAmount,
+          CA: amount,
         },
       });
-      console.log('[createCommande] Boutique mise à jour:', shopId, 'Résultat:', updateResult ? 'OK' : 'NOT FOUND');
+      console.log(
+        '[createCommande] Boutique mise à jour:',
+        shopId,
+        'Résultat:',
+        updateResult ? 'OK' : 'NOT FOUND'
+      );
     }
     console.log('[createCommande] Fin de la boucle de mise à jour');
 
@@ -374,7 +407,10 @@ exports.updateStatus = async (req, res) => {
     if (req.user.role !== 'admin') {
       const boutique = await Boutique.findOne({ userId: req.user.id });
       // si la commande a déjà une liste explicite de boutiques, l'utiliser d'abord
-      if (commande.shopIds && commande.shopIds.some((s) => s.toString() === boutique._id.toString())) {
+      if (
+        commande.shopIds &&
+        commande.shopIds.some((s) => s.toString() === boutique._id.toString())
+      ) {
         // accès accordé
       } else {
         const productIds = await Produit.distinct('_id', { shopId: boutique._id });

@@ -5,9 +5,9 @@
     <p class="text-gray-400">Votre panier est vide.</p>
   } @else {
     <div class="space-y-4">
-      @for(item of items(); track item.product._id) {
-        <app-cart-item 
-          [item]="item" 
+      @for (item of items(); track item.product._id) {
+        <app-cart-item
+          [item]="item"
           (remove)="remove($event)"
           (quantityChange)="updateQty($event.productId, $event.quantity)"
         ></app-cart-item>
@@ -15,11 +15,14 @@
     </div>
 
     <div class="mt-8 text-right">
-      <span class="text-matcha-spring font-bold text-xl">Total: {{ total() | currency:'EUR' }}</span>
+      <span class="text-matcha-spring font-bold text-xl">Total: {{ total() | appCurrency }}</span>
       <button class="mx-2 px-4 py-2 bg-red-500 text-white rounded" (click)="cart.clear()">
         Vider le panier
       </button>
-      <button class="mx-2 px-4 py-2 rounded border border-White/5 validate-btn" routerLink="/checkout">
+      <button
+        class="mx-2 px-4 py-2 rounded border border-White/5 validate-btn"
+        routerLink="/checkout"
+      >
         Valider l'achat
       </button>
     </div>

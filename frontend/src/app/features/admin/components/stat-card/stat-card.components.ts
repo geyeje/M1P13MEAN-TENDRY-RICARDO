@@ -1,11 +1,11 @@
-// src/app/features/admin/components/stat-card/stat-card.component.ts
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-stat-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: `
     <div class="card text-white" [ngClass]="'bg-' + color">
       <div class="card-body">
@@ -17,34 +17,38 @@ import { CommonModule } from '@angular/common';
               {{ subtitle }}
             </div>
           </div>
-          <div class="fs-1" *ngIf="icon">
-            <i [class]="'cil-' + icon"></i>
+          <div class="fs-1 d-flex align-items-center" *ngIf="icon">
+            <mat-icon style="font-size: 2.5rem; width: 2.5rem; height: 2.5rem;">{{
+              icon
+            }}</mat-icon>
           </div>
         </div>
         <div class="progress mt-3" style="height: 4px;" *ngIf="percentage !== undefined">
-          <div 
-            class="progress-bar bg-white" 
-            role="progressbar" 
+          <div
+            class="progress-bar bg-white"
+            role="progressbar"
             [style.width.%]="percentage"
             [attr.aria-valuenow]="percentage"
-            aria-valuemin="0" 
-            aria-valuemax="100">
-          </div>
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
         </div>
       </div>
     </div>
   `,
-  styles: [`
-    .card {
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-  `]
+  styles: [
+    `
+      .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    `,
+  ],
 })
 export class StatCardComponent {
   @Input() title: string = '';

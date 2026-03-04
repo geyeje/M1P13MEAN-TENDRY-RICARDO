@@ -40,6 +40,7 @@ export interface DashboardStats {
     total: number;
     thisMonth: number;
     avgCart: number;
+    platformCommission: number;
   };
   charts: {
     ordersByDay: Array<{ _id: string; count: number; revenue: number }>;
@@ -82,5 +83,23 @@ export class AdminService {
 
   getShops(params?: any): Observable<any> {
     return this.http.get(`${this.apiUrl}/shops`, { params });
+  }
+
+  getProducts(params?: any): Observable<any> {
+    // On utilise l'API publique des produits mais on peut passer des filtres admin
+    return this.http.get(`${environment.apiUrl}/produits`, { params });
+  }
+
+  getOrders(params?: any): Observable<any> {
+    // L'endpoint /api/commandes (GET) est réservé aux admins et liste tout
+    return this.http.get(`${environment.apiUrl}/commandes`, { params });
+  }
+
+  getSettings(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/settings`);
+  }
+
+  updateSettings(settings: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/settings`, settings);
   }
 }

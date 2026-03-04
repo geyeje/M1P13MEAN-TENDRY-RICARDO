@@ -1,6 +1,6 @@
 // src/app/features/boutiques/boutique-detail/product-card.component.ts
 import { Component, computed, input } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 import { RouterLink } from '@angular/router';
 import { Product } from '../../../core/services/product.service';
 import { ImageErrorDirective } from '../../../shared/directives/image-error.directive';
@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CurrencyPipe, RouterLink, ImageErrorDirective],
+  imports: [AppCurrencyPipe, RouterLink, ImageErrorDirective],
   template: `
     <div class="product-card" [routerLink]="['/products', product()._id]">
       <div class="product-image-container">
@@ -38,10 +38,10 @@ import { environment } from '../../../../environments/environment';
         
         <div class="product-price">
           @if (product().onSale && product().promoPrice) {
-            <span class="price-promo">{{ product().promoPrice | currency:'EUR' }}</span>
-            <span class="price-original">{{ product().price | currency:'EUR' }}</span>
+            <span class="price-promo">{{ product().promoPrice | appCurrency }}</span>
+            <span class="price-original">{{ product().price | appCurrency }}</span>
           } @else {
-            <span class="price-regular">{{ product().price | currency:'EUR' }}</span>
+            <span class="price-regular">{{ product().price | appCurrency }}</span>
           }
         </div>
 

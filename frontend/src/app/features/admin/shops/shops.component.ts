@@ -1,20 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { PlatformSettingsService } from '../../../core/services/platform-settings.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { ShopService, Shop } from '../../../core/services/shop';
 import { AdminService } from '../../../core/services/admin.service';
 
 @Component({
   selector: 'app-shops',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule],
   template: `
     <div class="admin-shops">
       <!-- Header -->
       <div class="page-header">
         <div>
-          <h1>🏪 Gestion des Boutiques</h1>
+          <h1 class="d-flex align-items-center gap-2">
+            <mat-icon style="font-size: 2rem; width: 2rem; height: 2rem;">storefront</mat-icon>
+            Gestion des Boutiques
+          </h1>
           <p class="subtitle">Validez, suspendez ou consultez les boutiques de la plateforme</p>
         </div>
       </div>
@@ -52,9 +57,10 @@ import { AdminService } from '../../../core/services/admin.service';
           </button>
         </div>
         <div class="search-box">
+          <mat-icon class="search-icon">search</mat-icon>
           <input
             type="text"
-            placeholder="🔍 Rechercher une boutique..."
+            placeholder="Rechercher une boutique..."
             [(ngModel)]="searchTerm"
             (input)="onSearch()"
           />
@@ -119,7 +125,7 @@ import { AdminService } from '../../../core/services/admin.service';
                     (click)="validateShop(shop._id, 'active')"
                     title="Valider"
                   >
-                    ✅
+                    <mat-icon>check_circle</mat-icon>
                   </button>
 
                   <!-- Suspendre (si active) -->
@@ -129,7 +135,7 @@ import { AdminService } from '../../../core/services/admin.service';
                     (click)="validateShop(shop._id, 'suspended')"
                     title="Suspendre"
                   >
-                    ⛔
+                    <mat-icon>block</mat-icon>
                   </button>
 
                   <!-- Réactiver (si suspendue) -->
@@ -139,7 +145,7 @@ import { AdminService } from '../../../core/services/admin.service';
                     (click)="validateShop(shop._id, 'active')"
                     title="Réactiver"
                   >
-                    🔄
+                    <mat-icon>refresh</mat-icon>
                   </button>
 
                   <!-- Supprimer -->
@@ -148,7 +154,7 @@ import { AdminService } from '../../../core/services/admin.service';
                     (click)="deleteShop(shop._id)"
                     title="Supprimer"
                   >
-                    🗑️
+                    <mat-icon>delete</mat-icon>
                   </button>
                 </div>
               </td>
@@ -159,7 +165,9 @@ import { AdminService } from '../../../core/services/admin.service';
 
       <!-- Empty State -->
       <div *ngIf="!loading && filteredShops.length === 0" class="empty-state">
-        <div class="empty-icon">🏪</div>
+        <div class="empty-icon">
+          <mat-icon style="font-size: 4rem; width: 4rem; height: 4rem;">storefront</mat-icon>
+        </div>
         <h3>Aucune boutique trouvée</h3>
         <p>Aucune boutique ne correspond à vos critères de recherche.</p>
       </div>
@@ -179,11 +187,11 @@ import { AdminService } from '../../../core/services/admin.service';
       .page-header h1 {
         font-size: 1.75rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--cui-body-color);
         margin: 0 0 0.25rem;
       }
       .subtitle {
-        color: #64748b;
+        color: var(--cui-body-secondary-color);
         margin: 0;
       }
 
@@ -195,12 +203,12 @@ import { AdminService } from '../../../core/services/admin.service';
         margin-bottom: 1.5rem;
       }
       .stat-box {
-        background: white;
+        background: var(--cui-card-bg);
         border-radius: 12px;
         padding: 1.25rem;
         text-align: center;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        border-left: 4px solid #94a3b8;
+        border-left: 4px solid var(--cui-border-color);
       }
       .stat-box.stat-success {
         border-left-color: #22c55e;
@@ -214,10 +222,10 @@ import { AdminService } from '../../../core/services/admin.service';
       .stat-number {
         font-size: 2rem;
         font-weight: 800;
-        color: #1e293b;
+        color: var(--cui-body-color);
       }
       .stat-label {
-        color: #64748b;
+        color: var(--cui-body-secondary-color);
         font-size: 0.85rem;
         margin-top: 0.25rem;
       }
@@ -237,26 +245,40 @@ import { AdminService } from '../../../core/services/admin.service';
       }
       .filter-btn {
         padding: 0.5rem 1rem;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--cui-border-color);
         border-radius: 8px;
-        background: white;
+        background: var(--cui-card-bg);
         cursor: pointer;
         font-weight: 500;
-        color: #475569;
+        color: var(--cui-body-secondary-color);
         transition: all 0.2s;
       }
       .filter-btn:hover {
-        background: #f1f5f9;
+        background: var(--cui-secondary-bg);
       }
       .filter-btn.active {
-        background: #1e293b;
+        background: var(--cui-primary);
         color: white;
-        border-color: #1e293b;
+        border-color: var(--cui-primary);
+      }
+      .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        color: var(--cui-body-secondary-color);
+        font-size: 1.1rem;
+        pointer-events: none;
       }
       .search-box input {
-        padding: 0.5rem 1rem;
-        border: 1px solid #e2e8f0;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        border: 1px solid var(--cui-border-color);
         border-radius: 8px;
+        background: var(--cui-input-bg, var(--cui-card-bg));
+        color: var(--cui-body-color);
         width: 260px;
         font-size: 0.9rem;
         outline: none;
@@ -291,7 +313,7 @@ import { AdminService } from '../../../core/services/admin.service';
 
       /* Table */
       .table-container {
-        background: white;
+        background: var(--cui-card-bg);
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         overflow: hidden;
@@ -301,25 +323,25 @@ import { AdminService } from '../../../core/services/admin.service';
         border-collapse: collapse;
       }
       .shops-table thead {
-        background: #f8fafc;
+        background: var(--cui-tertiary-bg);
       }
       .shops-table th {
         padding: 0.875rem 1rem;
         text-align: left;
         font-weight: 600;
-        color: #475569;
+        color: var(--cui-body-secondary-color);
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        border-bottom: 2px solid #e2e8f0;
+        border-bottom: 2px solid var(--cui-border-color);
       }
       .shops-table td {
         padding: 1rem;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--cui-border-color);
         vertical-align: middle;
       }
       .shops-table tbody tr:hover {
-        background: #f8fafc;
+        background: var(--cui-secondary-bg);
       }
 
       .shop-cell {
@@ -328,11 +350,11 @@ import { AdminService } from '../../../core/services/admin.service';
       }
       .shop-name {
         font-weight: 600;
-        color: #1e293b;
+        color: var(--cui-body-color);
       }
       .shop-email {
         font-size: 0.8rem;
-        color: #94a3b8;
+        color: var(--cui-body-secondary-color);
       }
 
       .category-badge {
@@ -393,28 +415,36 @@ import { AdminService } from '../../../core/services/admin.service';
       }
       .btn-validate {
         background: #dcfce7;
+        color: #166534;
       }
       .btn-validate:hover {
         background: #bbf7d0;
       }
       .btn-suspend {
         background: #fef3c7;
+        color: #92400e;
       }
       .btn-suspend:hover {
         background: #fde68a;
       }
       .btn-delete {
         background: #fee2e2;
+        color: #991b1b;
       }
       .btn-delete:hover {
         background: #fecaca;
+      }
+      .btn-action mat-icon {
+        font-size: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
       }
 
       /* Empty State */
       .empty-state {
         text-align: center;
         padding: 4rem 2rem;
-        background: white;
+        background: var(--cui-card-bg);
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       }
@@ -423,11 +453,11 @@ import { AdminService } from '../../../core/services/admin.service';
         margin-bottom: 1rem;
       }
       .empty-state h3 {
-        color: #1e293b;
+        color: var(--cui-body-color);
         margin-bottom: 0.5rem;
       }
       .empty-state p {
-        color: #64748b;
+        color: var(--cui-body-secondary-color);
       }
 
       @media (max-width: 768px) {
@@ -450,15 +480,16 @@ export class ShopsComponent implements OnInit {
   filteredShops: Shop[] = [];
   loading = true;
   totalShops = 0;
+  private platformSettings = inject(PlatformSettingsService);
 
   selectedStatus = 'all';
   searchTerm = '';
 
   statusFilters = [
     { value: 'all', label: 'Toutes' },
-    { value: 'en_attente', label: '⏳ En attente' },
-    { value: 'active', label: '✅ Actives' },
-    { value: 'suspendue', label: '⛔ Suspendues' },
+    { value: 'en_attente', label: 'En attente' },
+    { value: 'active', label: 'Actives' },
+    { value: 'suspendue', label: 'Suspendues' },
   ];
 
   constructor(
@@ -548,17 +579,14 @@ export class ShopsComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      en_attente: '⏳ En attente',
-      active: '✅ Active',
-      suspendue: '⛔ Suspendue',
+      en_attente: 'En attente',
+      active: 'Active',
+      suspendue: 'Suspendue',
     };
     return labels[status] || status;
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(amount);
+    return this.platformSettings.formatPrice(amount);
   }
 }

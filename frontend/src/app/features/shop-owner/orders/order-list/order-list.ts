@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { PlatformSettingsService } from '../../../../core/services/platform-settings.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Order, OrderService } from '../../../../core/services/order.service';
@@ -6,13 +7,13 @@ import { ShopService } from '../../../../core/services/shop.service';
 import { ProductService } from '../../../../core/services/product.service';
 
 @Component({
-  selector: 'app-order-list',
+  selector: 'app-shop-owner-order-list',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './order-list.html',
   styleUrl: './order-list.scss',
 })
-export class OrderList {
+export class ShopOwnerOrderList {
   orders: Order[] = [];
   loading = true;
   selectedStatus = 'all';
@@ -30,6 +31,7 @@ export class OrderList {
 
   private shopService = inject(ShopService);
   private productService = inject(ProductService);
+  private platformSettings = inject(PlatformSettingsService);
   constructor(public orderService: OrderService) {}
 
   ngOnInit() {
@@ -98,10 +100,7 @@ export class OrderList {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(amount);
+    return this.platformSettings.formatPrice(amount);
   }
 
   formatDate(date: string): string {

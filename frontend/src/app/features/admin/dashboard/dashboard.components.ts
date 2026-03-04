@@ -1,14 +1,16 @@
 // src/app/features/admin/dashboard/dashboard.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { PlatformSettingsService } from '../../../core/services/platform-settings.service';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { AdminService, DashboardStats } from '../../../core/services/admin.service';
 import { StatCardComponent } from '../components/stat-card/stat-card.components';
 import { ChartWidgetComponent } from '../components/chart-widget/chart-widget.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, StatCardComponent, ChartWidgetComponent],
+  imports: [CommonModule, StatCardComponent, ChartWidgetComponent, MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
@@ -30,6 +32,7 @@ export class DashboardComponent implements OnInit {
 
   orderStatusLabels: string[] = [];
   orderStatusData: number[] = [];
+  private platformSettings = inject(PlatformSettingsService);
 
   constructor(private adminService: AdminService) {}
 
@@ -109,9 +112,6 @@ export class DashboardComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(value);
+    return this.platformSettings.formatPrice(value);
   }
 }

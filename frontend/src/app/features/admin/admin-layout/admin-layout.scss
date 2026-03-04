@@ -91,7 +91,28 @@
   .nav-icon {
     font-size: 1.5rem;
     min-width: 1.5rem;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 0.25rem;
+
+    mat-icon {
+      font-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.2));
+    }
+  }
+
+  &:hover .nav-icon {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+
+  &.active .nav-icon {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .nav-label {
@@ -149,6 +170,7 @@
   top: 0;
   z-index: 500;
   border-bottom: 1px solid var(--cui-border-color);
+  transition: all 0.3s ease;
 
   .toggle-btn {
     background: none;
@@ -158,9 +180,74 @@
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
 
     &:hover {
-      background: var(--cui-tertiary-bg);
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .action-button {
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.75rem;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    &:hover {
+      background: rgba(132, 204, 22, 0.15);
+      border-color: #84cc16;
+      color: #84cc16;
+      transform: translateY(-2px);
+    }
+  }
+
+  // Dark Mode Overrides
+  :host-context([data-coreui-theme='dark']) & {
+    background: #0f172a;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+    .toggle-btn {
+      color: rgba(255, 255, 255, 0.8);
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .action-button {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+
+      &:hover {
+        background: rgba(132, 204, 22, 0.2);
+        border-color: #84cc16;
+        color: #84cc16;
+      }
     }
   }
 }
@@ -186,6 +273,7 @@
     justify-content: center;
     font-weight: 700;
     font-size: 0.8rem;
+    transition: all 0.3s;
   }
 
   .user-info {
@@ -196,11 +284,26 @@
       font-weight: 600;
       font-size: 0.875rem;
       color: var(--cui-body-color);
+      transition: all 0.3s;
     }
 
     .user-role {
       font-size: 0.75rem;
       color: var(--cui-secondary-color);
+      transition: all 0.3s;
+    }
+  }
+
+  :host-context([data-coreui-theme='dark']) & {
+    .user-avatar {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .user-name {
+      color: rgba(255, 255, 255, 0.95);
+    }
+    .user-role {
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }

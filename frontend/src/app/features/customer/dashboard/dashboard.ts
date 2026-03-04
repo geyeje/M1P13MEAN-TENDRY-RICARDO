@@ -4,12 +4,13 @@ import { OrderService, Order } from '../../../core/services/order.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, AppCurrencyPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -27,8 +28,7 @@ export class Dashboard implements OnInit {
   cartItems = this.cartService.items;
   cartCount = this.cartService.totalCount;
   cartTotal = computed(() =>
-    this.cartService.items()
-      .reduce((sum, i) => sum + i.product.price * i.quantity, 0),
+    this.cartService.items().reduce((sum, i) => sum + i.product.price * i.quantity, 0),
   );
 
   environment = environment;

@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Boutique = require('../models/Boutique');
 const Produit = require('../models/Produit');
 const Commande = require('../models/Commande');
+const Settings = require('../models/Settings');
 
 /**
  * @desc    Get complete admin dashboard statistics
@@ -285,5 +286,70 @@ exports.getAllShops = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Erreur récupération boutiques' });
+  }
+};
+
+/**
+ * @desc    Get platform settings
+ * @route   GET /api/admin/settings
+ * @access  Private/Admin
+ */
+exports.getSettings = async (req, res) => {
+  try {
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = await Settings.create({});
+    }
+    res.json({ success: true, settings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur récupération paramètres' });
+  }
+};
+
+/**
+ * @desc    Update platform settings
+ * @route   PUT /api/admin/settings
+ * @access  Private/Admin
+ */
+exports.updateSettings = async (req, res) => {
+  try {
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = new Settings(req.body);
+    } else {
+      Object.assign(settings, req.body);
+    }
+    await settings.save();
+    res.json({ success: true, settings, message: 'Paramètres mis à jour' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur mise à jour paramètres' });
+  }
+};
+/**
+ * @desc    Get public settings (visible to everyone)
+ * @route   GET /api/settings
+ * @access  Public
+ */
+exports.getPublicSettings = async (req, res) => {
+  try {
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = await Settings.create({});
+    }
+
+    // Return only non-sensitive settings to the public
+    const publicSettings = {
+      siteName: settings.siteName,
+      contactEmail: settings.contactEmail,
+      maintenanceMode: settings.maintenanceMode,
+      allowRegistrations: settings.allowRegistrations,
+      multiVendor: settings.multiVendor,
+      defaultCurrency: settings.defaultCurrency,
+      siteDescription: settings.siteDescription,
+    };
+
+    res.json({ success: true, settings: publicSettings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur récupération paramètres publics' });
   }
 };

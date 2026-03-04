@@ -23,8 +23,8 @@
         <p class="text-muted">Vue d'ensemble de votre plateforme</p>
       </div>
       <div class="col-auto">
-        <button class="btn btn-primary" (click)="loadDashboard()">
-          <i class="cil-reload"></i> Actualiser
+        <button class="btn btn-primary d-flex align-items-center gap-2" (click)="loadDashboard()">
+          <mat-icon>refresh</mat-icon> Actualiser
         </button>
       </div>
     </div>
@@ -40,7 +40,7 @@
     >
       <div class="col-12">
         <div class="alert alert-warning d-flex align-items-center">
-          <i class="cil-warning me-3 fs-4"></i>
+          <mat-icon class="me-3">warning</mat-icon>
           <div>
             <strong>Actions requises :</strong>
             <span *ngIf="stats.alerts.pendingShops > 0">
@@ -74,7 +74,7 @@
           title="Boutiques"
           [value]="stats.shops.total"
           [subtitle]="stats.shops.pending + ' en attente'"
-          icon="storage"
+          icon="storefront"
           color="success"
         >
         </app-stat-card>
@@ -84,7 +84,7 @@
           title="Produits"
           [value]="stats.products.total"
           [subtitle]="stats.products.inStock + ' en stock'"
-          icon="cart"
+          icon="inventory_2"
           color="info"
         >
         </app-stat-card>
@@ -94,7 +94,7 @@
           title="Commandes"
           [value]="stats.orders.total"
           [subtitle]="stats.orders.delivered + ' livrées'"
-          icon="list"
+          icon="shopping_basket"
           color="warning"
         >
         </app-stat-card>
@@ -103,32 +103,42 @@
 
     <!-- Revenue Cards -->
     <div class="row g-3 mb-4">
-      <div class="col-sm-6 col-lg-4">
+      <div class="col-sm-6 col-lg-3">
         <app-stat-card
           title="CA Total"
           [value]="stats.revenue.total"
           [subtitle]="formatCurrency(stats.revenue.total)"
-          icon="dollar"
+          icon="payments"
           color="success"
         >
         </app-stat-card>
       </div>
-      <div class="col-sm-6 col-lg-4">
+      <div class="col-sm-6 col-lg-3">
+        <app-stat-card
+          title="Commissions"
+          [value]="stats.revenue.platformCommission"
+          [subtitle]="formatCurrency(stats.revenue.platformCommission)"
+          icon="account_balance"
+          color="danger"
+        >
+        </app-stat-card>
+      </div>
+      <div class="col-sm-6 col-lg-3">
         <app-stat-card
           title="CA Ce Mois"
           [value]="stats.revenue.thisMonth"
           [subtitle]="formatCurrency(stats.revenue.thisMonth)"
-          icon="calendar"
+          icon="calendar_today"
           color="primary"
         >
         </app-stat-card>
       </div>
-      <div class="col-sm-6 col-lg-4">
+      <div class="col-sm-6 col-lg-3">
         <app-stat-card
           title="Panier Moyen"
           [value]="stats.revenue.avgCart"
           [subtitle]="formatCurrency(stats.revenue.avgCart)"
-          icon="basket"
+          icon="shopping_cart"
           color="info"
         >
         </app-stat-card>

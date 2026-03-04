@@ -6,6 +6,7 @@ import { ProductService, Product } from '../../core/services/product.service';
 import { signal } from '@angular/core';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { ShoppingCartService } from '../../core/services/shopping-cart.service';
+import { SeoService } from '../../core/services/seo.service';
 
 interface CategoryGroup {
   name: string;
@@ -22,6 +23,7 @@ interface CategoryGroup {
 export class HomeComponent implements OnInit {
   private productService = inject(ProductService);
   private productCartService = inject(ShoppingCartService);
+  private seoService = inject(SeoService);
 
   // tous les produits fetched depuis l'API
   allProducts = signal<Product[]>([]);
@@ -33,9 +35,7 @@ export class HomeComponent implements OnInit {
     const products = this.allProducts();
 
     // 1. Trier tous les produits par avgRating (du plus haut au plus bas)
-    const sortedByRating = [...products].sort(
-      (a, b) => (b.avgRating || 0) - (a.avgRating || 0)
-    );
+    const sortedByRating = [...products].sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
 
     // 2. Grouper par catégorie
     const grouped = new Map<string, Product[]>();
@@ -50,10 +50,13 @@ export class HomeComponent implements OnInit {
     // 3. Convertir en array et filtrer les catégories vides
     return Array.from(grouped.entries())
       .filter(([_, products]) => products.length > 0)
-      .map(([name, products]) => ({
-        name,
-        products: products.slice(0, 8), // afficher max 8 produits par section
-      } as CategoryGroup))
+      .map(
+        ([name, products]) =>
+          ({
+            name,
+            products: products.slice(0, 8), // afficher max 8 produits par section
+          }) as CategoryGroup,
+      )
       .sort((a, b) => a.name.localeCompare(b.name)); // trier les catégories alphabétiquement
   });
 
@@ -62,18 +65,19 @@ export class HomeComponent implements OnInit {
     this.productService.getAllProducts().subscribe({
       next: (response: any) => {
         this.allProducts.set(response.produits || []);
+        this.seoService.resetSeo();
         this.isLoading.set(false);
       },
       error: (error: any) => {
         this.errorMessage.set(
-          'Désolé, impossible de charger les produits. Veuillez réessayer plus tard.'
+          'Désolé, impossible de charger les produits. Veuillez réessayer plus tard.',
         );
         this.isLoading.set(false);
       },
     });
   }
 
-  onAddProductToCart(p: Product){
+  onAddProductToCart(p: Product) {
     this.productCartService.add(p);
   }
 }

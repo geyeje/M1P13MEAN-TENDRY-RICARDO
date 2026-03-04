@@ -4,16 +4,18 @@ import { Product, ProductService } from '../../../core/services/product.service'
 import { ShopService, Shop } from '../../../core/services/shop.service';
 import { ShoppingCartService } from '../../../core/services/shopping-cart.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { SeoService } from '../../../core/services/seo.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../directives/image-error.directive';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, ImageErrorDirective, MatIconModule, MatButtonModule],
+  imports: [CommonModule, ImageErrorDirective, MatIconModule, MatButtonModule, AppCurrencyPipe],
   templateUrl: './product-details.html',
   styleUrl: './product-details.scss',
 })
@@ -24,6 +26,7 @@ export class ProductDetails implements OnInit {
   private shopService = inject(ShopService);
   private cartService = inject(ShoppingCartService);
   private authService = inject(AuthService);
+  private seoService = inject(SeoService);
 
   product = signal<Product | null>(null);
   shop = signal<Shop | null>(null);
@@ -45,6 +48,16 @@ export class ProductDetails implements OnInit {
             if (res.produit.images && res.produit.images.length > 0) {
               this.selectedImage.set(res.produit.images[0]);
             }
+
+            // SEO
+            this.seoService.updateSeo({
+              title: res.produit.name,
+              description:
+                res.produit.description || `Achetez ${res.produit.name} sur Matcha Center.`,
+              image: this.getImageUrl(res.produit.images[0]),
+              type: 'product',
+            });
+
             // si on a reçu la note de l'utilisateur courant
             if (res.myRating && res.myRating > 0) {
               this.userRating.set(res.myRating);
