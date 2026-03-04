@@ -57,6 +57,17 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Normaliser les URLs avec des double-slashes (ex: /api//produits -> /api/produits)
+app.use((req, res, next) => {
+  if (req.path.includes('//')) {
+    const cleanPath = req.path.replace(/\/\/+/g, '/');
+    const cleanUrl = cleanPath + (req.url.includes('?') ? '?' + req.url.split('?')[1] : '');
+    console.warn(`[URL Normalization] Redirecting: ${req.url} -> ${cleanUrl}`);
+    return res.redirect(301, cleanUrl);
+  }
+  next();
+});
+
 // Import des routes
 const authRoutes = require('./routes/auth.routes');
 const boutiqueRoutes = require('./routes/boutique.routes');
