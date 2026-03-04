@@ -8,7 +8,7 @@ const outPath = path.join(__dirname, '..', 'src', 'environments', 'environment.p
 const API_URL =
   process.env.API_URL ||
   process.env.NGX_API_URL ||
-  'https://m1p13mean-tendry-ricardo.onrender.com/api';
+  'https://m1p13mean-tendry-ricardo.onrender.com';
 const STRIPE_KEY = process.env.STRIPE_PUBLIC_KEY || process.env.STRIPE_PK || '';
 
 const content = `export const environment = {
