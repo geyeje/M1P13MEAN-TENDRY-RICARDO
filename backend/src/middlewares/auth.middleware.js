@@ -96,13 +96,18 @@ exports.authorize = (...roles) => {
   return (req, res, next) => {
     // backend still stores "store" for shop owners; normalize to "boutique"
     if (req.user.role === 'store') {
-      req.user.role = 'boutique';    // mutate so subsequent logic/handlers see correct value
+      req.user.role = 'boutique';
     }
     // normalize old role names to new ones
     if (req.user.role === 'acheteur') {
       req.user.role = 'customer';
     }
     const userRole = req.user.role;
+
+    // L'admin a toujours accès à toutes les routes protégées
+    if (userRole === 'admin') {
+      return next();
+    }
 
     if (!roles.includes(userRole)) {
       return res.status(403).json({
