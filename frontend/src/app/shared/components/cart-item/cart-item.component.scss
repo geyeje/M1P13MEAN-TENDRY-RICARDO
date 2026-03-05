@@ -1,3 +1,15 @@
 :host {
   display: block;
 }
+.shop-link {
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.25rem;
+  
+  &:hover {
+    transform: translateX(2px);
+    color: var(--matcha-light, #b8e6d5) !important;
+  }
+}

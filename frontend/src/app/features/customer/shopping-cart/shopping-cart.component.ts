@@ -19,6 +19,10 @@ export class ShoppingCartComponent {
   total = computed(() =>
     this.cart.items().reduce((sum, i) => sum + (i.product.price || 0) * i.quantity, 0),
   );
+  
+  totalItems = computed(() =>
+    this.cart.items().reduce((sum, i) => sum + i.quantity, 0),
+  );
 
   remove(productId: string) {
     this.cart.remove(productId);
