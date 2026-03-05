@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node scripts/set-env.js && ng serve",
     "build": "npm run prebuild:vercel && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -52,6 +52,7 @@
     "@angular/compiler-cli": "^21.2.0",
     "@angular/material": "^21.2.0",
     "@tailwindcss/postcss": "^4.1.12",
+    "dotenv": "^17.3.1",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.12",
