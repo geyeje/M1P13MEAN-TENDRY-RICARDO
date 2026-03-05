@@ -5,20 +5,18 @@ const path = require('path');
 
 const outPath = path.join(__dirname, '..', 'src', 'environments', 'environment.prod.ts');
 
-let API_URL =
+const API_URL =
   process.env.API_URL ||
   process.env.NGX_API_URL ||
   'https://m1p13mean-tendry-ricardo.onrender.com/api';
-
-// Suppression du slash final s'il existe
-if (API_URL.endsWith('/')) {
-  API_URL = API_URL.slice(0, -1);
-}
 const STRIPE_KEY = process.env.STRIPE_PUBLIC_KEY || process.env.STRIPE_PK || '';
 
 const content = `export const environment = {
   production: true,
-  apiUrl: '${API_URL}',
+  apiUrl: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000/api'
+    : '${API_URL}'
+  ).replace(/\/+$/, ''),
   stripePublicKey: '${STRIPE_KEY}'
 };
 `;
