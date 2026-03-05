@@ -89,12 +89,12 @@ router.get('/:id', optionalProtect, boutiqueController.getBoutiqueById);
 router.post('/:id/rate', protect, boutiqueController.submitRating);
 
 // Routes protégées - Gérant
-router.get('/me/myboutique', protect, authorize('boutique'), boutiqueController.getMyBoutique);
+router.get('/me/myboutique', protect, authorize('store'), boutiqueController.getMyBoutique);
 
 router.post(
   '/',
   protect,
-  authorize('boutique'),
+  authorize('store'),
   upload.fields([
     { name: 'logo', maxCount: 1 },
     { name: 'banner', maxCount: 1 },
@@ -106,7 +106,7 @@ router.post(
 router.put(
   '/:id',
   protect,
-  authorize('boutique', 'admin'),
+  authorize('store', 'admin'),
   upload.fields([
     { name: 'logo', maxCount: 1 },
     { name: 'banner', maxCount: 1 },
@@ -115,7 +115,7 @@ router.put(
   boutiqueController.updateBoutique
 );
 
-router.delete('/:id', protect, authorize('boutique', 'admin'), boutiqueController.deleteBoutique);
+router.delete('/:id', protect, authorize('store', 'admin'), boutiqueController.deleteBoutique);
 
 // Routes admin
 router.get('/stats/overview', protect, authorize('admin'), boutiqueController.getBoutiquesStats);

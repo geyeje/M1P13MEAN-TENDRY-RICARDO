@@ -94,11 +94,10 @@ exports.optionalProtect = async (req, res, next) => {
 // Middleware pour vérifier le rôle de l'utilisateur
 exports.authorize = (...roles) => {
   return (req, res, next) => {
-    // backend still stores "store" for shop owners; normalize to "boutique"
-    if (req.user.role === 'store') {
-      req.user.role = 'boutique';
+    // Normalize legacy role names
+    if (req.user.role === 'boutique') {
+      req.user.role = 'store';
     }
-    // normalize old role names to new ones
     if (req.user.role === 'acheteur') {
       req.user.role = 'customer';
     }

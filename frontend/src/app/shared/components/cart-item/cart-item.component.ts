@@ -1,8 +1,11 @@
-import { Component, input, output, EventEmitter } from '@angular/core';
+import { Component, input, output, EventEmitter, Pipe } from '@angular/core';
 import { Product } from '../../../core/services/product.service';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../../../../environments/environment';
 import { ImageErrorDirective } from '../../directives/image-error.directive';
+import { RouterLink } from '@angular/router';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AsyncPipe, DecimalPipe } from '@angular/common';
 
 export interface CartItem {
   product: Product;
@@ -12,7 +15,7 @@ export interface CartItem {
 @Component({
   selector: 'app-cart-item',
   standalone: true,
-  imports: [MatIconModule, ImageErrorDirective],
+  imports: [MatIconModule, ImageErrorDirective, RouterLink, AppCurrencyPipe, DecimalPipe],
   templateUrl: './cart-item.component.html',
   styleUrl: './cart-item.component.scss',
 })

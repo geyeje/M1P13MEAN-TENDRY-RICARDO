@@ -10,9 +10,6 @@ export const roleGuard = (route: ActivatedRouteSnapshot) => {
   let requiredRole = route.data['role'];
   const user = authService.currentUserValue;
 
-  // normalize legacy 'store' to 'boutique'
-  if (requiredRole === 'store') requiredRole = 'boutique';
-
   if (user && user.role === requiredRole) {
     return true;
   }
@@ -22,10 +19,10 @@ export const roleGuard = (route: ActivatedRouteSnapshot) => {
     case 'admin':
       router.navigate(['/admin/dashboard']);
       break;
-    case 'boutique':
+    case 'store':
       router.navigate(['/shop-owner/dashboard']);
       break;
-    case 'acheteur':
+    case 'customer':
       router.navigate(['/']);
       break;
     default:

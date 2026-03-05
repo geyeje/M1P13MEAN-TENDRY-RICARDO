@@ -124,12 +124,12 @@ router.post('/:id/rate', protect, ctrl.submitRating);
 // ========================================
 // ROUTES GÉRANT (authentification requise)
 // ========================================
-router.get('/me/myproduits', protect, authorize('boutique'), ctrl.getMyProduits); // Mes produits
+router.get('/me/myproduits', protect, authorize('store'), ctrl.getMyProduits); // Mes produits
 
 router.post(
   '/',
   protect,
-  authorize('boutique'),
+  authorize('store'),
   upload.array('images', 5), // ← Upload max 5 images
   createValidation,
   ctrl.createProduit
@@ -138,14 +138,14 @@ router.post(
 router.put(
   '/:id',
   protect,
-  authorize('boutique', 'admin'),
+  authorize('store', 'admin'),
   upload.array('images', 5), // ← Upload max 5 images
   ctrl.updateProduit
 ); // Modifier produit
 
-router.delete('/:id', protect, authorize('boutique', 'admin'), ctrl.deleteProduit); // Supprimer produit
+router.delete('/:id', protect, authorize('store', 'admin'), ctrl.deleteProduit); // Supprimer produit
 
-router.patch('/:id/stock', protect, authorize('boutique', 'admin'), ctrl.updateStock); // Mettre à jour stock
+router.patch('/:id/stock', protect, authorize('store', 'admin'), ctrl.updateStock); // Mettre à jour stock
 
 // ========================================
 // ROUTES ACHETEUR

@@ -11,7 +11,7 @@ const routes: Routes = [
       {
         path: '',
         canActivate: [AuthGuard, roleGuard],
-        data: { role: 'boutique' },
+        data: { role: 'store' },
         loadComponent: () => import('./layout/shop-layout/shop-layout').then((m) => m.ShopLayout),
         children: [
           { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
