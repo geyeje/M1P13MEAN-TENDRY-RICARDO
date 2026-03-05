@@ -58,7 +58,7 @@ export class RegisterComponent implements OnInit {
         this.passwordValidator
       ]],
       confirmPassword: ['', Validators.required],
-      role: ['acheteur', Validators.required],
+      role: ['customer', Validators.required],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       adresse: [''],
       acceptTerms: [false, Validators.requiredTrue]
@@ -244,8 +244,8 @@ export class RegisterComponent implements OnInit {
   getRoleLabel(role: string): string {
     const labels: Record<string, string> = {
       'admin': 'Administrateur',
-      'boutique': 'Gérant de boutique',
-      'acheteur': 'Acheteur'
+      'store': 'Gérant de boutique',
+      'customer': 'Acheteur'
     };
     return labels[role] || role;
   }
