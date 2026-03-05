@@ -51,7 +51,7 @@ export class OrderDetails implements OnInit {
     const user = this.authService.currentUserValue;
     if (user?.role === 'admin') {
       this.router.navigate(['/admin/orders']);
-    } else if (user?.role === 'boutique') {
+    } else if (user?.role === 'store') {
       this.router.navigate(['/shop-owner/orders']);
     } else {
       this.router.navigate(['/customer/order-list']);

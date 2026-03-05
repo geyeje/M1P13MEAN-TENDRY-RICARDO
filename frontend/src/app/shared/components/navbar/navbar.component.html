@@ -56,9 +56,9 @@
               <span class="avatar-letter">
                 @if (currentUser()?.role === 'admin') {
                   A
-                } @else if (currentUser()?.role === 'acheteur') {
+                } @else if (currentUser()?.role === 'customer') {
                   C
-                } @else if (currentUser()?.role === 'boutique') {
+                } @else if (currentUser()?.role === 'store') {
                   B
                 } @else {
                   U

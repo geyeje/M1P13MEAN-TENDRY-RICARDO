@@ -28,7 +28,7 @@ export const routes: Routes = [
       {
         path: 'store',
         canActivate: [AuthGuard],
-        data: { roles: ['boutique'] },
+        data: { roles: ['store'] },
         loadChildren: () => import('./features/store/store.routes').then((m) => m.routes),
       },
       {
@@ -39,13 +39,13 @@ export const routes: Routes = [
       {
         path: 'customer',
         canActivate: [AuthGuard],
-        data: { roles: ['acheteur'] },
+        data: { roles: ['customer'] },
         loadChildren: () => import('./features/customer/customer.routes').then((m) => m.routes),
       },
       {
         path: 'checkout',
         canActivate: [AuthGuard],
-        data: { roles: ['acheteur'] },
+        data: { roles: ['customer'] },
         loadComponent: () =>
           import('./shared/checkout-component/checkout-component').then((m) => m.CheckoutComponent),
       },
@@ -106,7 +106,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [AuthGuard],
-    data: { role: 'admin' },
+    data: { roles: ['admin'] },
     loadComponent: () =>
       import('./features/admin/admin-layout/admin-layout').then((m) => m.AdminLayout),
     children: [
@@ -120,7 +120,7 @@ export const routes: Routes = [
   {
     path: 'shop-owner',
     canActivate: [AuthGuard],
-    // data: { roles: ['admin', 'boutique'] },
+    data: { roles: ['store'] },
     loadComponent: () =>
       import('./features/shop-owner/layout/shop-layout/shop-layout').then((m) => m.ShopLayout),
     children: [

@@ -6,7 +6,7 @@ export const shopOwnerRoutes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard, roleGuard],
-    data: { role: 'boutique' },
+    data: { role: 'store' },
     children: [
       {
         path: '',

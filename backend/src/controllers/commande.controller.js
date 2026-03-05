@@ -356,7 +356,7 @@ exports.getCommandeById = async (req, res) => {
       allowed = true;
     } else if (commande.buyerId._id.toString() === req.user.id) {
       allowed = true;
-    } else if (req.user.role === 'boutique') {
+    } else if (req.user.role === 'store') {
       const boutique = await Boutique.findOne({ userId: req.user.id });
       const productIds = await Produit.distinct('_id', { shopId: boutique._id });
       allowed = commande.items.some((item) =>

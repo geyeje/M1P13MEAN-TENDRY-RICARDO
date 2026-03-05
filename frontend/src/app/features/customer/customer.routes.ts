@@ -8,7 +8,7 @@ export const routes: Routes = [
     path: '',
     component: CustomerLayout,
     canActivate: [AuthGuard, roleGuard],
-    data: { role: 'acheteur' },
+    data: { role: 'customer' },
     children: [
       {
         path: '',

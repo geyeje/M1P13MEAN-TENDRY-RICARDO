@@ -33,12 +33,12 @@ router.patch('/:id/cancel',
 
 // ---- Gérant ----
 router.get('/shop/orders',
-  protect, authorize('boutique'),
+  protect, authorize('store'),
   ctrl.getShopCommandes
 );
 
 router.patch('/:id/status',
-  protect, authorize('boutique', 'admin'),
+  protect, authorize('store', 'admin'),
   ctrl.updateStatus
 );
 

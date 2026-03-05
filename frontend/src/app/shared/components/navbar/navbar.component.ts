@@ -69,8 +69,7 @@ export class Navbar {
     const role = this.authService.currentUserValue?.role;
     const routeMap: Record<string, string> = {
       admin: '/admin/dashboard',
-      boutique: '/shop-owner/dashboard',
-      acheteur: '/customer/dashboard',
+      store: '/shop-owner/dashboard',
       customer: '/customer/dashboard',
     };
     const route = routeMap[role || 'customer'] || '/customer/dashboard';
